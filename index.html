@@ -5,14 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WhiteBox Music - Home</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css"> <!-- Vincula tu CSS -->
+    <link rel="stylesheet" href="style.css"> 
 </head>
-<body>
-    <nav class="sidebar">
+<!-- Agregamos un ID al body para controlar el estado del menú -->
+<body id="body-content">
+
+    <nav class="sidebar" id="sidebar">
         <div class="sidebar-header"><img src="logo.png" class="brand-logo"></div>
         <div class="section-title">Descubre</div>
         
-        <!-- MENU: Fíjate que index.html tiene la clase active -->
+        <!-- ENLACES A LAS SECCIONES (Archivos separados) -->
         <a href="index.html" class="nav-item active"><i class="fa-solid fa-house"></i> Home</a>
         <a href="entrevistas.html" class="nav-item"><i class="fa-solid fa-microphone-lines"></i> Entrevistas</a>
         <a href="envia.html" class="nav-item"><i class="fa-solid fa-upload"></i> Envía Música</a>
@@ -25,7 +27,14 @@
 
     <main class="main-content">
         <header class="top-bar">
-            <div style="color:white; font-weight:bold;">WHITEBOX MUSIC</div>
+            <div style="display:flex; align-items:center; gap:20px;">
+                <!-- BOTÓN HAMBURGUESA PARA ESCONDER/MOSTRAR MENU -->
+                <button id="menu-btn" style="background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div style="color:white; font-weight:bold;">WHITEBOX MUSIC</div>
+            </div>
+            
             <div class="social-links"><a href="#">Spotify</a> <a href="#">IG</a></div>
         </header>
 
@@ -36,5 +45,8 @@
             </div>
         </section>
     </main>
+
+    <!-- Vinculamos el script para que funcione el botón -->
+    <script src="script.js"></script>
 </body>
 </html>
