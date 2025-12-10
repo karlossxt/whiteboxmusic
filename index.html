@@ -4,49 +4,103 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WhiteBox Music - Home</title>
+    <!-- Importante: FontAwesome para los iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css"> 
 </head>
-<!-- Agregamos un ID al body para controlar el estado del menú -->
+
 <body id="body-content">
 
+    <!-- BARRA LATERAL (ESTILO EXACTO DE TU IMAGEN) -->
     <nav class="sidebar" id="sidebar">
-        <div class="sidebar-header"><img src="logo.png" class="brand-logo"></div>
+        <!-- Cabecera del menú -->
+        <div class="sidebar-header">
+            <!-- Si tienes el logo.png úsalo, si no, texto -->
+            <img src="logo.png" class="brand-logo" alt="WhiteBox">
+        </div>
+
+        <!-- SECCIÓN 1: DESCUBRE -->
         <div class="section-title">Descubre</div>
         
-        <!-- ENLACES A LAS SECCIONES (Archivos separados) -->
-        <a href="index.html" class="nav-item active"><i class="fa-solid fa-house"></i> Home</a>
-        <a href="entrevistas.html" class="nav-item"><i class="fa-solid fa-microphone-lines"></i> Entrevistas</a>
-        <a href="envia.html" class="nav-item"><i class="fa-solid fa-upload"></i> Envía Música</a>
-        <a href="fotos.html" class="nav-item"><i class="fa-solid fa-camera"></i> Fotos</a>
+        <a href="index.html" class="nav-item active">
+            <i class="fa-solid fa-radio"></i> Blog
+        </a>
+        <a href="entrevistas.html" class="nav-item">
+            <i class="fa-solid fa-microphone-lines"></i> Entrevistas
+        </a>
+        <a href="envia.html" class="nav-item">
+            <i class="fa-solid fa-upload"></i> Envía Música
+        </a>
+        <a href="fotos.html" class="nav-item">
+            <i class="fa-solid fa-camera"></i> Fotos
+        </a>
+        <a href="#live" class="nav-item">
+            <i class="fa-solid fa-bolt"></i> WhiteBox Live
+        </a>
+
+        <!-- SECCIÓN 2: EQUIPO (Miri, Juan Pablo...) -->
+        <div class="section-title">Equipo</div>
         
-        <div class="section-title">Información</div>
-        <a href="quienes.html" class="nav-item"><i class="fa-solid fa-users"></i> Quienes Somos</a>
-        <a href="contacto.html" class="nav-item"><i class="fa-solid fa-envelope"></i> Contacto</a>
+        <a href="#" class="nav-item">
+            <i class="fa-solid fa-headphones"></i> Miri
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fa-solid fa-music"></i> Juan Pablo
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fa-solid fa-record-vinyl"></i> Madame Bleu
+        </a>
+
+        <!-- SECCIÓN 3: AJUSTES -->
+        <div class="section-title">Ajustes</div>
+        
+        <div class="nav-item" style="cursor: pointer;">
+            <i class="fa-solid fa-moon"></i> 
+            Dark Theme 
+            <span style="margin-left:auto; font-size:0.7rem; color:#666; font-weight:bold;">ON</span>
+        </div>
+        
+        <!-- FOOTER PEQUEÑO -->
+        <div style="margin-top: 30px; font-size: 0.7rem; color: #444;">
+            <a href="contacto.html" style="color:#666; text-decoration:none;">Contacto</a>
+        </div>
     </nav>
 
+
+    <!-- CONTENIDO PRINCIPAL -->
     <main class="main-content">
         <header class="top-bar">
             <div style="display:flex; align-items:center; gap:20px;">
-                <!-- BOTÓN HAMBURGUESA PARA ESCONDER/MOSTRAR MENU -->
+                <!-- Botón de las 3 rayitas -->
                 <button id="menu-btn" style="background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">
                     <i class="fa-solid fa-bars"></i>
                 </button>
                 <div style="color:white; font-weight:bold;">WHITEBOX MUSIC</div>
             </div>
             
-            <div class="social-links"><a href="#">Spotify</a> <a href="#">IG</a></div>
+            <div class="social-links">
+                <a href="#">Spotify</a> 
+                <a href="#">TikTok</a> 
+                <a href="#">Instagram</a> 
+                <a href="contacto.html">Contacto</a>
+                <!-- Lupa de búsqueda -->
+                <i class="fa-solid fa-magnifying-glass" style="margin-left:15px; color:white;"></i>
+            </div>
         </header>
 
+        <!-- SECCIÓN HERO -->
         <section style="height: 85vh; background: url('https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=2070') center/cover; display:flex; align-items:center; justify-content:center; text-align:center;">
-            <div style="background: rgba(0,0,0,0.6); padding: 40px;">
-                <h1 style="font-size: 4rem; margin: 0; text-transform: uppercase;">WhiteBox Music</h1>
-                <p>Descubre lo nuevo</p>
+            <div style="background: rgba(0,0,0,0.6); padding: 40px; border-radius:10px;">
+                <p style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; margin-bottom:10px;">Indie Music from Across the globe</p>
+                <h1 style="font-size: 4rem; margin: 0; text-transform: uppercase; line-height:1;">Your favorite music.<br>Artists to discover.</h1>
+                <p style="font-size: 1.5rem; margin-top: 10px;">And more in Wolf in a Suit</p>
+                
+                <button style="margin-top:20px; background:transparent; border:1px solid white; color:white; padding:10px 40px; border-radius:20px; cursor:pointer; text-transform:uppercase;">Discover</button>
             </div>
         </section>
     </main>
 
-    <!-- Vinculamos el script para que funcione el botón -->
+    <!-- SCRIPT (No olvides tener el archivo script.js en la carpeta) -->
     <script src="script.js"></script>
 </body>
 </html>
