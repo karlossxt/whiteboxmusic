@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhiteBox Music</title>
+    <!-- Iconos FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- ESTILOS GENERALES --- */
+        :root {
+            --bg-color: #050505;
+            --sidebar-bg: #000000;
+            --text-color: #ffffff;
+            --text-muted: #888888;
+            --accent-color: #ff4d00; /* Naranja/Rojo estilo Wolf */
+            --accent-green: #ccff00; /* Verde Neón */
+            --sidebar-width: 240px;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+        }
+
+        /* --- BARRA LATERAL (WOLF STYLE) --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: var(--sidebar-bg);
+            padding: 20px 25px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            overflow-y: auto;
+            border-right: 1px solid #1a1a1a;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        
+        .menu-icon { font-size: 1.2rem; color: #ccc; margin-right: 15px; cursor: pointer; }
+        
+        /* Ajuste del Logo para que se vea bien */
+        .brand-logo {
+            max-width: 140px; /* Tamaño máximo */
+            height: auto;
+            object-fit: contain;
+        }
+
+        .section-title {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-transform: capitalize;
+            margin-bottom: 15px;
+            margin-top: 25px;
+            font-weight: 600;
+        }
+        .section-title:first-of-type { margin-top: 0; }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #e0e0e0;
+            padding: 10px 0;
+            font-size: 0.95rem;
+            transition: 0.2s;
+            font-weight: 500;
+            border-right: 3px solid transparent;
+        }
+
+        .nav-item i { width: 30px; color: var(--accent-color); font-size: 1rem; }
+        .nav-item:hover { color: #fff; transform: translateX(5px); }
+        .nav-item.active { color: #fff; border-right: 3px solid var(--accent-color); }
+
+        .sidebar-footer { margin-top: auto; padding-top: 30px; }
+        .footer-link { display: block; color: var(--text-muted); font-size: 0.8rem; text-decoration: none; margin-bottom: 10px; }
+        .footer-link:hover { color: #fff; }
+        .copyright { color: #444; font-size: 0.75rem; margin-top: 15px; }
+
+        /* --- CONTENIDO PRINCIPAL (RESTURADO) --- */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            padding: 0;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 40px;
+            background: rgba(0,0,0,0.7);
+            position: sticky;
+            top: 0;
+            z-index: 900;
+            backdrop-filter: blur(10px);
+        }
+        .search-bar input { background: #222; border: none; padding: 10px 20px; border-radius: 30px; color: #fff; width: 250px; outline: none;}
+        .social-links a { color: #fff; text-decoration: none; margin-left: 20px; font-size: 0.9rem; text-transform: uppercase; font-weight: bold;}
+
+        /* Hero Section (Fondo de banda) */
+        .hero {
+            height: 80vh;
+            /* Foto de fondo */
+            background-image: url('https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            position: relative;
+        }
+        .hero::before { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); } /* Oscurecer foto */
+        
+        .hero-text { position: relative; z-index: 1; max-width: 700px; }
+        .hero h1 { font-size: 3.5rem; line-height: 1.1; margin-bottom: 25px; font-weight: 800;}
+        
+        .btn-discover {
+            border: 2px solid #fff;
+            background: transparent;
+            color: #fff;
+            padding: 12px 50px;
+            border-radius: 30px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-discover:hover { background: #fff; color: #000; }
+
+        /* Media Grid */
+        .media-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; height: 250px; }
+        .media-item { background: #000; overflow: hidden; position: relative; }
+        .media-item img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: 0.5s; }
+        .media-item:hover img { opacity: 1; transform: scale(1.05); }
+
+        /* Live Section */
+        .live-section { padding: 80px 40px; text-align: center; background: radial-gradient(circle at center, #111 0%, #050505 100%); }
+        
+        .giant-title { font-size: 4rem; font-weight: 900; color: #fff; margin: 0; letter-spacing: -2px; }
+        .neon-script {
+            font-family: 'Brush Script MT', cursive;
+            color: var(--accent-green);
+            font-size: 3.5rem;
+            text-shadow: 0 0 15px var(--accent-green);
+            display: block;
+            margin-top: -30px;
+            margin-bottom: 40px;
+        }
+
+        .spotify-container {
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+        }
+
+        .tags-container { padding: 40px; text-align: center; }
+        .tag-btn { border: 1px solid #333; color: #aaa; padding: 8px 25px; border-radius: 20px; text-decoration: none; margin: 0 5px; font-size: 0.8rem; transition: 0.3s;}
+        .tag-btn:hover { border-color: #fff; color: #fff; }
+
+    </style>
+</head>
+<body>
+
+    <!-- BARRA LATERAL (Sidebar) -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <i class="fa-solid fa-bars menu-icon"></i>
+            <!-- Tu Logo -->
+            <img src="logo.png" alt="WhiteBox" class="brand-logo">
+        </div>
+
+        <div class="section-title">Descubre</div>
+        <a href="#" class="nav-item active"><i class="fa-solid fa-radio"></i> Blog</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-microphone-lines"></i> Entrevistas</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-upload"></i> Envía Música</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-camera"></i> Fotos</a>
+        <a href="#live-section" class="nav-item"><i class="fa-solid fa-bolt"></i> WhiteBox Live</a>
+
+        <div class="section-title">Equipo</div>
+        <a href="#" class="nav-item"><i class="fa-solid fa-headphones"></i> Miri</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-music"></i> Juan Pablo</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-record-vinyl"></i> Madame Bleu</a>
+
+        <div class="section-title">Ajustes</div>
+        <div class="nav-item" style="cursor: pointer;">
+            <i class="fa-solid fa-moon"></i> Dark Theme <span style="margin-left:auto; font-size:0.7rem; color:#666;">ON</span>
+        </div>
+
+        <div class="sidebar-footer">
+            <a href="#" class="footer-link">Política de Privacidad</a>
+            <a href="#" class="footer-link">Contacto</a>
+            <div class="copyright">@2025 WhiteBox Music</div>
+        </div>
+    </nav>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+        
+        <header class="top-bar">
+            <div class="search-bar">
+                <input type="text" placeholder="Buscar artista...">
+            </div>
+            <div class="social-links">
+                <a href="#">Spotify</a>
+                <a href="#">Instagram</a>
+                <a href="#">Contacto</a>
+            </div>
+        </header>
+
+        <!-- Sección Grande con Foto -->
+        <section class="hero">
+            <div class="hero-text">
+                <p style="text-transform: uppercase; font-size: 0.9rem; letter-spacing: 3px; margin-bottom: 10px;">Indie Music from Across the globe</p>
+                <h1>Your favorite music.<br>Artists to discover.</h1>
+                <button class="btn-discover">Discover</button>
+            </div>
+        </section>
+
+        <!-- 3 Fotos Pequeñas -->
+        <section class="media-grid">
+            <div class="media-item"><img src="https://images.unsplash.com/photo-1514525253440-b393452e233e?auto=format&fit=crop&w=500" alt="Music 1"></div>
+            <div class="media-item"><img src="https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?auto=format&fit=crop&w=500" alt="Music 2"></div>
+            <div class="media-item"><img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=500" alt="Music 3"></div>
+        </section>
+
+        <!-- Sección Live & Spotify -->
+        <section class="live-section" id="live-section">
+            <h2 class="giant-title">WhiteBox Music</h2>
+            <span class="neon-script">Live</span>
+
+            <div class="spotify-container">
+                <!-- Playlist Spotify -->
+                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator&theme=0" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            </div>
+
+            <div class="tags-container">
+                <a href="#" class="tag-btn">pop</a>
+                <a href="#" class="tag-btn">r&b</a>
+                <a href="#" class="tag-btn">rock</a>
+                <a href="#" class="tag-btn">indie</a>
+                <a href="#" class="tag-btn">kpop</a>
+            </div>
+        </section>
+
+    </main>
+
+</body>
+</html>
