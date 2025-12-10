@@ -57,4 +57,55 @@ section { padding: 60px 40px; flex-grow: 1; }
 
 /* Modal */
 .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); justify-content: center; align-items: center; }
+
 .close-modal { position: absolute; top: 20px; right: 40px; color: #fff; font-size: 40px; cursor: pointer; }
+/* --- style.css --- */
+
+/* 1. Modifica .sidebar para agregar 'transition' y 'left' */
+.sidebar {
+    width: var(--sidebar-width);
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0; /* Posición inicial: Visible */
+    background-color: #000;
+    padding: 20px 25px;
+    box-sizing: border-box;
+    border-right: 1px solid #1a1a1a;
+    z-index: 1000;
+    overflow-y: auto;
+    transition: left 0.4s ease; /* MAGIA: Esto hace que se deslice suave */
+}
+
+/* 2. Modifica .main-content para agregar 'transition' y 'margin-left' */
+.main-content {
+    margin-left: var(--sidebar-width); /* Margen inicial */
+    width: calc(100% - var(--sidebar-width));
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    transition: margin-left 0.4s ease, width 0.4s ease; /* MAGIA: El contenido se ajusta suave */
+}
+
+/* --- ESTILOS NUEVOS PARA CUANDO EL MENÚ ESTÁ CERRADO --- */
+
+/* Cuando el body tiene la clase 'menu-closed', el sidebar se va a la izquierda (-240px) */
+body.menu-closed .sidebar {
+    left: -240px; /* Se esconde fuera de la pantalla */
+}
+
+/* Cuando el body tiene la clase 'menu-closed', el contenido ocupa todo el ancho */
+body.menu-closed .main-content {
+    margin-left: 0;
+    width: 100%;
+}
+
+/* --- RESPONSIVE (CELULARES) --- */
+/* En pantallas pequeñas, el menú debe estar escondido por defecto y sobreponerse */
+@media (max-width: 768px) {
+    .sidebar { left: -240px; } /* Oculto por defecto en celular */
+    .main-content { margin-left: 0; width: 100%; }
+    
+    /* Clase especial para ABRIR el menú en celular */
+    body.menu-open .sidebar { left: 0; }
+}
