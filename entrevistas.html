@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Entrevistas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="sidebar-header"><img src="logo.png" class="brand-logo"></div>
+        <div class="section-title">Descubre</div>
+        <a href="index.html" class="nav-item"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="entrevistas.html" class="nav-item active"><i class="fa-solid fa-microphone-lines"></i> Entrevistas</a>
+        <a href="envia.html" class="nav-item"><i class="fa-solid fa-upload"></i> Envía Música</a>
+        <a href="fotos.html" class="nav-item"><i class="fa-solid fa-camera"></i> Fotos</a>
+        <div class="section-title">Información</div>
+        <a href="quienes.html" class="nav-item"><i class="fa-solid fa-users"></i> Quienes Somos</a>
+        <a href="contacto.html" class="nav-item"><i class="fa-solid fa-envelope"></i> Contacto</a>
+    </nav>
+
+    <main class="main-content">
+        <header class="top-bar"><div>ENTREVISTAS</div> <div class="social-links"><a href="#">IG</a></div></header>
+        <section>
+            <h2 class="giant-title">ENTREVISTAS</h2>
+
+            <div class="sub-header">IG LIVE</div>
+            <div class="carousel-container">
+                <!-- Videos Verticales (Placeholders) -->
+                <div class="video-thumb" onclick="openModal('img', 'https://images.unsplash.com/photo-1516280440614-6697288d5d38?w=500')" style="background-image:url('https://images.unsplash.com/photo-1516280440614-6697288d5d38?w=500');"></div>
+                <div class="video-thumb" style="background-image:url('https://images.unsplash.com/photo-1514525253440-b393452e233e?w=500');"></div>
+                <div class="video-thumb" style="background-image:url('https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=500');"></div>
+            </div>
+
+            <!-- Banner Spotify -->
+            <div class="spotify-banner">
+                <div>
+                    <h3 style="margin:0; color:#1db954;">Spotify <i class="fa-brands fa-spotify"></i></h3>
+                    <p style="margin:0; font-size:0.9rem;">DESCUBRE MÚSICA NUEVA</p>
+                </div>
+                <div style="width:80px; height:80px; background:#333;"></div> <!-- Cover Playlist -->
+            </div>
+
+            <div class="sub-header">YOUTUBE</div>
+            <div class="youtube-frame" onclick="openModal('video', 'https://www.youtube.com/embed/dQw4w9WgXcQ')">
+                <i class="fa-brands fa-youtube" style="font-size:5rem; color:red;"></i>
+            </div>
+        </section>
+    </main>
+
+    <div id="myModal" class="modal"><span class="close-modal" onclick="closeModal()">&times;</span><div id="modal-content-container"></div></div>
+    <script src="script.js"></script>
+</body>
+</html>
