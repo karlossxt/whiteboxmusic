@@ -25,4 +25,22 @@ function closeModal() {
 window.onclick = function(event) {
     const modal = document.getElementById('myModal');
     if (event.target == modal) { closeModal(); }
+    /* --- Agrega esto a script.js --- */
+
+// Seleccionamos los elementos
+const menuBtn = document.getElementById('menu-btn');
+const body = document.getElementById('body-content');
+
+// Escuchamos el clic en el botón
+if (menuBtn) {
+    menuBtn.addEventListener('click', () => {
+        // Si la pantalla es grande (Desktop)
+        if (window.innerWidth > 768) {
+            body.classList.toggle('menu-closed');
+        } 
+        // Si la pantalla es pequeña (Móvil)
+        else {
+            body.classList.toggle('menu-open');
+        }
+    });
 }
