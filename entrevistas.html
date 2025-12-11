@@ -2,53 +2,114 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Entrevistas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrevistas | WhiteBox Music</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    
+    <!-- REUTILIZAMOS LOS ESTILOS DEL INDEX Y AGREGAMOS NUEVOS -->
+    <style>
+        /* --- ESTILOS BASE (Mismos del Index) --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: #000; color: white; display: flex; min-height: 100vh; }
+        a { text-decoration: none; color: white; transition: 0.3s; }
+        ul { list-style: none; }
+
+        /* SIDEBAR (Igual que index) */
+        .sidebar { width: 250px; background: #000; padding: 40px 30px; border-right: 1px solid #222; position: fixed; height: 100vh; }
+        .sidebar-logo, .whitebox-logo-bottom { font-weight: 900; text-transform: uppercase; }
+        .sidebar-logo { font-size: 1.2rem; margin-bottom: 40px; }
+        .whitebox-logo-bottom { margin-top: auto; border: 2px solid white; padding: 10px; text-align: center; }
+        .menu-list li { margin-bottom: 15px; font-size: 0.9rem; font-weight: bold; text-transform: uppercase; display: flex; gap: 10px; cursor: pointer; }
+        .menu-list i { color: #ff4757; }
+        .menu-list a { color: white; display: flex; gap: 10px; width: 100%; }
+
+        /* MAIN CONTENT */
+        .main-content { margin-left: 250px; width: calc(100% - 250px); background-color: #121212; padding: 40px; }
+
+        /* --- ESTILOS ESPECÍFICOS DE ENTREVISTAS --- */
+        h1.page-title { font-size: 3rem; font-weight: 900; text-transform: uppercase; margin-bottom: 40px; }
+        
+        .section-header { text-align: center; margin: 40px 0 20px 0; }
+        .section-header h2 { color: #ff6b6b; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; }
+
+        /* IG LIVE SLIDER */
+        .ig-slider { display: flex; align-items: center; gap: 10px; justify-content: center; }
+        .ig-cards { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; }
+        .ig-card { min-width: 200px; height: 200px; background: #333; position: relative; cursor: pointer; }
+        .ig-card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: 0.3s; }
+        .ig-card:hover img { opacity: 1; }
+        .arrow-btn { background: none; border: none; color: white; font-size: 2rem; cursor: pointer; }
+
+        /* SPOTIFY BANNER */
+        .spotify-banner { margin: 40px 0; width: 100%; }
+        .spotify-banner img { width: 100%; height: auto; border-radius: 8px; }
+
+        /* YOUTUBE VIDEO */
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000; margin-top: 20px; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+
+        /* NOTAS AMARILLAS (COMO EN TU IMAGEN DE REFERENCIA) */
+        .dev-note { background: #f1c40f; color: black; padding: 10px; font-size: 0.8rem; font-weight: bold; display: inline-block; margin-bottom: 10px; }
+    </style>
 </head>
 <body>
-    <nav class="sidebar">
-        <div class="sidebar-header"><img src="logo.png" class="brand-logo"></div>
-        <div class="section-title">Descubre</div>
-        <a href="index.html" class="nav-item"><i class="fa-solid fa-house"></i> Home</a>
-        <a href="entrevistas.html" class="nav-item active"><i class="fa-solid fa-microphone-lines"></i> Entrevistas</a>
-        <a href="envia.html" class="nav-item"><i class="fa-solid fa-upload"></i> Envía Música</a>
-        <a href="fotos.html" class="nav-item"><i class="fa-solid fa-camera"></i> Fotos</a>
-        <div class="section-title">Información</div>
-        <a href="quienes.html" class="nav-item"><i class="fa-solid fa-users"></i> Quienes Somos</a>
-        <a href="contacto.html" class="nav-item"><i class="fa-solid fa-envelope"></i> Contacto</a>
-    </nav>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-logo"><a href="index.html">WHITEBOX MUSIC</a></div>
+        <ul class="menu-list">
+            <li><a href="index.html"><i class="fa-regular fa-circle-dot"></i> HOME</a></li>
+            <li><a href="entrevistas.html"><i class="fa-solid fa-microphone-lines"></i> ENTREVISTAS</a></li>
+            <li><a href="fotos.html"><i class="fa-solid fa-camera"></i> FOTOS</a></li>
+            <li><a href="quienes-somos.html"><i class="fa-solid fa-users"></i> QUIENES SOMOS</a></li>
+            <li><a href="contacto.html"><i class="fa-solid fa-envelope"></i> CONTACTO</a></li>
+        </ul>
+        <div class="whitebox-logo-bottom">WBM</div>
+    </aside>
 
     <main class="main-content">
-        <header class="top-bar"><div>ENTREVISTAS</div> <div class="social-links"><a href="#">IG</a></div></header>
-        <section>
-            <h2 class="giant-title">ENTREVISTAS</h2>
+        <h1 class="page-title">ENTREVISTAS</h1>
 
-            <div class="sub-header">IG LIVE</div>
-            <div class="carousel-container">
-                <!-- Videos Verticales (Placeholders) -->
-                <div class="video-thumb" onclick="openModal('img', 'https://images.unsplash.com/photo-1516280440614-6697288d5d38?w=500')" style="background-image:url('https://images.unsplash.com/photo-1516280440614-6697288d5d38?w=500');"></div>
-                <div class="video-thumb" style="background-image:url('https://images.unsplash.com/photo-1514525253440-b393452e233e?w=500');"></div>
-                <div class="video-thumb" style="background-image:url('https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=500');"></div>
-            </div>
+        <!-- SECCIÓN IG LIVE -->
+        <div class="section-header"><h2>IG LIVE</h2></div>
+        
+        <!-- Nota del desarrollador (puedes borrar esto después) -->
+        <div style="text-align: right;"><span class="dev-note">Al dar clic se abren en nueva pestaña</span></div>
 
-            <!-- Banner Spotify -->
-            <div class="spotify-banner">
-                <div>
-                    <h3 style="margin:0; color:#1db954;">Spotify <i class="fa-brands fa-spotify"></i></h3>
-                    <p style="margin:0; font-size:0.9rem;">DESCUBRE MÚSICA NUEVA</p>
-                </div>
-                <div style="width:80px; height:80px; background:#333;"></div> <!-- Cover Playlist -->
+        <div class="ig-slider">
+            <button class="arrow-btn">◀</button>
+            <div class="ig-cards">
+                <!-- Tarjeta 1 -->
+                <a href="https://instagram.com" target="_blank" class="ig-card">
+                    <img src="https://images.unsplash.com/photo-1513118172236-40bd2691d683?q=80&w=400" alt="Live 1">
+                </a>
+                <!-- Tarjeta 2 -->
+                <a href="https://instagram.com" target="_blank" class="ig-card">
+                    <img src="https://images.unsplash.com/photo-1481349518771-20055b2a7b24?q=80&w=400" alt="Live 2">
+                </a>
+                <!-- Tarjeta 3 -->
+                <a href="https://instagram.com" target="_blank" class="ig-card">
+                    <img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=400" alt="Live 3">
+                </a>
             </div>
+            <button class="arrow-btn">▶</button>
+        </div>
 
-            <div class="sub-header">YOUTUBE</div>
-            <div class="youtube-frame" onclick="openModal('video', 'https://www.youtube.com/embed/dQw4w9WgXcQ')">
-                <i class="fa-brands fa-youtube" style="font-size:5rem; color:red;"></i>
-            </div>
-        </section>
+        <!-- SECCIÓN SPOTIFY -->
+        <div class="spotify-banner">
+            <!-- Ejemplo de imagen, idealmente aquí incrustas un iframe de spotify -->
+            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </div>
+
+        <!-- SECCIÓN YOUTUBE -->
+        <div class="section-header"><h2>YOUTUBE</h2></div>
+        
+        <div class="video-container">
+            <!-- Video de ejemplo -->
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ?si=muted=1" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+
     </main>
-
-    <div id="myModal" class="modal"><span class="close-modal" onclick="closeModal()">&times;</span><div id="modal-content-container"></div></div>
-    <script src="script.js"></script>
 </body>
 </html>
