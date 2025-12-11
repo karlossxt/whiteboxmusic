@@ -5,11 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WhiteBox Music</title>
     
-    <!-- Fuentes de Google (Inter para textos y una Cursiva para "Live") -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Yellowtail&display=swap" rel="stylesheet">
-    
-    <!-- Iconos (FontAwesome) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
@@ -20,7 +17,7 @@
             font-family: 'Inter', sans-serif;
             background-color: #000;
             color: white;
-            display: flex; /* Estructura de 2 columnas */
+            display: flex;
             min-height: 100vh;
         }
 
@@ -35,26 +32,48 @@
             display: flex;
             flex-direction: column;
             border-right: 1px solid #222;
-            position: fixed; /* Se queda fija */
+            position: fixed;
             height: 100vh;
             left: 0;
             top: 0;
             z-index: 100;
         }
 
-        .sidebar-logo { font-weight: 900; font-size: 1.2rem; letter-spacing: -1px; margin-bottom: 40px; }
+        /* ESTILO PARA EL LOGO IMAGEN */
+        .sidebar-logo {
+            margin-bottom: 30px;
+            text-align: center; /* Centrar logo si es pequeño */
+        }
+        
+        .sidebar-logo img {
+            max-width: 100%; /* Que no se salga del ancho */
+            height: auto;    /* Mantener proporción */
+            display: block;
+        }
+
         .greeting { font-weight: bold; margin-bottom: 20px; display: block; }
 
-        .menu-list li { margin-bottom: 15px; font-size: 0.9rem; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .menu-list li:hover { color: #aaa; }
-        
-        /* Iconos rojos del menú */
+        .menu-list li { 
+            margin-bottom: 15px; 
+            font-size: 0.9rem; 
+            font-weight: bold; 
+            text-transform: uppercase; 
+        }
+
+        .menu-list li a {
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            color: white;
+        }
+
+        .menu-list li a:hover { color: #aaa; }
         .menu-list i { color: #ff4757; font-size: 0.8rem; }
 
         .section-title { font-size: 0.8rem; color: #666; margin-top: 40px; margin-bottom: 15px; text-transform: uppercase; font-weight: bold; }
 
         .whitebox-logo-bottom {
-            margin-top: auto; /* Empuja el logo al final */
+            margin-top: auto;
             border: 2px solid white;
             padding: 10px;
             text-align: center;
@@ -66,12 +85,12 @@
 
         /* --- 2. CONTENIDO PRINCIPAL (DERECHA) --- */
         .main-content {
-            margin-left: 250px; /* Deja espacio para el sidebar */
+            margin-left: 250px;
             width: calc(100% - 250px);
-            background-color: #121212; /* Un gris muy oscuro, no negro total */
+            background-color: #121212;
         }
 
-        /* Top Bar (Buscador y Redes) */
+        /* Top Bar */
         .top-bar {
             background: #000;
             padding: 15px 40px;
@@ -95,7 +114,7 @@
         .top-links { display: flex; gap: 20px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; }
         .top-links a:hover { color: #ff4757; }
 
-        /* Hero Section (Imagen Grande) */
+        /* Hero Section */
         .hero {
             position: relative;
             height: 500px;
@@ -118,124 +137,69 @@
         .hero p { font-size: 1rem; margin-bottom: 10px; font-style: italic; opacity: 0.9; }
         
         .btn-discover {
-            background: transparent;
-            border: 2px solid white;
-            color: white;
-            padding: 10px 60px;
-            border-radius: 30px;
-            text-transform: uppercase;
-            font-weight: bold;
-            margin-top: 20px;
-            cursor: pointer;
-            transition: 0.3s;
+            background: transparent; border: 2px solid white; color: white;
+            padding: 10px 60px; border-radius: 30px; text-transform: uppercase;
+            font-weight: bold; margin-top: 20px; cursor: pointer; transition: 0.3s;
         }
         .btn-discover:hover { background: white; color: black; }
 
-        /* Galería de 4 fotos */
-        .photo-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            height: 200px;
-        }
+        /* Galería */
+        .photo-grid { display: grid; grid-template-columns: repeat(4, 1fr); height: 200px; }
         .photo-item { width: 100%; height: 100%; object-fit: cover; filter: grayscale(50%); transition: 0.3s; }
         .photo-item:hover { filter: grayscale(0%); }
 
         /* Banner Neón */
-        .neon-banner {
-            background: black;
-            padding: 60px 0;
-            text-align: center;
-            position: relative;
-        }
-        .neon-text {
-            font-family: 'Inter', sans-serif;
-            font-weight: 900;
-            font-size: 4rem;
-            color: #ff4d4d; /* Rojo salmón */
-            text-transform: uppercase;
-            line-height: 0.8;
-        }
+        .neon-banner { background: black; padding: 60px 0; text-align: center; position: relative; }
+        .neon-text { font-family: 'Inter', sans-serif; font-weight: 900; font-size: 4rem; color: #ff4d4d; text-transform: uppercase; line-height: 0.8; }
         .neon-live {
-            font-family: 'Yellowtail', cursive; /* Fuente manuscrita */
-            color: #ccff00; /* Verde neón */
-            font-size: 4rem;
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) rotate(-5deg);
+            font-family: 'Yellowtail', cursive; color: #ccff00; font-size: 4rem;
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%) rotate(-5deg);
             text-shadow: 0 0 10px rgba(204, 255, 0, 0.5);
         }
 
-        /* Playlist Spotify (Simulada o Iframe) */
-        .playlist-section {
-            padding: 40px;
-            background: #121212;
-            display: flex;
-            justify-content: center;
-        }
+        /* Playlist */
+        .playlist-section { padding: 40px; background: #121212; display: flex; justify-content: center; }
         
-        /* Estilo para simular el reproductor de la imagen */
-        .spotify-mockup {
-            width: 100%;
-            max-width: 800px;
-            background: #181818; /* Gris Spotify */
-            padding: 20px;
-            border-radius: 8px;
-        }
-        
-        /* Etiquetas (Tags) */
-        .tags-container {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            padding: 40px 0;
-            background: #000;
-        }
-        .tag {
-            border: 1px solid white;
-            padding: 8px 25px;
-            border-radius: 20px;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-            cursor: pointer;
-        }
+        /* Tags */
+        .tags-container { display: flex; justify-content: center; gap: 15px; padding: 40px 0; background: #000; }
+        .tag { border: 1px solid white; padding: 8px 25px; border-radius: 20px; text-transform: uppercase; font-size: 0.9rem; cursor: pointer; }
         .tag:hover { background: white; color: black; }
 
         /* Footer */
-        footer {
-            padding: 20px 40px;
-            text-align: right;
-            font-size: 0.8rem;
-            color: #666;
-            background: #000;
-        }
+        footer { padding: 20px 40px; text-align: right; font-size: 0.8rem; color: #666; background: #000; }
 
     </style>
 </head>
 <body>
 
-    <!-- SIDEBAR (BARRA IZQUIERDA) -->
+    <!-- SIDEBAR -->
     <aside class="sidebar">
-        <div class="sidebar-logo">WHITEBOX MUSIC</div>
+        <!-- LOGO IMAGEN AQUÍ -->
+        <div class="sidebar-logo">
+            <a href="index.html">
+                <img src="logo.png" alt="WhiteBox Music">
+            </a>
+        </div>
         
         <span class="greeting">HOLA!</span>
         
         <ul class="menu-list">
-            <li><i class="fa-regular fa-circle-dot"></i> BLOG</li>
-            <li><i class="fa-solid fa-microphone-lines"></i> ENTREVISTAS</li>
-            <li><i class="fa-solid fa-music"></i> ENVÍA MÚSICA</li>
-            <li><i class="fa-solid fa-camera"></i> FOTOS</li>
+            <li><a href="#"><i class="fa-regular fa-circle-dot"></i> BLOG</a></li>
+            <li><a href="entrevistas.html"><i class="fa-solid fa-microphone-lines"></i> ENTREVISTAS</a></li>
+            <li><a href="#"><i class="fa-solid fa-music"></i> ENVÍA MÚSICA</a></li>
+            <li><a href="fotos.html"><i class="fa-solid fa-camera"></i> FOTOS</a></li>
+            <li><a href="quienes-somos.html"><i class="fa-solid fa-users"></i> QUIENES SOMOS</a></li>
         </ul>
 
         <ul class="menu-list" style="margin-top: 20px;">
-            <li><i class="fa-brands fa-youtube"></i> WHITEBOX MUSIC LIVE</li>
+            <li><a href="#"><i class="fa-brands fa-youtube"></i> WHITEBOX MUSIC LIVE</a></li>
         </ul>
 
         <div class="section-title">EQUIPO</div>
         <ul class="menu-list">
-            <li><i class="fa-solid fa-user"></i> MIRI</li>
-            <li><i class="fa-solid fa-user"></i> JUAN PABLO</li>
-            <li><i class="fa-solid fa-heart"></i> MADAME BLEU</li>
+            <li><a href="#"><i class="fa-solid fa-user"></i> MIRI</a></li>
+            <li><a href="#"><i class="fa-solid fa-user"></i> JUAN PABLO</a></li>
+            <li><a href="#"><i class="fa-solid fa-heart"></i> MADAME BLEU</a></li>
         </ul>
 
         <div class="whitebox-logo-bottom">
@@ -243,10 +207,9 @@
         </div>
     </aside>
 
-    <!-- CONTENIDO PRINCIPAL (DERECHA) -->
+    <!-- CONTENIDO -->
     <main class="main-content">
         
-        <!-- TOP BAR -->
         <div class="top-bar">
             <div class="search-container">
                 <span>Search...</span>
@@ -256,11 +219,11 @@
                 <a href="#">SPOTIFY</a>
                 <a href="#">TIK TOK</a>
                 <a href="#">INSTAGRAM</a>
-                <a href="#">CONTACTO</a>
+                <a href="contacto.html">CONTACTO</a>
             </div>
         </div>
 
-        <!-- HERO SECTION -->
+        <!-- HERO -->
         <section class="hero">
             <div class="hero-overlay">
                 <p>Indie Music from Across the globe</p>
@@ -269,7 +232,7 @@
             </div>
         </section>
 
-        <!-- PHOTO GRID -->
+        <!-- FOTOS -->
         <section class="photo-grid">
             <img src="https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?q=80&w=600" class="photo-item">
             <img src="https://images.unsplash.com/photo-1459749411177-287ce327690b?q=80&w=600" class="photo-item">
@@ -277,16 +240,14 @@
             <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=600" class="photo-item">
         </section>
 
-        <!-- NEON BANNER -->
+        <!-- BANNER NEON -->
         <section class="neon-banner">
             <div class="neon-text">WhiteBox Music</div>
             <div class="neon-live">Live</div>
         </section>
 
-        <!-- PLAYLIST SPOTIFY -->
+        <!-- PLAYLIST -->
         <section class="playlist-section">
-            <!-- Aquí usamos un iframe real de Spotify.
-                 Puedes cambiar el 'src' por tu propia playlist de Spotify. -->
             <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator&theme=0" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
         </section>
 
@@ -300,10 +261,9 @@
             <div class="tag">independiente</div>
         </section>
 
-        <!-- FOOTER -->
         <footer>
             <p>Términos y condiciones</p>
-            <p>Contacto</p>
+            <p><a href="contacto.html" style="color:#666;">Contacto</a></p>
         </footer>
 
     </main>
