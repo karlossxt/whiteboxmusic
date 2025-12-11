@@ -3,104 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WhiteBox Music - Home</title>
-    <!-- Importante: FontAwesome para los iconos -->
+    <title>WhiteBox Music</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css"> 
+    <link rel="stylesheet" href="style.css">
 </head>
+<body>
 
-<body id="body-content">
+    <!-- BARRA LATERAL (FIJA A LA IZQUIERDA) -->
+    <nav class="sidebar">
+        <div class="sidebar-content">
+            <!-- Sección HOLA! -->
+            <div class="menu-group">
+                <h3 class="menu-title">HOLA!</h3>
+                <a href="index.html" class="nav-item active"><i class="fa-solid fa-circle-dot"></i> BLOG</a>
+                <a href="entrevistas.html" class="nav-item"><i class="fa-solid fa-microphone-lines"></i> ENTREVISTAS</a>
+                <a href="envia.html" class="nav-item"><i class="fa-solid fa-music"></i> ENVÍA MÚSICA</a>
+                <a href="fotos.html" class="nav-item"><i class="fa-solid fa-camera"></i> FOTOS</a>
+            </div>
 
-    <!-- BARRA LATERAL (ESTILO EXACTO DE TU IMAGEN) -->
-    <nav class="sidebar" id="sidebar">
-        <!-- Cabecera del menú -->
-        <div class="sidebar-header">
-            <!-- Si tienes el logo.png úsalo, si no, texto -->
-            <img src="logo.png" class="brand-logo" alt="WhiteBox">
+            <!-- Enlace especial ROJO -->
+            <div class="menu-group">
+                <a href="#live" class="special-link">
+                    <i class="fa-solid fa-folder-open"></i> WHITEBOX MUSIC <br> LIVE
+                </a>
+            </div>
+
+            <!-- Sección EQUIPO -->
+            <div class="menu-group">
+                <h3 class="menu-title">EQUIPO</h3>
+                <a href="#" class="nav-item"><i class="fa-solid fa-headphones"></i> MIRI</a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-user"></i> JUAN PABLO</a>
+                <a href="#" class="nav-item"><i class="fa-solid fa-record-vinyl"></i> MADAME BLEU</a>
+            </div>
         </div>
 
-        <!-- SECCIÓN 1: DESCUBRE -->
-        <div class="section-title">Descubre</div>
-        
-        <a href="index.html" class="nav-item active">
-            <i class="fa-solid fa-radio"></i> Blog
-        </a>
-        <a href="entrevistas.html" class="nav-item">
-            <i class="fa-solid fa-microphone-lines"></i> Entrevistas
-        </a>
-        <a href="envia.html" class="nav-item">
-            <i class="fa-solid fa-upload"></i> Envía Música
-        </a>
-        <a href="fotos.html" class="nav-item">
-            <i class="fa-solid fa-camera"></i> Fotos
-        </a>
-        <a href="#live" class="nav-item">
-            <i class="fa-solid fa-bolt"></i> WhiteBox Live
-        </a>
-
-        <!-- SECCIÓN 2: EQUIPO (Miri, Juan Pablo...) -->
-        <div class="section-title">Equipo</div>
-        
-        <a href="#" class="nav-item">
-            <i class="fa-solid fa-headphones"></i> Miri
-        </a>
-        <a href="#" class="nav-item">
-            <i class="fa-solid fa-music"></i> Juan Pablo
-        </a>
-        <a href="#" class="nav-item">
-            <i class="fa-solid fa-record-vinyl"></i> Madame Bleu
-        </a>
-
-        <!-- SECCIÓN 3: AJUSTES -->
-        <div class="section-title">Ajustes</div>
-        
-        <div class="nav-item" style="cursor: pointer;">
-            <i class="fa-solid fa-moon"></i> 
-            Dark Theme 
-            <span style="margin-left:auto; font-size:0.7rem; color:#666; font-weight:bold;">ON</span>
-        </div>
-        
-        <!-- FOOTER PEQUEÑO -->
-        <div style="margin-top: 30px; font-size: 0.7rem; color: #444;">
-            <a href="contacto.html" style="color:#666; text-decoration:none;">Contacto</a>
+        <!-- CAJITA BLANCA LOGO (ABAJO A LA IZQUIERDA) -->
+        <div class="whitebox-logo-container">
+            <div class="whitebox-square">
+                WHITEBOX<br>MUSIC
+            </div>
         </div>
     </nav>
 
-
-    <!-- CONTENIDO PRINCIPAL -->
+    <!-- CONTENIDO PRINCIPAL (DERECHA) -->
     <main class="main-content">
+        
+        <!-- BARRA SUPERIOR (BUSCADOR + REDES) -->
         <header class="top-bar">
-            <div style="display:flex; align-items:center; gap:20px;">
-                <!-- Botón de las 3 rayitas -->
-                <button id="menu-btn" style="background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-                <div style="color:white; font-weight:bold;">WHITEBOX MUSIC</div>
+            <!-- Buscador estilo Google/Spotify -->
+            <div class="search-container">
+                <input type="text" placeholder="Search..." class="search-input">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
             </div>
-            
+
             <div class="social-links">
-                <a href="#">Spotify</a> 
-                <a href="#">TikTok</a> 
-                <a href="#">Instagram</a> 
-                <a href="contacto.html">Contacto</a>
-                <!-- Lupa de búsqueda -->
-                <i class="fa-solid fa-magnifying-glass" style="margin-left:15px; color:white;"></i>
+                <a href="#">SPOTIFY</a>
+                <a href="#">TIK TOK</a>
+                <a href="#">INSTAGRAM</a>
+                <a href="contacto.html">CONTACTO</a>
             </div>
         </header>
 
-        <!-- SECCIÓN HERO -->
-        <section style="height: 85vh; background: url('https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=2070') center/cover; display:flex; align-items:center; justify-content:center; text-align:center;">
-            <div style="background: rgba(0,0,0,0.6); padding: 40px; border-radius:10px;">
-                <p style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; margin-bottom:10px;">Indie Music from Across the globe</p>
-                <h1 style="font-size: 4rem; margin: 0; text-transform: uppercase; line-height:1;">Your favorite music.<br>Artists to discover.</h1>
-                <p style="font-size: 1.5rem; margin-top: 10px;">And more in Wolf in a Suit</p>
-                
-                <button style="margin-top:20px; background:transparent; border:1px solid white; color:white; padding:10px 40px; border-radius:20px; cursor:pointer; text-transform:uppercase;">Discover</button>
+        <!-- HERO SECTION (IMAGEN GRANDE) -->
+        <section class="hero">
+            <div class="hero-overlay">
+                <p class="subtitle">Indie Music from Across the globe</p>
+                <h1>Your favorite music.<br>Artists to discover.<br>And more in Wolf in a Suit</h1>
+                <button class="btn-discover">Discover</button>
             </div>
         </section>
+
+        <!-- TIRA DE 3 IMÁGENES (GRID) -->
+        <section class="media-strip">
+            <div class="strip-item" style="background-image: url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500');"></div>
+            <div class="strip-item" style="background-image: url('https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=500');"></div>
+            <div class="strip-item" style="background-image: url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=500');"></div>
+            <div class="strip-item" style="background-image: url('https://images.unsplash.com/photo-1514525253440-b393452e233e?w=500');"></div>
+        </section>
+
+        <!-- SECCIÓN LIVE (TITULO GIGANTE + SPOTIFY) -->
+        <section class="live-section" id="live">
+            <h2 class="giant-text">WhiteBox Music</h2>
+            <div class="neon-text">Live</div>
+
+            <!-- Playlist Spotify -->
+            <div class="spotify-wrapper">
+                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator&theme=0" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            </div>
+
+            <!-- Tags del Footer -->
+            <div class="tags-row">
+                <span class="tag-pill">pop</span>
+                <span class="tag-pill">r&b</span>
+                <span class="tag-pill">rock</span>
+                <span class="tag-pill">indie</span>
+                <span class="tag-pill">kpop</span>
+                <span class="tag-pill">independiente</span>
+            </div>
+        </section>
+
+        <footer style="text-align: right; padding: 20px 40px; color: #666; font-size: 0.8rem;">
+            Términos y condiciones<br>Contacto
+        </footer>
+
     </main>
 
-    <!-- SCRIPT (No olvides tener el archivo script.js en la carpeta) -->
+    <!-- Script para funcionalidad básica -->
     <script src="script.js"></script>
 </body>
 </html>
