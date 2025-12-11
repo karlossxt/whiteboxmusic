@@ -1,81 +1,234 @@
+/* --- style.css --- */
 :root {
-    --bg-color: #050505;
-    --text-color: #ffffff;
-    --accent-orange: #ff4d00; /* EL COLOR NARANJA IMPORTANTE */
-    --accent-red: #ff3b3b; 
-    --sidebar-width: 240px;
+    --bg-black: #000000;
+    --text-white: #ffffff;
+    --accent-red: #ff3b3b;   /* El rojo del logo grande */
+    --accent-neon: #ccff00;  /* El verde neón de 'Live' */
+    --sidebar-w: 220px;
 }
 
-body { margin: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); display: flex; }
-a { text-decoration: none; }
+body {
+    margin: 0;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: var(--bg-black);
+    color: var(--text-white);
+    display: flex;
+}
 
-/* SIDEBAR - Estilo Wolf in a Suit */
+/* --- SIDEBAR IZQUIERDA --- */
 .sidebar {
-    width: var(--sidebar-width);
+    width: var(--sidebar-w);
     height: 100vh;
     position: fixed;
-    top: 0;
-    left: 0;
-    background-color: #000; /* Fondo totalmente negro */
-    padding: 20px 25px;
+    top: 0; left: 0;
+    background: #000;
+    padding: 30px 20px;
     box-sizing: border-box;
-    border-right: 1px solid #1a1a1a;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Empuja el logo blanco al fondo */
+    border-right: 1px solid #222;
     z-index: 1000;
-    overflow-y: auto;
-    transition: left 0.4s ease; /* Para la animación de esconder */
 }
 
-/* Títulos de sección (Descubre, Equipo...) en gris */
-.section-title {
-    color: #666; /* Gris oscuro */
-    font-size: 0.85rem;
+.menu-title {
+    font-size: 0.8rem;
+    color: #fff;
     margin-bottom: 15px;
     margin-top: 30px;
-    font-weight: normal;
+    font-weight: bold;
+    text-transform: uppercase;
 }
-.section-title:first-of-type { margin-top: 10px; }
+.menu-title:first-child { margin-top: 0; }
 
-/* Items del menú */
 .nav-item {
     display: flex;
     align-items: center;
-    color: #ccc; /* Texto gris claro */
-    padding: 8px 0;
-    font-size: 0.95rem;
+    color: #999;
+    text-decoration: none;
+    font-size: 0.75rem;
     font-weight: bold;
-    transition: 0.2s;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    transition: 0.3s;
 }
+.nav-item i { margin-right: 10px; font-size: 0.6rem; color: var(--accent-red); } /* Iconos rojos pequeños */
+.nav-item:hover, .nav-item.active { color: #fff; }
 
-/* LOS ICONOS NARANJAS */
-.nav-item i {
-    width: 25px; /* Espacio fijo para el icono */
-    color: var(--accent-orange); /* Aquí se aplica el naranja */
-    font-size: 1rem;
-    margin-right: 10px;
-}
-
-/* Efecto Hover */
-.nav-item:hover, .nav-item.active {
+.special-link {
     color: #fff;
-    border-right: 3px solid var(--accent-orange); /* Línea naranja a la derecha al seleccionar */
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9rem;
+    display: block;
+    margin-top: 20px;
+    line-height: 1.2;
 }
+.special-link i { margin-right: 5px; color: var(--accent-red); }
 
-/* ... EL RESTO DE TU CSS SIGUE IGUAL (main-content, transition, etc) ... */
-.main-content {
-    margin-left: var(--sidebar-width);
-    width: calc(100% - var(--sidebar-width));
-    min-height: 100vh;
+/* CAJA BLANCA LOGO */
+.whitebox-logo-container {
+    margin-bottom: 20px;
+}
+.whitebox-square {
+    background: white;
+    color: black;
+    width: 100px;
+    height: 80px;
     display: flex;
-    flex-direction: column;
-    transition: margin-left 0.4s ease, width 0.4s ease;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 0.9rem;
+    line-height: 1;
+    text-align: center;
+    border: 2px solid white;
 }
 
-/* Clases para esconder menú (Javascript) */
-body.menu-closed .sidebar { left: -240px; }
-body.menu-closed .main-content { margin-left: 0; width: 100%; }
+/* --- CONTENIDO PRINCIPAL --- */
+.main-content {
+    margin-left: var(--sidebar-w);
+    width: calc(100% - var(--sidebar-w));
+}
 
+/* BARRA SUPERIOR */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background: #000;
+    position: sticky;
+    top: 0;
+    z-index: 900;
+}
+
+/* Buscador */
+.search-container {
+    background: #222;
+    border-radius: 20px;
+    padding: 5px 15px;
+    display: flex;
+    align-items: center;
+    width: 300px;
+}
+.search-input {
+    background: transparent;
+    border: none;
+    color: #fff;
+    width: 100%;
+    outline: none;
+    font-size: 0.8rem;
+}
+.search-icon { color: #666; font-size: 0.8rem; }
+
+.social-links { display: flex; gap: 20px; }
+.social-links a { color: #fff; text-decoration: none; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+
+/* HERO */
+.hero {
+    height: 70vh;
+    background: url('https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=2070') center/cover;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.hero-overlay {
+    text-align: center;
+    z-index: 1;
+}
+.hero::before {
+    content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
+    background: rgba(0,0,0,0.3); /* Oscurecer un poco la foto */
+}
+.subtitle { font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 10px; opacity: 0.9; }
+.hero h1 { font-size: 3.5rem; line-height: 1.1; margin: 0 0 30px 0; font-weight: 800; }
+
+.btn-discover {
+    background: transparent;
+    border: 1px solid #fff;
+    color: #fff;
+    padding: 8px 60px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.btn-discover:hover { background: white; color: black; }
+
+/* TIRA DE MEDIA (GRID) */
+.media-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    height: 200px;
+}
+.strip-item {
+    background-size: cover;
+    background-position: center;
+    border-right: 1px solid #111;
+    filter: grayscale(50%);
+    transition: 0.3s;
+}
+.strip-item:hover { filter: grayscale(0%); }
+
+/* SECCIÓN LIVE */
+.live-section {
+    padding: 60px 40px;
+    text-align: center;
+    background: #000;
+}
+.giant-text {
+    font-size: 5rem;
+    font-weight: 900;
+    color: var(--accent-red); /* Color Rojo/Salmón */
+    margin: 0;
+    line-height: 0.8;
+    letter-spacing: -2px;
+}
+.neon-text {
+    font-family: 'Brush Script MT', cursive;
+    font-size: 4rem;
+    color: var(--accent-neon); /* Verde Neón */
+    text-shadow: 0 0 15px var(--accent-neon);
+    margin-top: -30px;
+    margin-bottom: 40px;
+    position: relative;
+    z-index: 10;
+}
+
+.spotify-wrapper {
+    max-width: 800px;
+    margin: 0 auto 50px auto;
+    background: #111;
+}
+
+.tags-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.tag-pill {
+    border: 1px solid #555;
+    border-radius: 20px;
+    padding: 5px 20px;
+    font-size: 0.8rem;
+    color: #ccc;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.tag-pill:hover { border-color: #fff; color: #fff; }
+
+/* RESPONSIVE CELULAR */
 @media (max-width: 768px) {
-    .sidebar { left: -240px; }
+    .sidebar { display: none; } /* Ocultar sidebar en cel temporalmente o usar menú hamburguesa */
     .main-content { margin-left: 0; width: 100%; }
-    body.menu-open .sidebar { left: 0; }
+    .hero h1 { font-size: 2rem; }
+    .giant-text { font-size: 3rem; }
+    .top-bar { flex-direction: column; gap: 10px; }
+    .media-strip { grid-template-columns: 1fr 1fr; height: auto; }
+    .strip-item { height: 150px; }
 }
+
