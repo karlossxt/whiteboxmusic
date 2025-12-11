@@ -2,45 +2,144 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Fotos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fotos | WhiteBox Music</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        /* ESTILOS BASE */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: #000; color: white; display: flex; min-height: 100vh; }
+        a { text-decoration: none; color: white; }
+        ul { list-style: none; }
+        .sidebar { width: 250px; background: #000; padding: 40px 30px; border-right: 1px solid #222; position: fixed; height: 100vh; }
+        .sidebar-logo { font-size: 1.2rem; font-weight: 900; margin-bottom: 40px; }
+        .menu-list li { margin-bottom: 15px; font-weight: bold; }
+        .menu-list i { color: #ff4757; margin-right: 10px; }
+        .main-content { margin-left: 250px; width: calc(100% - 250px); background: #eee; padding: 40px; color: black; } /* Fondo claro para las fotos */
+
+        /* CABECERA */
+        .page-header { display: flex; align-items: center; gap: 20px; margin-bottom: 40px; border-bottom: 2px solid black; padding-bottom: 20px; }
+        h1 { font-size: 3rem; font-weight: 900; text-transform: uppercase; }
+        .subtitle { font-size: 1.2rem; color: #ff6b6b; font-weight: bold; }
+        .desc { font-style: italic; color: #555; }
+
+        /* GRID DE FOTOS POLAROID */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .polaroid {
+            background: white;
+            padding: 10px 10px 30px 10px; /* Espacio abajo para parecer polaroid */
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .polaroid:hover { transform: scale(1.03) rotate(2deg); z-index: 2; box-shadow: 5px 5px 15px rgba(0,0,0,0.2); }
+        .polaroid img { width: 100%; height: 200px; object-fit: cover; filter: grayscale(20%); }
+
+        /* MODAL (POPUP) */
+        .modal {
+            display: none; /* Oculto por defecto */
+            position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            justify-content: center; align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 15px 15px 50px 15px;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+            transform: rotate(-2deg);
+        }
+
+        .modal-img { width: 100%; display: block; }
+        
+        .close-btn {
+            position: absolute; top: -15px; right: -15px;
+            background: black; color: white; width: 30px; height: 30px;
+            border-radius: 50%; text-align: center; line-height: 30px; cursor: pointer;
+            font-weight: bold;
+        }
+
+        .yellow-link {
+            background: #ffe600; color: black; padding: 5px 10px;
+            font-weight: bold; font-size: 0.9rem;
+            position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
+            white-space: nowrap;
+        }
+    </style>
 </head>
 <body>
-    <nav class="sidebar">
-        <div class="sidebar-header"><img src="logo.png" class="brand-logo"></div>
-        <div class="section-title">Descubre</div>
-        <a href="index.html" class="nav-item"><i class="fa-solid fa-house"></i> Home</a>
-        <a href="entrevistas.html" class="nav-item"><i class="fa-solid fa-microphone-lines"></i> Entrevistas</a>
-        <a href="envia.html" class="nav-item"><i class="fa-solid fa-upload"></i> Envía Música</a>
-        <a href="fotos.html" class="nav-item active"><i class="fa-solid fa-camera"></i> Fotos</a>
-        <div class="section-title">Información</div>
-        <a href="quienes.html" class="nav-item"><i class="fa-solid fa-users"></i> Quienes Somos</a>
-        <a href="contacto.html" class="nav-item"><i class="fa-solid fa-envelope"></i> Contacto</a>
-    </nav>
 
-    <!-- Fondo claro para esta sección -->
-    <main class="main-content" style="background: #f4f4f4; color: black;">
-        <header class="top-bar"><div>FOTOS</div></header>
-        <section>
-            <div style="display:flex; align-items:center; margin-bottom:20px;">
-                <h2 class="giant-title" style="margin:0; color:black;">FOTOS</h2>
-                <span style="color:#ff3b3b; font-weight:bold; font-size:1.5rem; margin-left:10px;">WBM</span>
-            </div>
-            <p style="margin-bottom:30px;">¿Gracias por ser parte de este gran recorrido con WhiteBox Music!</p>
+    <aside class="sidebar">
+        <div class="sidebar-logo"><a href="index.html">WHITEBOX MUSIC</a></div>
+        <ul class="menu-list">
+            <li><a href="index.html"><i class="fa-regular fa-circle-dot"></i> HOME</a></li>
+            <li><a href="entrevistas.html"><i class="fa-solid fa-microphone-lines"></i> ENTREVISTAS</a></li>
+            <li><a href="fotos.html"><i class="fa-solid fa-camera"></i> FOTOS</a></li>
+            <li><a href="quienes-somos.html"><i class="fa-solid fa-users"></i> QUIENES SOMOS</a></li>
+            <li><a href="contacto.html"><i class="fa-solid fa-envelope"></i> CONTACTO</a></li>
+        </ul>
+    </aside>
 
-            <div class="polaroid-grid">
-                <div class="polaroid" onclick="openModal('img', 'https://images.unsplash.com/photo-1501386761122-ebd13d001c1f?w=800')">
-                    <img src="https://images.unsplash.com/photo-1501386761122-ebd13d001c1f?w=400">
-                </div>
-                <div class="polaroid"><img src="https://images.unsplash.com/photo-1514525253440-b393452e233e?w=400"></div>
-                <div class="polaroid"><img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=400"></div>
-                <div class="polaroid"><img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400"></div>
+    <main class="main-content">
+        <div class="page-header">
+            <div>
+                <h1>FOTOS</h1>
+                <span class="subtitle">WBM</span>
             </div>
-        </section>
+            <p class="desc">¡Gracias por ser parte de este gran recorrido con WhiteBox Music!</p>
+        </div>
+
+        <div class="gallery-grid">
+            <!-- FOTOS (Puedes duplicar estas líneas) -->
+            <div class="polaroid" onclick="openModal(this)">
+                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400" alt="Foto 1">
+            </div>
+            <div class="polaroid" onclick="openModal(this)">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400" alt="Foto 2">
+            </div>
+            <div class="polaroid" onclick="openModal(this)">
+                <img src="https://images.unsplash.com/photo-1517070208541-6ddc4d3efbcb?q=80&w=400" alt="Foto 3">
+            </div>
+            <div class="polaroid" onclick="openModal(this)">
+                <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=400" alt="Foto 4">
+            </div>
+            <div class="polaroid" onclick="openModal(this)">
+                <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=400" alt="Foto 5">
+            </div>
+            <div class="polaroid" onclick="openModal(this)">
+                <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=400" alt="Foto 6">
+            </div>
+        </div>
     </main>
-    
-    <div id="myModal" class="modal"><span class="close-modal" onclick="closeModal()">&times;</span><div id="modal-content-container"></div></div>
-    <script src="script.js"></script>
+
+    <!-- EL POPUP OCULTO -->
+    <div class="modal" id="photoModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">X</span>
+            <img id="modalImage" class="modal-img" src="">
+            <a href="#" class="yellow-link">https://enlace-del-evento.com</a>
+        </div>
+    </div>
+
+    <script>
+        function openModal(element) {
+            var imgSrc = element.querySelector('img').src;
+            document.getElementById('modalImage').src = imgSrc;
+            document.getElementById('photoModal').style.display = 'flex';
+        }
+        function closeModal() {
+            document.getElementById('photoModal').style.display = 'none';
+        }
+    </script>
+
 </body>
 </html>
