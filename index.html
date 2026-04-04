@@ -6,16 +6,22 @@
     <title>WhiteBox Music</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Yellowtail&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Oswald:wght@700&family=Yellowtail&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* --- RESET Y BASES --- */
+        :root {
+            --pink: #e772a7;
+            --bg-dark: #000;
+            --bg-main: #121212;
+        }
+
+        /* --- RESET --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #000;
+            background-color: var(--bg-dark);
             color: white;
             display: flex;
             min-height: 100vh;
@@ -25,7 +31,7 @@
         a { text-decoration: none; color: white; transition: 0.3s; }
         ul { list-style: none; }
 
-        /* --- 1. SIDEBAR (IZQUIERDA) --- */
+        /* --- SIDEBAR (IZQUIERDA) --- */
         .sidebar {
             width: 250px;
             background-color: #000;
@@ -35,44 +41,44 @@
             border-right: 1px solid #222;
             position: fixed;
             height: 100vh;
-            left: 0;
-            top: 0;
-            z-index: 100;
+            left: 0; top: 0; z-index: 1000;
             overflow-y: auto;
+            transition: 0.4s ease;
         }
 
         .sidebar-logo { margin-bottom: 30px; text-align: center; }
         .sidebar-logo img { max-width: 100%; height: auto; display: block; }
 
-        .greeting { font-weight: bold; margin-bottom: 20px; display: block; }
+        .greeting { font-weight: bold; margin-bottom: 20px; display: block; color: var(--pink); }
 
         .menu-list li { margin-bottom: 15px; font-size: 0.9rem; font-weight: bold; text-transform: uppercase; }
         .menu-list li a { display: flex; align-items: center; gap: 10px; color: white; }
-        .menu-list li a:hover { color: #ff4757; }
-        .menu-list i { color: #ff4757; font-size: 0.8rem; width: 20px; text-align: center; }
+        .menu-list li a:hover { color: var(--pink); }
+        .menu-list i { color: var(--pink); font-size: 0.9rem; width: 20px; text-align: center; }
 
         .section-title { font-size: 0.8rem; color: #666; margin-top: 40px; margin-bottom: 15px; text-transform: uppercase; font-weight: bold; }
 
         .whitebox-logo-bottom {
             margin-top: auto;
-            border: 2px solid white;
+            border: 2px solid var(--pink);
             padding: 10px;
             text-align: center;
             font-weight: 900;
             text-transform: uppercase;
             font-size: 1.2rem;
             line-height: 1;
+            color: var(--pink);
         }
 
-        /* --- 2. CONTENIDO PRINCIPAL (DERECHA) --- */
+        /* --- CONTENIDO PRINCIPAL --- */
         .main-content {
             margin-left: 250px;
             width: calc(100% - 250px);
-            background-color: #121212;
+            background-color: var(--bg-main);
             min-height: 100vh;
         }
 
-        /* Top Bar */
+        /* Top Bar & Hamburguesa */
         .top-bar {
             background: #000;
             padding: 15px 40px;
@@ -80,6 +86,13 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid #222;
+        }
+
+        .menu-toggle {
+            display: none; /* Solo visible en movil */
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: white;
         }
 
         .search-container {
@@ -94,141 +107,118 @@
         }
 
         .top-links { display: flex; gap: 20px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; }
-        .top-links a:hover { color: #ff4757; }
+        .top-links a:hover { color: var(--pink); }
 
-        /* Hero Section (Banner) */
+        /* Hero */
         .hero {
-            position: relative;
             height: 500px;
-            /* CORREGIDO: Aquí va tu nueva imagen de fondo */
-            background: url('pexels-myatezhny39-2938205.jpg') center/cover no-repeat;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('pexels-myatezhny39-2938205.jpg') center/cover no-repeat;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
+            align-items: center; justify-content: center; text-align: center;
         }
-        .hero::before {
-            content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
-            background: rgba(0,0,0,0.5); z-index: 1;
-        }
-
-        .hero-overlay {
-            position: relative; z-index: 2;
-            padding: 20px;
-        }
-
-        .hero h1 { font-size: 3.5rem; line-height: 1.1; margin-bottom: 20px; font-weight: 800; text-shadow: 2px 2px 10px black; }
-        .hero p { font-size: 1.1rem; margin-bottom: 10px; font-style: italic; opacity: 0.9; }
-        
+        .hero h1 { font-size: 3.5rem; line-height: 1.1; margin-bottom: 20px; font-weight: 800; }
         .btn-discover {
             background: transparent; border: 2px solid white; color: white;
-            padding: 10px 60px; border-radius: 30px; text-transform: uppercase;
-            font-weight: bold; margin-top: 20px; cursor: pointer; transition: 0.3s;
+            padding: 12px 60px; border-radius: 30px; text-transform: uppercase;
+            font-weight: bold; cursor: pointer; transition: 0.3s;
         }
         .btn-discover:hover { background: white; color: black; }
 
-        /* Galería de Fotos */
+        /* Galería SIN espacios */
         .photo-grid { 
             display: grid; 
             grid-template-columns: repeat(4, 1fr); 
-            height: 250px; 
-            overflow: hidden; 
-        }
-        
-        .photo-container {
             width: 100%;
-            height: 100%;
-            overflow: hidden;
-            position: relative;
+            background: black;
         }
-
+        .photo-container { overflow: hidden; width: 100%; line-height: 0; }
         .photo-item { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-            filter: grayscale(80%) brightness(0.8); 
-            transition: all 0.5s ease; 
+            width: 100%; height: 300px; object-fit: cover; 
+            filter: grayscale(100%); transition: 0.5s; display: block; 
         }
+        .photo-container:hover .photo-item { filter: grayscale(0%); transform: scale(1.05); }
 
-        .photo-container:hover .photo-item { 
-            filter: grayscale(0%) brightness(1.1); 
-            transform: scale(1.1);
+        /* BANNER PERSONALIZADO (Reemplaza Neón) */
+        .custom-banner {
+            background-color: #000;
+            padding: 80px 20px;
+            text-align: center;
         }
-
-        /* Banner Neón */
-        .neon-banner { background: black; padding: 70px 0; text-align: center; position: relative; overflow: hidden; }
-        .neon-text { font-family: 'Inter', sans-serif; font-weight: 900; font-size: 4rem; color: #ff4d4d; text-transform: uppercase; line-height: 0.8; }
-        
-        .neon-live {
-            font-family: 'Yellowtail', cursive; 
-            color: #ccff00; 
+        .custom-banner h2 {
+            font-family: 'Oswald', sans-serif;
             font-size: 4.5rem;
-            position: absolute; 
-            bottom: 20px; 
-            left: 50%; 
-            transform: translateX(-50%) rotate(-5deg);
-            text-shadow: 0 0 15px rgba(204, 255, 0, 0.6);
-            z-index: 10;
+            color: var(--pink);
+            text-transform: uppercase;
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+        .custom-banner .line {
+            width: 150px; height: 3px; background: white;
+            margin: 25px auto;
+        }
+        .custom-banner .arrows {
+            color: var(--pink); font-size: 2.5rem; letter-spacing: 10px;
         }
 
-        /* Playlist */
-        .playlist-section { padding: 40px; background: #121212; display: flex; justify-content: center; }
-        
-        /* Tags */
-        .tags-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; padding: 40px 20px; background: #000; }
-        .tag { border: 1px solid white; padding: 8px 25px; border-radius: 20px; text-transform: uppercase; font-size: 0.9rem; cursor: pointer; transition: 0.3s; }
-        .tag:hover { background: white; color: black; transform: translateY(-3px); }
+        /* Playlist Youtube */
+        .playlist-section { padding: 40px; background: #000; display: flex; justify-content: center; }
+        .yt-wrapper { width: 100%; max-width: 900px; border-radius: 15px; overflow: hidden; }
 
-        /* Footer */
-        footer { padding: 20px 40px; text-align: right; font-size: 0.8rem; color: #666; background: #000; }
+        /* Tags y Footer */
+        .footer-area { background: #000; padding: 60px 40px; }
+        .tags-container { 
+            display: flex; justify-content: center; flex-wrap: wrap; 
+            gap: 15px; margin-bottom: 50px; 
+        }
+        .tag { 
+            border: 2px solid white; padding: 10px 30px; border-radius: 50px; 
+            text-transform: uppercase; font-size: 0.9rem; font-weight: bold; transition: 0.3s;
+        }
+        .tag:hover { background: white; color: black; }
 
-        /* --- 📱 VERSIÓN MÓVIL (RESPONSIVE) --- */
+        footer { text-align: right; font-size: 0.8rem; color: #666; }
+
+        /* --- 📱 VERSIÓN MÓVIL (HAMBURGUESA) --- */
         @media (max-width: 768px) {
-            body { flex-direction: column; }
-            
             .sidebar {
-                position: relative;
-                width: 100%;
-                height: auto;
-                border-right: none;
-                border-bottom: 1px solid #333;
-                padding: 20px;
+                left: -250px; /* Escondido por defecto */
             }
-            .sidebar-logo img { max-height: 40px; margin: 0 auto; }
-            .greeting, .section-title, .whitebox-logo-bottom { display: none; }
-            .menu-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 15px; }
-            .menu-list li { margin: 0; font-size: 0.8rem; }
-
+            .sidebar.active {
+                left: 0; /* Se muestra al activar */
+            }
             .main-content { margin-left: 0; width: 100%; }
             
-            .top-bar { flex-direction: column; gap: 15px; padding: 20px; }
-            .search-container { width: 100%; }
-            .top-links { width: 100%; justify-content: center; font-size: 0.75rem; }
-
-            .hero h1 { font-size: 2rem; }
+            .menu-toggle { display: block; } /* Mostrar icono hamburguesa */
             
-            .photo-grid { grid-template-columns: repeat(2, 1fr); height: auto; }
-            .photo-container { height: 200px; }
-
-            .neon-text { font-size: 2.5rem; }
-            .neon-live { font-size: 3rem; bottom: 15px; }
+            .top-bar { padding: 15px 20px; }
+            .search-container { display: none; } /* Ocultar busqueda en movil para espacio */
+            
+            .hero h1 { font-size: 2.2rem; }
+            .photo-grid { grid-template-columns: repeat(2, 1fr); }
+            .custom-banner h2 { font-size: 2.5rem; }
+            
+            footer { text-align: center; }
         }
     </style>
 </head>
 <body>
 
+    <!-- BOTÓN HAMBURGUESA (Solo móvil) -->
+    <div style="position: fixed; top: 15px; left: 20px; z-index: 2000;" class="menu-toggle" onclick="toggleMenu()">
+        <i class="fa-solid fa-bars"></i>
+    </div>
+
     <!-- SIDEBAR -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
         <div class="sidebar-logo">
-            <a href="index.html">
-                <img src="logo.png" alt="WhiteBox Music">
-            </a>
+            <a href="index.html"><img src="logo.png" alt="WhiteBox Music"></a>
         </div>
         
         <span class="greeting">HOLA!</span>
         
         <ul class="menu-list">
-            <li><a href="#"><i class="fa-regular fa-circle-dot"></i> BLOG</a></li>
+            <!-- Cambio de Blog a Descubre -->
+            <li><a href="#"><i class="fa-solid fa-headphones"></i> DESCUBRE</a></li>
             <li><a href="entrevistas.html"><i class="fa-solid fa-microphone-lines"></i> ENTREVISTAS</a></li>
             <li><a href="#"><i class="fa-solid fa-music"></i> ENVÍA MÚSICA</a></li>
             <li><a href="fotos.html"><i class="fa-solid fa-camera"></i> FOTOS</a></li>
@@ -242,13 +232,10 @@
         <div class="section-title">EQUIPO</div>
         <ul class="menu-list">
             <li><a href="#"><i class="fa-solid fa-user"></i> MIRI</a></li>
-            <li><a href="#"><i class="fa-solid fa-user"></i> JUAN PABLO</a></li>
-            <li><a href="#"><i class="fa-solid fa-heart"></i> MADAME BLEU</a></li>
+             
         </ul>
 
-        <div class="whitebox-logo-bottom">
-            WHITEBOX<br>MUSIC
-        </div>
+        <div class="whitebox-logo-bottom">WHITEBOX<br>MUSIC</div>
     </aside>
 
     <!-- CONTENIDO -->
@@ -276,55 +263,53 @@
             </div>
         </section>
 
-        <!-- FOTOS -->
+        <!-- FOTOS JUNTAS -->
         <section class="photo-grid">
-            <!-- Foto 1 -->
-            <div class="photo-container">
-                <img src="pexels-rdne-7502181.jpg" class="photo-item" alt="Foto 1">
-            </div>
-            <!-- Foto 2 -->
-            <div class="photo-container">
-                <img src="pexels-rdne-8197303.jpg" class="photo-item" alt="Foto 2">
-            </div>
-            <!-- Foto 3 -->
-            <div class="photo-container">
-                <img src="pexels-theshuttervision-15447298.jpg" class="photo-item" alt="Foto 3">
-            </div>
-            <!-- Foto 4 -->
-            <div class="photo-container">
-                <img src="pexels-vitalina-3807093.jpg" class="photo-item" alt="Foto 4">
-            </div>
+            <div class="photo-container"><img src="pexels-rdne-7502181.jpg" class="photo-item"></div>
+            <div class="photo-container"><img src="pexels-rdne-8197303.jpg" class="photo-item"></div>
+            <div class="photo-container"><img src="pexels-theshuttervision-15447298.jpg" class="photo-item"></div>
+            <div class="photo-container"><img src="pexels-vitalina-3807093.jpg" class="photo-item"></div>
         </section>
 
-        <!-- BANNER NEON -->
-        <section class="neon-banner">
-            <div class="neon-text">WhiteBox Music</div>
-            <div class="neon-live">Live</div>
+        <!-- BANNER PERSONALIZADO (TEXTO) -->
+        <section class="custom-banner">
+            <h2>SI LLEGASTE HASTA AQUÍ<br>ES POR ALGO... SIGUE</h2>
+            <div class="line"></div>
+            <div class="arrows">>>>>></div>
         </section>
 
-        <!-- PLAYLIST -->
+        <!-- PLAYLIST YOUTUBE MUSIC -->
         <section class="playlist-section">
-            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator&theme=0" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            <div class="yt-wrapper">
+                <iframe width="100%" height="450" src="https://www.youtube.com/embed/videoseries?list=PL_Xv_uX-_uS2H_XoX9XvM_8f9pQYV_8vX" frameborder="0" allowfullscreen></iframe>
+            </div>
         </section>
 
-        <!-- TAGS -->
-        <section class="tags-container">
-            <div class="tag">pop</div>
-            <div class="tag">r&b</div>
-            <div class="tag">rock</div>
-            <div class="tag">indie</div>
-            <div class="tag">kpop</div>
-            <div class="tag">independiente</div>
-        </section>
+        <!-- TAGS Y FOOTER -->
+        <section class="footer-area">
+            <div class="tags-container">
+                <div class="tag">pop</div>
+                <div class="tag">r&b</div>
+                <div class="tag">rock</div>
+                <div class="tag">indie</div>
+                <div class="tag">kpop</div>
+                <div class="tag">independiente</div>
+            </div>
 
-        <footer>
-            <p>Términos y condiciones</p>
-            <p><a href="contacto.html" style="color:#666;">Contacto</a></p>
-        </footer>
+            <footer>
+                <p>Términos y condiciones</p>
+                <p><a href="contacto.html" style="color:#666;">Contacto</a></p>
+            </footer>
+        </section>
 
     </main>
 
+    <!-- SCRIPT PARA EL MENÚ MÓVIL -->
+    <script>
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+    </script>
+
 </body>
 </html>
-
-
