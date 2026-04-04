@@ -31,6 +31,30 @@
         a { text-decoration: none; color: white; transition: 0.3s; }
         ul { list-style: none; }
 
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-dark);
+    color: white;
+    display: flex;
+    min-height: 100vh;
+    overflow-x: hidden;
+    
+    /* EFECTO DE CARGA AL ACTUALIZAR */
+    animation: aparecerPagina 1.2s ease-out;
+}
+
+/* Animación del efecto */
+@keyframes aparecerPagina {
+    0% {
+        opacity: 0;
+        transform: translateY(10px); /* Empieza un poco abajo */
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0); /* Termina en su posición original */
+    }
+}
+        
         /* --- SIDEBAR (IZQUIERDA) --- */
         .sidebar {
             width: 250px;
