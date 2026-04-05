@@ -25,7 +25,6 @@
             background-color: var(--black);
             color: white;
             overflow-x: hidden;
-            /* Efecto ruido sutil */
             background-image: url("https://www.transparenttextures.com/patterns/60-lines.png");
         }
 
@@ -53,10 +52,12 @@
         }
         .nav-links a:hover { color: white; text-shadow: 0 0 8px var(--pink); }
 
-        /* --- HERO: ENTREVISTAS --- */
+        /* --- HERO: ENTREVISTAS + BUSCADOR --- */
         .hero-interviews {
-            padding: 150px 50px 50px;
+            padding: 150px 50px 80px;
             text-align: left;
+            display: flex;
+            flex-direction: column;
         }
 
         .main-title {
@@ -66,8 +67,7 @@
             text-transform: uppercase;
             line-height: 0.8;
             letter-spacing: -8px;
-            margin-bottom: 20px;
-            /* Recorte de texto para efecto moderno */
+            margin-bottom: 40px;
             -webkit-text-stroke: 1px var(--pink);
             color: transparent;
         }
@@ -77,7 +77,45 @@
             -webkit-text-stroke: 0;
         }
 
-        /* --- LISTA DE ENTREVISTAS (ESTILO EDITORIAL) --- */
+        /* BUSCADOR ESTILO INDIE */
+        .search-container {
+            max-width: 500px;
+            position: relative;
+            margin-top: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--pink);
+            padding: 10px 40px 10px 5px;
+            color: white;
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            border-bottom: 2px solid white;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255,255,255,0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--pink);
+            font-size: 1rem;
+        }
+
+        /* --- LISTA DE ENTREVISTAS --- */
         .interviews-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -92,7 +130,6 @@
             position: relative;
         }
 
-        /* Alternar orden de imagen y texto */
         .interview-item:nth-child(even) {
             flex-direction: row-reverse;
         }
@@ -125,7 +162,7 @@
         .interview-num {
             font-family: 'Oswald', sans-serif;
             font-size: 4rem;
-            color: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.05);
             margin-bottom: -30px;
             display: block;
         }
@@ -194,6 +231,7 @@
 
         /* --- RESPONSIVE --- */
         @media (max-width: 900px) {
+            .hero-interviews { padding: 120px 20px 40px; }
             .interview-item, .interview-item:nth-child(even) {
                 flex-direction: column;
                 margin-bottom: 80px;
@@ -202,6 +240,7 @@
             .interview-title { font-size: 2.5rem; }
             .main-title { font-size: 20vw; letter-spacing: -3px; }
             header { justify-content: center; padding: 20px; }
+            .search-container { max-width: 100%; }
         }
     </style>
 </head>
@@ -218,11 +257,16 @@
 
     <main>
         
-        <!-- HERO -->
+        <!-- HERO CON BUSCADOR -->
         <section class="hero-interviews">
             <h1 class="main-title">
                 ENTRE<span>VISTAS</span>
             </h1>
+
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="BUSCAR EN EL ARCHIVO...">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            </div>
         </section>
 
         <section class="interviews-container">
@@ -249,7 +293,7 @@
                 <div class="interview-content">
                     <span class="interview-num">VOL. 02</span>
                     <span class="interview-category">SYNTH WAVE</span>
-                    <h2 class="interview-title"><br>Hija del Neón</h2>
+                    <h2 class="interview-title">Madame Bleu: <br>Hija del Neón</h2>
                     <p class="interview-excerpt">Un viaje íntimo a través de los sintetizadores y las letras melancólicas que definen su nuevo álbum...</p>
                     <a href="#" class="read-btn">LEER ENTREVISTA</a>
                 </div>
