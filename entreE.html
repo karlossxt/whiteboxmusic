@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENTREVISTAS | WhiteBox Music</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Oswald:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --pink: #e772a7;
+            --black: #000000;
+            --gray: #0a0a0a;
+            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        /* --- RESET --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--black);
+            color: white;
+            overflow-x: hidden;
+            /* Efecto ruido sutil */
+            background-image: url("https://www.transparenttextures.com/patterns/60-lines.png");
+        }
+
+        a { text-decoration: none; transition: var(--transition); }
+
+        /* --- MENÚ SUPERIOR DERECHA --- */
+        header {
+            width: 100%;
+            padding: 30px 50px;
+            display: flex;
+            justify-content: flex-end;
+            position: fixed;
+            top: 0; left: 0;
+            z-index: 1000;
+            background: linear-gradient(to bottom, black, transparent);
+        }
+
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a {
+            color: var(--pink);
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+        }
+        .nav-links a:hover { color: white; text-shadow: 0 0 8px var(--pink); }
+
+        /* --- HERO: ENTREVISTAS --- */
+        .hero-interviews {
+            padding: 150px 50px 50px;
+            text-align: left;
+        }
+
+        .main-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 15vw;
+            color: var(--pink);
+            text-transform: uppercase;
+            line-height: 0.8;
+            letter-spacing: -8px;
+            margin-bottom: 20px;
+            /* Recorte de texto para efecto moderno */
+            -webkit-text-stroke: 1px var(--pink);
+            color: transparent;
+        }
+
+        .main-title span {
+            color: var(--pink);
+            -webkit-text-stroke: 0;
+        }
+
+        /* --- LISTA DE ENTREVISTAS (ESTILO EDITORIAL) --- */
+        .interviews-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 50px 20px;
+        }
+
+        .interview-item {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            margin-bottom: 150px;
+            position: relative;
+        }
+
+        /* Alternar orden de imagen y texto */
+        .interview-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .interview-img-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            border-radius: 5px;
+        }
+
+        .interview-img {
+            width: 100%;
+            height: 600px;
+            object-fit: cover;
+            filter: grayscale(100%);
+            transition: var(--transition);
+        }
+
+        .interview-item:hover .interview-img {
+            filter: grayscale(0%);
+            transform: scale(1.05);
+        }
+
+        .interview-content {
+            flex: 1;
+            z-index: 10;
+        }
+
+        .interview-num {
+            font-family: 'Oswald', sans-serif;
+            font-size: 4rem;
+            color: rgba(255,255,255,0.1);
+            margin-bottom: -30px;
+            display: block;
+        }
+
+        .interview-category {
+            color: var(--pink);
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .interview-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 4rem;
+            line-height: 0.9;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+            transition: var(--transition);
+        }
+
+        .interview-item:hover .interview-title {
+            color: var(--pink);
+            transform: translateX(20px);
+        }
+
+        .interview-excerpt {
+            font-size: 1rem;
+            color: #888;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            max-width: 400px;
+        }
+
+        .read-btn {
+            display: inline-block;
+            border: 2px solid var(--pink);
+            color: var(--pink);
+            padding: 12px 35px;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+        }
+
+        .read-btn:hover {
+            background: var(--pink);
+            color: black;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            padding: 100px 50px 50px;
+            text-align: center;
+            border-top: 1px solid #111;
+        }
+
+        .footer-logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2rem;
+            color: var(--pink);
+            letter-spacing: 10px;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 900px) {
+            .interview-item, .interview-item:nth-child(even) {
+                flex-direction: column;
+                margin-bottom: 80px;
+            }
+            .interview-img { height: 400px; }
+            .interview-title { font-size: 2.5rem; }
+            .main-title { font-size: 20vw; letter-spacing: -3px; }
+            header { justify-content: center; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav class="nav-links">
+            <a href="index.html">HOME</a>
+            <a href="descubre.html">DESCUBRE</a>
+            <a href="#">FOTOS</a>
+            <a href="#">CONTACTO</a>
+        </nav>
+    </header>
+
+    <main>
+        
+        <!-- HERO -->
+        <section class="hero-interviews">
+            <h1 class="main-title">
+                ENTRE<span>VISTAS</span>
+            </h1>
+        </section>
+
+        <section class="interviews-container">
+            
+            <!-- ENTREVISTA 1 -->
+            <article class="interview-item">
+                <div class="interview-img-wrapper">
+                    <img src="https://images.pexels.com/photos/1649691/pexels-photo-1649691.jpeg" class="interview-img">
+                </div>
+                <div class="interview-content">
+                    <span class="interview-num">VOL. 01</span>
+                    <span class="interview-category">PORTADA / INDIE</span>
+                    <h2 class="interview-title">La distorsión <br>como lenguaje</h2>
+                    <p class="interview-excerpt">Hablamos con las mentes creativas detrás del sonido que está sacudiendo los garajes de la ciudad...</p>
+                    <a href="#" class="read-btn">LEER ENTREVISTA</a>
+                </div>
+            </article>
+
+            <!-- ENTREVISTA 2 -->
+            <article class="interview-item">
+                <div class="interview-img-wrapper">
+                    <img src="https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg" class="interview-img">
+                </div>
+                <div class="interview-content">
+                    <span class="interview-num">VOL. 02</span>
+                    <span class="interview-category">SYNTH WAVE</span>
+                    <h2 class="interview-title"><br>Hija del Neón</h2>
+                    <p class="interview-excerpt">Un viaje íntimo a través de los sintetizadores y las letras melancólicas que definen su nuevo álbum...</p>
+                    <a href="#" class="read-btn">LEER ENTREVISTA</a>
+                </div>
+            </article>
+
+            <!-- ENTREVISTA 3 -->
+            <article class="interview-item">
+                <div class="interview-img-wrapper">
+                    <img src="https://images.pexels.com/photos/257904/pexels-photo-257904.jpeg" class="interview-img">
+                </div>
+                <div class="interview-content">
+                    <span class="interview-num">VOL. 03</span>
+                    <span class="interview-category">CULTURA URBANA</span>
+                    <h2 class="interview-title">Ritmo, rima <br>y realidad</h2>
+                    <p class="interview-excerpt">Dani Hache nos abre las puertas de su estudio para explicarnos cómo se cocina el trap más crudo del momento...</p>
+                    <a href="#" class="read-btn">LEER ENTREVISTA</a>
+                </div>
+            </article>
+
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="footer-logo">WHITEBOX MUSIC</div>
+        <p style="color: #444; font-size: 0.7rem; margin-top: 20px;">WHITEBOX ARCHIVE &copy; 2024 / STORIES FROM THE UNDERGROUND</p>
+    </footer>
+
+</body>
+</html>
