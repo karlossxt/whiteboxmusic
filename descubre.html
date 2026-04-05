@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DESCUBRE | WhiteBox Music</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Oswald:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --pink: #e772a7;
+            --black: #000000;
+            --gray: #1a1a1a;
+            --transition: all 0.3s ease;
+        }
+
+        /* --- RESET --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--black);
+            color: white;
+            overflow-x: hidden;
+            /* Efecto grano de película sutil */
+            background-image: url("https://www.transparenttextures.com/patterns/carbon-fibre.png");
+        }
+
+        a { text-decoration: none; transition: var(--transition); }
+
+        /* --- NAV SUPERIOR DERECHA --- */
+        header {
+            width: 100%;
+            padding: 30px 50px;
+            display: flex;
+            justify-content: flex-end; /* Lo mueve a la derecha */
+            position: absolute;
+            top: 0; left: 0;
+            z-index: 100;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--pink);
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+        }
+
+        .nav-links a:hover {
+            color: white;
+            text-shadow: 0 0 10px var(--pink);
+        }
+
+        /* --- HERO: TÍTULO GRANDE + BUSCADOR --- */
+        .hero-section {
+            padding: 150px 20px 80px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .main-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 12vw; /* Tamaño gigantesco responsivo */
+            color: var(--pink);
+            text-transform: uppercase;
+            line-height: 0.8;
+            letter-spacing: -5px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            text-shadow: 5px 5px 0px rgba(231, 114, 167, 0.2);
+        }
+
+        .main-title i {
+            font-size: 0.6em;
+            vertical-align: middle;
+        }
+
+        .search-wrapper {
+            width: 100%;
+            max-width: 600px;
+            margin-top: 40px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid var(--pink);
+            padding: 15px 50px 15px 20px;
+            font-size: 1.5rem;
+            color: white;
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            border-bottom: 3px solid white;
+            box-shadow: 0 10px 20px -10px var(--pink);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--pink);
+            font-size: 1.2rem;
+        }
+
+        /* --- GRID DE CARDS CUADRADAS --- */
+        .descubre-grid {
+            padding: 50px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .artist-card {
+            aspect-ratio: 1/1;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #222;
+            cursor: pointer;
+            background-color: var(--gray);
+        }
+
+        .card-img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            filter: grayscale(100%) contrast(1.2);
+            transition: transform 0.8s cubic-bezier(0.2, 1, 0.3, 1), filter 0.5s ease;
+        }
+
+        .artist-card:hover .card-img {
+            transform: scale(1.1);
+            filter: grayscale(0%) contrast(1);
+        }
+
+        /* Overlay */
+        .card-info {
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%;
+            padding: 30px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            color: white;
+            transform: translateY(10px);
+            transition: var(--transition);
+        }
+
+        .artist-card:hover .card-info {
+            transform: translateY(0);
+        }
+
+        .artist-name {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2.2rem;
+            text-transform: uppercase;
+            line-height: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .tags-row {
+            display: flex; gap: 8px; flex-wrap: wrap;
+        }
+
+        .tag {
+            border: 1px solid white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        .artist-card:hover .tag {
+            border-color: var(--pink);
+            color: var(--pink);
+        }
+
+        /* Botón Flotante (+) */
+        .float-btn {
+            position: absolute;
+            top: 20px; right: 20px;
+            width: 45px; height: 45px;
+            border: 2px solid white;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            transition: var(--transition);
+        }
+
+        .artist-card:hover .float-btn {
+            background: var(--pink);
+            border-color: var(--pink);
+            transform: rotate(90deg);
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            padding: 80px 50px 40px;
+            text-align: center;
+            border-top: 1px solid #111;
+        }
+
+        .footer-logo {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.5rem;
+            color: var(--pink);
+            letter-spacing: 5px;
+            margin-bottom: 20px;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            header { padding: 20px; justify-content: center; }
+            .nav-links { gap: 15px; }
+            .main-title { font-size: 20vw; letter-spacing: -2px; }
+            .descubre-grid { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav class="nav-links">
+            <a href="index.html">HOME</a>
+            <a href="#">BLOG</a>
+            <a href="#">FOTOS</a>
+            <a href="#">CONTACTO</a>
+        </nav>
+    </header>
+
+    <main>
+        
+        <!-- SECCIÓN HERO -->
+        <section class="hero-section">
+            <h1 class="main-title">
+                DESCUBRE <i class="fa-solid fa-headphones"></i>
+            </h1>
+            
+            <!-- BUSCADOR -->
+            <div class="search-wrapper">
+                <input type="text" class="search-input" placeholder="BUSCAR ARTISTA, GÉNERO O CIUDAD...">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            </div>
+        </section>
+
+        <!-- GRID DE FICHAS -->
+        <section class="descubre-grid">
+            
+            <!-- CARD 1 -->
+            <div class="artist-card">
+                <img src="https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg" class="card-img">
+                <div class="float-btn">+</div>
+                <div class="card-info">
+                    <h2 class="artist-name">ZOE<br></h2>
+                    <div class="tags-row">
+                        <span class="tag">SYNTH POP</span>
+                        <span class="tag">DARKWAVE</span>
+                        <span class="tag">GRAN CANARIA</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD 2 -->
+            <div class="artist-card">
+                <img src="https://images.pexels.com/photos/1644613/pexels-photo-1644613.jpeg" class="card-img">
+                <div class="float-btn">+</div>
+                <div class="card-info">
+                    <h2 class="artist-name">THE LAST<br>INTERNATIONALE</h2>
+                    <div class="tags-row">
+                        <span class="tag">INDIE ROCK</span>
+                        <span class="tag">ALTERNATIVE</span>
+                        <span class="tag">BARCELONA</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD 3 -->
+            <div class="artist-card">
+                <img src="https://images.pexels.com/photos/257904/pexels-photo-257904.jpeg" class="card-img">
+                <div class="float-btn">+</div>
+                <div class="card-info">
+                    <h2 class="artist-name">SIA<br></h2>
+                    <div class="tags-row">
+                        <span class="tag">URBAN</span>
+                        <span class="tag">TRAP</span>
+                        <span class="tag">MADRID</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD 4 -->
+            <div class="artist-card">
+                <img src="https://images.pexels.com/photos/210922/pexels-photo-210922.jpeg" class="card-img">
+                <div class="float-btn">+</div>
+                <div class="card-info">
+                    <h2 class="artist-name">WHITEBOX<br>LIVE</h2>
+                    <div class="tags-row">
+                        <span class="tag">SESSIONS</span>
+                        <span class="tag">LONDON</span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="footer-logo">WHITEBOX MUSIC</div>
+        <p style="color: #444; font-size: 0.7rem;">&copy; 2024 ARCHIVO INDIE ROCK. TODOS LOS DERECHOS RESERVADOS.</p>
+    </footer>
+
+</body>
+</html>
