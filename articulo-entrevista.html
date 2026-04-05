@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Distorsión como Lenguaje | Entrevistas WhiteBox</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Oswald:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --pink: #e772a7;
+            --black: #000000;
+            --gray: #111;
+            --text-gray: #aaa;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--black);
+            color: white;
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+
+        /* --- NAVEGACIÓN SUPERIOR --- */
+        .article-nav {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, black, transparent);
+            z-index: 100;
+        }
+
+        .back-btn {
+            color: var(--pink);
+            font-weight: 900;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+        }
+
+        /* --- HEADER DEL ARTÍCULO --- */
+        .article-header {
+            padding: 150px 20px 80px;
+            text-align: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .meta-top {
+            color: var(--pink);
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .article-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            line-height: 0.9;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+        }
+
+        .article-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-gray);
+            max-width: 700px;
+            margin: 0 auto;
+            font-style: italic;
+        }
+
+        /* --- IMAGEN PRINCIPAL --- */
+        .main-image-container {
+            width: 100%;
+            height: 80vh;
+            overflow: hidden;
+            margin-bottom: 100px;
+        }
+
+        .main-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(100%);
+        }
+
+        /* --- CUERPO DEL TEXTO --- */
+        .article-body {
+            max-width: 750px; /* Columna de lectura estrecha profesional */
+            margin: 0 auto;
+            padding: 0 20px 100px;
+            font-size: 1.1rem;
+            color: #ddd;
+        }
+
+        /* Letra capital rosa */
+        .article-body p:first-of-type::first-letter {
+            font-family: 'Oswald', sans-serif;
+            font-size: 6rem;
+            float: left;
+            margin-right: 15px;
+            line-height: 0.8;
+            color: var(--pink);
+            font-weight: 900;
+            padding-top: 10px;
+        }
+
+        /* Preguntas del entrevistador */
+        .question {
+            color: var(--pink);
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.4rem;
+            text-transform: uppercase;
+            margin: 60px 0 20px;
+            display: block;
+            line-height: 1.2;
+        }
+
+        /* Cita destacada (Pull Quote) */
+        .pull-quote {
+            margin: 80px -100px; /* Se sale un poco de la columna */
+            padding: 40px;
+            border-left: 5px solid var(--pink);
+            font-family: 'Oswald', sans-serif;
+            font-size: 2.5rem;
+            line-height: 1;
+            text-transform: uppercase;
+            color: white;
+            background-color: var(--gray);
+        }
+
+        .footer-article {
+            text-align: center;
+            padding: 100px 20px;
+            border-top: 1px solid #222;
+        }
+
+        /* --- SECCIÓN DE COMPARTIR (ICONOS) --- */
+        .share-container {
+            margin-top: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .share-label {
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 3px;
+            color: #444;
+            text-transform: uppercase;
+        }
+
+        .share-icons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .share-icons a {
+            width: 55px;
+            height: 55px;
+            border: 2px solid var(--pink);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--pink);
+            font-size: 1.3rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-decoration: none;
+        }
+
+        /* Efecto al pasar el ratón */
+        .share-icons a:hover {
+            background-color: var(--pink);
+            color: black;
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 10px 20px rgba(231, 114, 167, 0.3);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .pull-quote {
+                margin: 50px 0;
+                font-size: 1.8rem;
+            }
+            .article-title { font-size: 3rem; }
+            .article-nav { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="article-nav">
+        <a href="entrevistas.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Volver al Archivo</a>
+        <div style="color: var(--pink); font-weight: 900;">REF #001 / 2024</div>
+    </nav>
+
+    <header class="article-header">
+        <span class="meta-top">Portada / Por Miri & Juan Pablo</span>
+        <h1 class="article-title">La distorsión <br>como lenguaje</h1>
+        <p class="article-subtitle">Hablamos con la banda que está devolviendo el ruido crudo a los escenarios, recordándonos que el rock indie no ha muerto, solo estaba durmiendo en un garaje.</p>
+    </header>
+
+    <div class="main-image-container">
+        <img src="https://images.pexels.com/photos/1649691/pexels-photo-1649691.jpeg" alt="Concierto Indie">
+    </div>
+
+    <article class="article-body">
+        <p>
+            a distorsión ha dejado de ser un simple efecto de pedal para convertirse en una declaración de principios. En un mundo donde la música digital busca la perfección matemática, hay quienes encuentran la belleza en el error, en el cable que falla y en el amplificador que ruge antes de explotar.
+        </p>
+
+        <p>
+            Nos citamos con los integrantes de <em>The Static Echoes</em> en un local de ensayo donde el olor a humedad y cerveza vieja impregna las paredes. No hay aire acondicionado, solo un ventilador cansado que apenas mueve el aire denso de Londres.
+        </p>
+
+        <span class="question">¿Por qué elegir el ruido en la era de la nitidez digital?</span>
+        <p>
+            "Porque la nitidez miente", nos confiesa Alex, el guitarrista de la banda, mientras ajusta la tensión de una cuerda. "La vida no es un archivo .WAV perfectamente masterizado. La vida es ruidosa, es sucia y es impredecible. Cuando pisas el pedal y el sonido se rompe, estás siendo honesto. No hay autotune para una guitarra que llora."
+        </p>
+
+        <aside class="pull-quote">
+            "La perfección es aburrida. Preferimos un acorde que sangre a una nota que brille."
+        </aside>
+
+        <span class="question">Muchos dicen que el indie rock está en un ciclo de nostalgia infinita...</span>
+        <p>
+            "No es nostalgia, es herencia", interviene Sofía, la baterista. "Usamos las herramientas del pasado para disparar hacia el futuro. No queremos sonar como los Pixies, queremos que los Pixies se sientan orgullosos de lo que estamos haciendo con el ruido que ellos inventaron. La distorsión es nuestro lenguaje porque es lo único que corta el silencio de la apatía moderna."
+        </p>
+
+        <span class="question">¿Qué podemos esperar de vuestro próximo directo en WhiteBox?</span>
+        <p>
+            "Sudor, volumen insoportable y conexión real. Si sales del concierto con los oídos pitando y la camiseta mojada, habremos hecho nuestro trabajo. Queremos que la gente sienta que algo está pasando en ese momento exacto, algo que no se puede replicar en una pantalla de TikTok."
+        </p>
+    </article>
+
+    <footer class="footer-article">
+        <div style="font-family: 'Oswald', sans-serif; font-size: 2rem; color: var(--pink); letter-spacing: 5px;">
+            WHITEBOX MUSIC
+        </div>
+
+        <div class="share-container">
+            <span class="share-label">Compartir Archivo</span>
+            <div class="share-icons">
+                <!-- Instagram -->
+                <a href="#" title="Compartir en Instagram">
+                    <i class="fa-brands fa-instagram"></i>
+                </a>
+                <!-- Spotify -->
+                <a href="#" title="Ver en Spotify">
+                    <i class="fa-brands fa-spotify"></i>
+                </a>
+                <!-- TikTok -->
+                <a href="#" title="Compartir en TikTok">
+                    <i class="fa-brands fa-tiktok"></i>
+                </a>
+                <!-- Copiar Enlace -->
+                <a href="#" title="Copiar Enlace">
+                    <i class="fa-solid fa-link"></i>
+                </a>
+            </div>
+        </div>
+
+        <p style="margin-top: 60px; color: #222; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px;">
+            REGISTRO DE ARCHIVO #001 / WHITEBOX EDITORIAL TEAM &copy; 2024
+        </p>
+    </footer>
+
+</body>
+</html>
