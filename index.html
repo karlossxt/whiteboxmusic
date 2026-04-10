@@ -6,7 +6,8 @@
     <title>WhiteBox Music</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Oswald:wght@700&family=Yellowtail&display=swap" rel="stylesheet">
+    <!-- Importamos Plus Jakarta Sans (muy parecida a Miranda Sans) e Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..0,800;1,200..1,800&family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
@@ -26,11 +27,9 @@
             display: flex;
             min-height: 100vh;
             overflow-x: hidden;
-            /* EFECTO DE CARGA AL ACTUALIZAR */
             animation: aparecerPagina 1.2s ease-out;
         }
 
-        /* Animación del efecto */
         @keyframes aparecerPagina {
             0% { opacity: 0; transform: translateY(10px); }
             100% { opacity: 1; transform: translateY(0); }
@@ -39,7 +38,7 @@
         a { text-decoration: none; color: white; transition: 0.3s; }
         ul { list-style: none; }
         
-        /* --- SIDEBAR (IZQUIERDA) --- */
+        /* --- SIDEBAR --- */
         .sidebar {
             width: 250px;
             background-color: #000;
@@ -56,26 +55,17 @@
 
         .sidebar-logo { margin-bottom: 30px; text-align: center; }
         .sidebar-logo img { max-width: 100%; height: auto; display: block; }
-
         .greeting { font-weight: bold; margin-bottom: 20px; display: block; color: var(--pink); }
-
         .menu-list li { margin-bottom: 15px; font-size: 0.9rem; font-weight: bold; text-transform: uppercase; }
         .menu-list li a { display: flex; align-items: center; gap: 10px; color: white; }
         .menu-list li a:hover { color: var(--pink); }
         .menu-list i { color: var(--pink); font-size: 0.9rem; width: 20px; text-align: center; }
-
         .section-title { font-size: 0.8rem; color: #666; margin-top: 40px; margin-bottom: 15px; text-transform: uppercase; font-weight: bold; }
 
         .whitebox-logo-bottom {
-            margin-top: auto;
-            border: 2px solid var(--pink);
-            padding: 10px;
-            text-align: center;
-            font-weight: 900;
-            text-transform: uppercase;
-            font-size: 1.2rem;
-            line-height: 1;
-            color: var(--pink);
+            margin-top: auto; border: 2px solid var(--pink); padding: 10px;
+            text-align: center; font-weight: 900; text-transform: uppercase;
+            font-size: 1.2rem; line-height: 1; color: var(--pink);
         }
 
         /* --- CONTENIDO PRINCIPAL --- */
@@ -86,27 +76,36 @@
             min-height: 100vh;
         }
 
-        /* NUEVA CINTA CORREDIZA */
+        /* --- BANNER MIRANDA SANS STYLE --- */
         .scrolling-banner {
-            background-color: var(--pink);
-            color: black;
+            background-color: #000;
+            color: var(--pink);
             overflow: hidden;
             white-space: nowrap;
-            padding: 10px 0;
-            font-family: 'Oswald', sans-serif;
-            font-weight: bold;
-            text-transform: capitalize;
+            padding: 12px 0;
             display: flex;
+            align-items: center;
+            border-bottom: 1px solid #222;
         }
 
         .scroll-text {
             display: inline-block;
-            animation: marquee 20s linear infinite;
+            animation: marquee 25s linear infinite;
+            font-family: 'Plus Jakarta Sans', sans-serif; /* Similar a Miranda Sans */
+            font-weight: 600;
             font-size: 1.2rem;
+            letter-spacing: 0.5px;
         }
 
         .scroll-text span {
-            padding-right: 50px;
+            display: inline-flex;
+            align-items: center;
+            padding-right: 60px;
+        }
+
+        .emoji-spacer {
+            margin: 0 15px;
+            font-size: 1.4rem;
         }
 
         @keyframes marquee {
@@ -124,33 +123,18 @@
             border-bottom: 1px solid #222;
         }
 
-        .menu-toggle {
-            display: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: white;
-        }
-
+        .menu-toggle { display: none; font-size: 1.5rem; cursor: pointer; color: white; }
         .search-container {
-            background: #222;
-            padding: 8px 15px;
-            border-radius: 20px;
-            width: 40%;
-            display: flex;
-            justify-content: space-between;
-            color: #888;
-            font-size: 0.9rem;
+            background: #222; padding: 8px 15px; border-radius: 20px;
+            width: 40%; display: flex; justify-content: space-between; color: #888; font-size: 0.9rem;
         }
-
         .top-links { display: flex; gap: 20px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; }
-        .top-links a:hover { color: var(--pink); }
 
         /* Hero */
         .hero {
             height: 500px;
             background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('pexels-myatezhny39-2938205.jpg') center/cover no-repeat;
-            display: flex;
-            align-items: center; justify-content: center; text-align: center;
+            display: flex; align-items: center; justify-content: center; text-align: center;
         }
         .hero h1 { font-size: 3.5rem; line-height: 1.1; margin-bottom: 20px; font-weight: 800; }
         .btn-discover {
@@ -161,45 +145,27 @@
         .btn-discover:hover { background: white; color: black; }
 
         /* Galería */
-        .photo-grid { 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
-            width: 100%;
-            background: black;
-        }
+        .photo-grid { display: grid; grid-template-columns: repeat(4, 1fr); width: 100%; background: black; }
         .photo-container { overflow: hidden; width: 100%; line-height: 0; }
-        .photo-item { 
-            width: 100%; height: 300px; object-fit: cover; 
-            filter: grayscale(100%); transition: 0.5s; display: block; 
-        }
+        .photo-item { width: 100%; height: 300px; object-fit: cover; filter: grayscale(100%); transition: 0.5s; display: block; }
         .photo-container:hover .photo-item { filter: grayscale(0%); transform: scale(1.05); }
 
-        /* Playlist Youtube */
+        /* Playlist Youtube Original */
         .playlist-section { padding: 40px; background: #000; display: flex; justify-content: center; }
         .yt-wrapper { width: 100%; max-width: 900px; border-radius: 15px; overflow: hidden; }
 
-        /* Tags y Footer */
+        /* Footer Area Original */
         .footer-area { background: #000; padding: 60px 40px; }
-        .tags-container { 
-            display: flex; justify-content: center; flex-wrap: wrap; 
-            gap: 15px; margin-bottom: 50px; 
-        }
-        .tag { 
-            border: 2px solid white; padding: 10px 30px; border-radius: 50px; 
-            text-transform: uppercase; font-size: 0.9rem; font-weight: bold; transition: 0.3s;
-        }
+        .tags-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-bottom: 50px; }
+        .tag { border: 2px solid white; padding: 10px 30px; border-radius: 50px; text-transform: uppercase; font-size: 0.9rem; font-weight: bold; transition: 0.3s; }
         .tag:hover { background: white; color: black; }
-
         footer { text-align: right; font-size: 0.8rem; color: #666; }
 
-        /* --- 📱 VERSIÓN MÓVIL --- */
         @media (max-width: 768px) {
             .sidebar { left: -250px; }
             .sidebar.active { left: 0; }
             .main-content { margin-left: 0; width: 100%; }
             .menu-toggle { display: block; }
-            .top-bar { padding: 15px 20px; }
-            .search-container { display: none; }
             .hero h1 { font-size: 2.2rem; }
             .photo-grid { grid-template-columns: repeat(2, 1fr); }
             footer { text-align: center; }
@@ -208,19 +174,15 @@
 </head>
 <body>
 
-    <!-- BOTÓN HAMBURGUESA -->
     <div style="position: fixed; top: 15px; left: 20px; z-index: 2000;" class="menu-toggle" onclick="toggleMenu()">
         <i class="fa-solid fa-bars"></i>
     </div>
 
-    <!-- SIDEBAR COMPLETA -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-logo">
             <a href="index.html"><img src="logo.png" alt="WhiteBox Music"></a>
         </div>
-        
         <span class="greeting">HOLA!</span>
-        
         <ul class="menu-list">
             <li><a href="descubre.html"><i class="fa-solid fa-headphones"></i> DESCUBRE</a></li>
             <li><a href="entreE.html"><i class="fa-solid fa-microphone-lines"></i> ENTREVISTAS</a></li>
@@ -228,30 +190,23 @@
             <li><a href="fotos.html"><i class="fa-solid fa-camera"></i> FOTOS</a></li>
             <li><a href="quienes.html"><i class="fa-solid fa-users"></i> QUIENES SOMOS</a></li>
         </ul>
-
-        <ul class="menu-list" style="margin-top: 20px;">
-            <li><a href="#"><i class="fa-brands fa-youtube"></i> WHITEBOX MUSIC LIVE</a></li>
-        </ul>
-
         <div class="section-title">EQUIPO</div>
         <ul class="menu-list">
             <li><a href="#"><i class="fa-solid fa-user"></i> MIRI</a></li>
         </ul>
-
         <div class="whitebox-logo-bottom">WHITEBOX<br>MUSIC</div>
     </aside>
 
-    <!-- CONTENIDO PRINCIPAL -->
     <main class="main-content">
 
-        <!-- CINTA CORREDIZA (TEXTO MOVIDO AQUÍ) -->
+        <!-- BANNER CORREDIZO REFINADO -->
         <div class="scrolling-banner">
             <div class="scroll-text">
-                <span>Si llegaste hasta aquí es por algo... Sigue 😊</span>
-                <span>                                                 </span>
-                <span>Si llegaste hasta aquí es por algo... Sigue 😊</span>
-                <span>Si llegaste hasta aquí es por algo... Sigue 😊</span>
-                
+                <span>Si llegaste hasta aquí es por algo... Sigue <span class="emoji-spacer">☺️</span></span>
+                <span>Si llegaste hasta aquí es por algo... Sigue <span class="emoji-spacer">☺️</span></span>
+                <span>Si llegaste hasta aquí es por algo... Sigue <span class="emoji-spacer">☺️</span></span>
+                <span>Si llegaste hasta aquí es por algo... Sigue <span class="emoji-spacer">☺️</span></span>
+                <span>Si llegaste hasta aquí es por algo... Sigue <span class="emoji-spacer">☺️</span></span>
             </div>
         </div>
         
@@ -268,16 +223,14 @@
             </div>
         </div>
 
-        <!-- HERO COMPLETO -->
         <section class="hero">
             <div class="hero-overlay">
                 <p>Indie Music from Across the globe</p>
-                <h1>Your favorite music.<br>Artists to discover.<br>And more in Wolf in a Suit</h1>
+                <h1>Your favorite music.<br>Artists to discover.<br>And more in WhiteBox</h1>
                 <button class="btn-discover">Discover</button>
             </div>
         </section>
 
-        <!-- FOTOS JUNTAS -->
         <section class="photo-grid">
             <div class="photo-container"><img src="pexels-rdne-7502181.jpg" class="photo-item"></div>
             <div class="photo-container"><img src="pexels-rdne-8197303.jpg" class="photo-item"></div>
@@ -285,22 +238,14 @@
             <div class="photo-container"><img src="pexels-vitalina-3807093.jpg" class="photo-item"></div>
         </section>
 
-        <!-- PLAYLIST YOUTUBE ORIGINAL -->
+        <!-- YOUTUBE PLAYLIST ORIGINAL -->
         <section class="playlist-section">
             <div class="yt-wrapper">
-                <iframe 
-                    width="100%" 
-                    height="500" 
-                    src="https://www.youtube.com/embed/videoseries?list=TU_PLAYLIST_ID" 
-                    title="WhiteBox Music Playlist" 
-                    frameborder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                    allowfullscreen>
-                </iframe>
+                <iframe width="100%" height="500" src="https://www.youtube.com/embed/videoseries?list=TU_PLAYLIST_ID" title="WhiteBox" frameborder="0" allowfullscreen></iframe>
             </div>
         </section>
 
-        <!-- TAGS Y FOOTER ORIGINALES -->
+        <!-- FOOTER ORIGINAL -->
         <section class="footer-area">
             <div class="tags-container">
                 <div class="tag">pop</div>
@@ -310,7 +255,6 @@
                 <div class="tag">kpop</div>
                 <div class="tag">independiente</div>
             </div>
-
             <footer>
                 <p>Términos y condiciones</p>
                 <p><a href="contacto.html" style="color:#666;">Contacto</a></p>
@@ -319,7 +263,6 @@
 
     </main>
 
-    <!-- SCRIPT ORIGINAL -->
     <script>
         function toggleMenu() {
             document.getElementById('sidebar').classList.toggle('active');
