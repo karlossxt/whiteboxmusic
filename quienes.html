@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quienes Somos | WhiteBox Music</title>
+    <meta name="description" content="WhiteBox Music es una plataforma independiente que reúne a una amplia gama de artistas musicales.">
+    <meta property="og:title" content="Quienes Somos | WhiteBox Music">
+    <meta property="og:description" content="WhiteBox Music — plataforma independiente de artistas musicales.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="logo.png">
+    <link rel="icon" type="image/png" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..0,800;1,200..1,800&family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .main-content { background: #fff; padding: 60px; color: black; display: flex; flex-direction: column; align-items: center; }
+        h1 { font-size: 4rem; font-weight: 900; text-transform: uppercase; margin-bottom: 60px; }
+        .text-block { max-width: 800px; text-align: center; margin-bottom: 50px; }
+        h3 { font-size: 1rem; font-weight: 900; margin-bottom: 20px; }
+        p { font-size: 1rem; line-height: 1.8; margin-bottom: 20px; font-weight: 300; }
+        .site-footer { text-align: center; padding: 40px; border-top: 1px solid #ddd; margin-top: 60px; width: 100%; max-width: 800px; }
+        .footer-logo-text { font-size: 11px; font-weight: 900; letter-spacing: 3px; margin-bottom: 15px; }
+        .site-footer p { color: #999; font-size: 0.7rem; }
+    </style>
+</head>
+<body>
+
+    <div class="menu-toggle" onclick="toggleMenu()">
+        <i class="fa-solid fa-bars"></i>
+    </div>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo"><a href="index.html"><img src="logo.png" alt="WhiteBox Music"></a></div>
+        <span class="greeting">HOLA!</span>
+        <ul class="menu-list">
+            <li><a href="descubre.html"><i class="fa-solid fa-headphones"></i> DESCUBRE</a></li>
+            <li><a href="entreE.html"><i class="fa-solid fa-microphone-lines"></i> ENTREVISTAS</a></li>
+            <li><a href="envia-musica.html"><i class="fa-solid fa-music"></i> ENVÍA MÚSICA</a></li>
+            <li><a href="fotos.html"><i class="fa-solid fa-camera"></i> FOTOS</a></li>
+            <li><a href="quienes.html"><i class="fa-solid fa-users"></i> QUIENES SOMOS</a></li>
+        </ul>
+        <div class="section-title">EQUIPO</div>
+        <ul class="menu-list"><li><a href="#"><i class="fa-solid fa-user"></i> MIRI</a></li></ul>
+        <div class="whitebox-logo-bottom">WHITEBOX<br>MUSIC</div>
+    </aside>
+
+    <main class="main-content">
+        <h1>QUIENES SOMOS</h1>
+
+        <div class="text-block">
+            <h3>(ESP)</h3>
+            <p>As&iacute; como t&uacute;, nos encanta la m&uacute;sica, conocer y explorar un lado de la industria musical que ha ido evolucionando con el tiempo.</p>
+            <p>Quiz&aacute; hayas llegado hasta esta p&aacute;gina por diferentes motivos: curiosidad, casualidad, alg&uacute;n art&iacute;culo de inter&eacute;s... Lo que s&iacute; sabemos es que queremos darte la bienvenida e introducirte a WhiteBox Music.</p>
+            <p>WhiteBox Music re&uacute;ne a una amplia gama de artistas en una plataforma independiente que busca crear experiencias emocionales para todos aquellos amantes de la m&uacute;sica.</p>
+        </div>
+
+        <div class="text-block">
+            <h3>(ENG)</h3>
+            <p>Perhaps you have stumbled upon this page by different reasons: curiosity, an article, finding new music... What we do know is we want to welcome you and introduce you to WhiteBox Music.</p>
+            <p>WhiteBox Music reunites a wide range of musicians on an independent platform that searchs emotional experiences for all those music lovers.</p>
+        </div>
+
+        <footer class="site-footer" style="border-top: 1px solid #ddd; margin-top: 60px;">
+            <a href="terminos.html" style="color: #999;">T&eacute;rminos y condiciones</a>
+            <div class="social-icons">
+                <a href="#" title="Spotify" style="color: #999;"><i class="fa-brands fa-spotify"></i></a>
+                <a href="#" title="Instagram" style="color: #999;"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" title="TikTok" style="color: #999;"><i class="fa-brands fa-tiktok"></i></a>
+                <a href="#" title="YouTube" style="color: #999;"><i class="fa-brands fa-youtube"></i></a>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+    </script>
+
+</body>
+</html>

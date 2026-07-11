@@ -1,0 +1,471 @@
+:root {
+    --bg: #000;
+    --text: #fff;
+    --accent: #888;
+    --sidebar-width: 220px;
+    --pink: #e772a7;
+    --gray: #1a1a1a;
+    --black: #000;
+    --transition: 0.3s ease;
+    --text-gray: #888;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    min-height: 100vh;
+    animation: aparecerPagina 1.2s ease-out;
+}
+
+body.article-page {
+    display: block;
+    min-height: auto;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+img {
+    max-width: 100%;
+}
+
+@keyframes aparecerPagina {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* SIDEBAR */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: #111;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+}
+
+.sidebar-logo {
+    text-align: center;
+    margin-bottom: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.sidebar-logo a {
+    display: flex;
+    justify-content: center;
+}
+
+.sidebar-logo img {
+    width: 80px;
+    height: auto;
+}
+
+.greeting {
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-bottom: 25px;
+    letter-spacing: 0.5px;
+}
+
+.menu-list {
+    list-style: none;
+    width: 100%;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+.menu-list li {
+    margin-bottom: 8px;
+}
+
+.menu-list li a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: 0.2s;
+    font-weight: 500;
+}
+
+.menu-list li a i {
+    width: 18px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.menu-list li a:hover {
+    background: #222;
+}
+
+.section-title {
+    font-size: 10px;
+    letter-spacing: 2px;
+    font-weight: bold;
+    color: #666;
+    margin: 10px 0 10px;
+    align-self: flex-start;
+}
+
+.whitebox-logo-bottom {
+    margin-top: auto;
+    font-size: 11px;
+    font-weight: 900;
+    text-align: center;
+    line-height: 1.3;
+    letter-spacing: 3px;
+}
+
+/* MAIN CONTENT */
+.main-content {
+    margin-left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+    min-height: 100vh;
+}
+
+/* SCROLLING BANNER */
+.scrolling-banner {
+    background: #000;
+    overflow: hidden;
+    white-space: nowrap;
+    border-bottom: 1px solid #222;
+    padding: 10px 0;
+}
+
+.scroll-text {
+    display: inline-flex;
+    animation: scrollBanner 40s linear infinite;
+}
+
+.scroll-text span {
+    margin-right: 80px;
+    font-size: 13px;
+    font-weight: 300;
+    color: #ccc;
+    flex-shrink: 0;
+}
+
+.emoji-spacer {
+    margin-left: 8px;
+}
+
+@keyframes scrollBanner {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+/* TOP BAR */
+.top-bar {
+    background: #000;
+    padding: 15px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #222;
+}
+
+.search-container {
+    background: #222;
+    padding: 8px 15px;
+    border-radius: 20px;
+    width: 40%;
+    display: flex;
+    justify-content: space-between;
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.top-links {
+    display: flex;
+    gap: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* HERO */
+.hero {
+    height: 500px;
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('pexels-myatezhny39-2938205.jpg') center/cover no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 3.5rem;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    font-weight: 800;
+}
+
+.btn-discover {
+    background: transparent;
+    border: 2px solid white;
+    color: white;
+    padding: 12px 60px;
+    border-radius: 30px;
+    text-transform: uppercase;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    display: inline-block;
+}
+
+.btn-discover:hover {
+    background: white;
+    color: black;
+}
+
+/* PHOTO GRID */
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    width: 100%;
+    background: black;
+}
+
+.photo-container {
+    overflow: hidden;
+    width: 100%;
+    line-height: 0;
+}
+
+.photo-item {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    filter: grayscale(100%);
+    transition: 0.5s;
+    display: block;
+}
+
+.photo-container:hover .photo-item {
+    filter: grayscale(0%);
+    transform: scale(1.05);
+}
+
+/* PLAYLIST */
+.playlist-section {
+    padding: 40px;
+    background: #000;
+    display: flex;
+    justify-content: center;
+}
+
+.yt-wrapper {
+    width: 100%;
+    max-width: 900px;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+/* FOOTER AREA */
+.footer-area {
+    background: #000;
+    padding: 60px 40px 30px;
+}
+
+.tags-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 50px;
+}
+
+.tag {
+    border: 2px solid white;
+    padding: 10px 30px;
+    border-radius: 50px;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    font-weight: bold;
+    transition: 0.3s;
+    display: inline-block;
+}
+
+.tag:hover {
+    background: white;
+    color: black;
+}
+
+footer {
+    text-align: right;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+/* OVERLAY (mobile) */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: 999;
+}
+
+.overlay.active {
+    display: block;
+}
+
+.menu-toggle {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1001;
+    cursor: pointer;
+    font-size: 1.5rem;
+}
+
+/* FOOTER EXTRA (for contact page footer override) */
+.footer-logo.footer-logo {
+    margin-top: auto;
+    font-size: 11px;
+    font-weight: 900;
+    text-align: center;
+    line-height: 1.3;
+    letter-spacing: 3px;
+    padding-top: 20px;
+}
+
+/* NAV LINKS (pages without sidebar) */
+.nav-links {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    gap: 30px;
+    padding: 20px 40px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
+    z-index: 100;
+}
+
+.nav-links a {
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #888;
+    transition: 0.3s;
+}
+
+.nav-links a:hover {
+    color: white;
+}
+
+/* SITE FOOTER (shared) */
+.site-footer {
+    background: #000;
+    color: #fff;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    width: 100%;
+}
+
+.site-footer a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.site-footer a:hover {
+    color: var(--pink);
+}
+
+.site-footer .social-icons {
+    display: flex;
+    gap: 15px;
+}
+
+.site-footer .social-icons a {
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.site-footer .social-icons a:hover {
+    color: var(--pink);
+}
+
+/* NO-SIDEBAR PAGES (full-width layout) */
+body.no-sidebar {
+    display: block;
+    min-height: 100vh;
+}
+
+body.no-sidebar footer {
+    text-align: center;
+    padding: 40px;
+    color: #555;
+    font-size: 0.7rem;
+}
+
+body.no-sidebar footer .footer-logo {
+    font-size: 11px;
+    font-weight: 900;
+    text-align: center;
+    line-height: 1.3;
+    letter-spacing: 3px;
+    margin-bottom: 15px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    .menu-toggle {
+        display: block;
+    }
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+    .hero {
+        height: 350px;
+    }
+    .hero h1 {
+        font-size: 2.2rem;
+    }
+    .photo-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .top-bar {
+        flex-direction: column;
+        gap: 10px;
+        padding: 15px;
+    }
+    .search-container {
+        width: 100%;
+    }
+}

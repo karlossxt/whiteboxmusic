@@ -1,0 +1,290 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARCHIVO FOTOGRÁFICO | WhiteBox Music</title>
+    <meta name="description" content="Archivo fotográfico de WhiteBox Music. Momentos en vivo, backstage y sesiones editoriales.">
+    <meta property="og:title" content="ARCHIVO FOTOGRÁFICO | WhiteBox Music">
+    <meta property="og:description" content="Archivo fotográfico de WhiteBox Music.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="logo.png">
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&family=Oswald:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .gallery-hero {
+            padding: 180px 50px 100px;
+            text-align: center;
+        }
+
+        .main-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 10vw;
+            color: white;
+            text-transform: uppercase;
+            line-height: 0.8;
+            -webkit-text-stroke: 1px var(--pink);
+            color: transparent;
+        }
+
+        .year-section {
+            max-width: 1200px;
+            margin: 0 auto 150px;
+            padding: 0 20px;
+        }
+
+        .year-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 40px;
+            position: sticky;
+            top: 100px;
+            z-index: 10;
+            background: var(--black);
+            padding: 20px 0;
+        }
+
+        .year-number {
+            font-family: 'Oswald', sans-serif;
+            font-size: 6rem;
+            color: var(--pink);
+            line-height: 1;
+        }
+
+        .year-line {
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(to right, var(--pink), transparent);
+        }
+
+        .instagram-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .photo-item {
+            position: relative;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            background-color: var(--gray);
+            cursor: pointer;
+        }
+
+        .photo-item img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            filter: grayscale(100%) contrast(1.2);
+            transition: var(--transition);
+        }
+
+        .photo-item:hover img {
+            filter: grayscale(0%) contrast(1);
+            transform: scale(1.1);
+        }
+
+        .photo-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: var(--transition);
+            border: 2px solid var(--pink);
+        }
+
+        .photo-item:hover .photo-overlay {
+            opacity: 1;
+        }
+
+        .photo-overlay i {
+            color: var(--pink);
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .photo-info {
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+            padding: 0 10px;
+        }
+
+        @media (max-width: 768px) {
+            .instagram-grid { grid-template-columns: repeat(2, 1fr); }
+            .year-number { font-size: 4rem; }
+            .main-title { font-size: 15vw; }
+        }
+
+        .site-footer {
+            background: #000;
+            color: #fff;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+        }
+
+        .site-footer a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .site-footer a:hover {
+            color: var(--pink);
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-icons a {
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .social-icons a:hover {
+            color: var(--pink);
+        }
+    </style>
+</head>
+<body class="no-sidebar">
+
+    <header>
+        <nav class="nav-links">
+            <a href="index.html">HOME</a>
+            <a href="descubre.html">DESCUBRE</a>
+            <a href="entreE.html">ENTREVISTAS</a>
+            <a href="envia-musica.html">ENVÍA MÚSICA</a>
+            <a href="contacto.html">CONTACTO</a>
+        </nav>
+    </header>
+
+    <main>
+        
+        <section class="gallery-hero">
+            <h1 class="main-title">EL ARCHIVO</h1>
+        </section>
+
+        <section class="year-section">
+            <div class="year-header">
+                <span class="year-number">2026</span>
+                <div class="year-line"></div>
+                <p style="font-size: 0.7rem; letter-spacing: 3px;">FUTURE SESSIONS</p>
+            </div>
+
+            <div class="instagram-grid">
+                <div class="photo-item">
+                    <img src="https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg" alt="Estadio Nacional Tour" loading="lazy">
+                    <div class="photo-overlay">
+                        <i class="fa-solid fa-bolt"></i>
+                        <span class="photo-info">ESTADIO NACIONAL / TOUR</span>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <img src="https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg" alt="Grabación Album" loading="lazy">
+                    <div class="photo-overlay">
+                        <i class="fa-solid fa-microphone"></i>
+                        <span class="photo-info">GRABACIÓN ALBUM III</span>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <img src="https://images.pexels.com/photos/144428/pexels-photo-144428.jpeg" alt="Backstage" loading="lazy">
+                    <div class="photo-overlay">
+                        <i class="fa-solid fa-heart"></i>
+                        <span class="photo-info">BACKSTAGE MOMENTS</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="year-section">
+            <div class="year-header">
+                <span class="year-number">2025</span>
+                <div class="year-line"></div>
+                <p style="font-size: 0.7rem; letter-spacing: 3px;">EXPANSIÓN</p>
+            </div>
+
+            <div class="instagram-grid">
+                <div class="photo-item">
+                    <img src="https://images.pexels.com/photos/164745/pexels-photo-164745.jpeg" alt="Sala Neón Madrid" loading="lazy">
+                    <div class="photo-overlay">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <span class="photo-info">SALA NEÓN / MADRID</span>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <img src="https://images.pexels.com/photos/257904/pexels-photo-257904.jpeg" alt="Festival Indie" loading="lazy">
+                    <div class="photo-overlay">
+                        <i class="fa-solid fa-music"></i>
+                        <span class="photo-info">FESTIVAL INDIE ROCK</span>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <img src="https://images.pexels.com/photos/167491/pexels-photo-167491.jpeg" alt="Sesión Editorial" loading="lazy">
+                    <div class="photo-overlay">
+                        <i class="fa-solid fa-camera"></i>
+                        <span class="photo-info">SESIÓN EDITORIAL</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="year-section">
+            <div class="year-header">
+                <span class="year-number">2024</span>
+                <div class="year-line"></div>
+                <p style="font-size: 0.7rem; letter-spacing: 3px;">EL ORIGEN</p>
+            </div>
+
+            <div class="instagram-grid">
+                <div class="photo-item">
+                    <img src="https://images.pexels.com/photos/1047442/pexels-photo-1047442.jpeg" alt="Primer show en vivo" loading="lazy">
+                    <div class="photo-overlay">
+                        <i class="fa-solid fa-star"></i>
+                        <span class="photo-info">PRIMER SHOW EN VIVO</span>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <img src="https://images.pexels.com/photos/164853/pexels-photo-164853.jpeg" alt="Lanzamiento WhiteBox" loading="lazy">
+                    <div class="photo-overlay">
+                        <i class="fa-solid fa-compact-disc"></i>
+                        <span class="photo-info">LANZAMIENTO WHITEBOX I</span>
+                    </div>
+                </div>
+                <div class="photo-item">
+                    <img src="https://images.pexels.com/photos/210922/pexels-photo-210922.jpeg" alt="Equipo fundador" loading="lazy">
+                    <div class="photo-overlay">
+                        <i class="fa-solid fa-users"></i>
+                        <span class="photo-info">EL EQUIPO FUNDADOR</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <a href="terminos.html">T&eacute;rminos y condiciones</a>
+        <div class="social-icons">
+            <a href="#" title="Spotify"><i class="fa-brands fa-spotify"></i></a>
+            <a href="#" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+            <a href="#" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+        </div>
+    </footer>
+
+</body>
+</html>

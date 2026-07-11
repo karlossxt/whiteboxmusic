@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrevistas | WhiteBox Music</title>
+    <meta name="description" content="Entrevistas exclusivas con artistas independientes. IG Live, Spotify y YouTube en WhiteBox Music.">
+    <meta property="og:title" content="Entrevistas | WhiteBox Music">
+    <meta property="og:description" content="Entrevistas exclusivas con artistas independientes.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="logo.png">
+    <link rel="icon" type="image/png" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..0,800;1,200..1,800&family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .main-content { padding: 40px; }
+        h1.page-title { font-size: 3rem; font-weight: 900; text-transform: uppercase; margin-bottom: 40px; }
+        .section-header { text-align: center; margin: 40px 0 20px 0; }
+        .section-header h2 { color: #ff6b6b; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; }
+        .ig-slider { display: flex; align-items: center; gap: 10px; justify-content: center; }
+        .ig-cards { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; }
+        .ig-card { min-width: 200px; height: 200px; background: #333; position: relative; cursor: pointer; }
+        .ig-card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: 0.3s; }
+        .ig-card:hover img { opacity: 1; }
+        .arrow-btn { background: none; border: none; color: white; font-size: 2rem; cursor: pointer; }
+        .spotify-banner { margin: 40px 0; width: 100%; }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000; margin-top: 20px; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .site-footer { text-align: center; padding: 40px; border-top: 1px solid #222; margin-top: 60px; }
+        .footer-logo-text { font-size: 11px; font-weight: 900; letter-spacing: 3px; margin-bottom: 15px; }
+        .site-footer p { color: #555; font-size: 0.7rem; }
+    </style>
+</head>
+<body>
+
+    <div class="menu-toggle" onclick="toggleMenu()">
+        <i class="fa-solid fa-bars"></i>
+    </div>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo"><a href="index.html"><img src="logo.png" alt="WhiteBox Music"></a></div>
+        <span class="greeting">HOLA!</span>
+        <ul class="menu-list">
+            <li><a href="descubre.html"><i class="fa-solid fa-headphones"></i> DESCUBRE</a></li>
+            <li><a href="entreE.html"><i class="fa-solid fa-microphone-lines"></i> ENTREVISTAS</a></li>
+            <li><a href="envia-musica.html"><i class="fa-solid fa-music"></i> ENVÍA MÚSICA</a></li>
+            <li><a href="fotos.html"><i class="fa-solid fa-camera"></i> FOTOS</a></li>
+            <li><a href="quienes.html"><i class="fa-solid fa-users"></i> QUIENES SOMOS</a></li>
+        </ul>
+        <div class="section-title">EQUIPO</div>
+        <ul class="menu-list"><li><a href="#"><i class="fa-solid fa-user"></i> MIRI</a></li></ul>
+        <div class="whitebox-logo-bottom">WHITEBOX<br>MUSIC</div>
+    </aside>
+
+    <main class="main-content">
+        <h1 class="page-title">ENTREVISTAS</h1>
+
+        <div class="section-header"><h2>IG LIVE</h2></div>
+
+        <div class="ig-slider">
+            <button class="arrow-btn">&larr;</button>
+            <div class="ig-cards">
+                <a href="https://instagram.com" target="_blank" class="ig-card">
+                    <img src="https://images.unsplash.com/photo-1513118172236-40bd2691d683?q=80&w=400" alt="IG Live 1" loading="lazy">
+                </a>
+                <a href="https://instagram.com" target="_blank" class="ig-card">
+                    <img src="https://images.unsplash.com/photo-1481349518771-20055b2a7b24?q=80&w=400" alt="IG Live 2" loading="lazy">
+                </a>
+                <a href="https://instagram.com" target="_blank" class="ig-card">
+                    <img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=400" alt="IG Live 3" loading="lazy">
+                </a>
+            </div>
+            <button class="arrow-btn">&rarr;</button>
+        </div>
+
+        <div class="spotify-banner">
+            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </div>
+
+        <div class="section-header"><h2>YOUTUBE</h2></div>
+
+        <div class="video-container">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ?si=muted=1" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>
+        </div>
+
+        <footer class="site-footer">
+            <a href="terminos.html">T&eacute;rminos y condiciones</a>
+            <div class="social-icons">
+                <a href="#" title="Spotify"><i class="fa-brands fa-spotify"></i></a>
+                <a href="#" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+                <a href="#" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+    </script>
+
+</body>
+</html>
