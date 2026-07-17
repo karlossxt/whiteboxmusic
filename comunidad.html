@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comunidad | WhiteBox Music</title>
+    <meta name="description" content="Comparte tu historia musical con la comunidad de WhiteBox Music. Cuéntanos ese momento que nunca olvidarás.">
+    <meta property="og:title" content="Comunidad | WhiteBox Music">
+    <meta property="og:description" content="Comparte tu historia musical con la comunidad de WhiteBox Music.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="logo.png">
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..0,800;1,200..1,800&family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .main-content { background: #fff; padding: 0; color: #000; }
+
+        .com-hero {
+            background: #000; color: #fff; padding: 15px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .com-hero-links a { color: #fff; text-decoration: none; margin-left: 20px; transition: 0.3s; }
+        .com-hero-links a:hover { color: #F6ADC6; }
+
+        .com-container { max-width: 800px; margin: 0 auto; padding: 60px 20px; }
+
+        .com-container h1 {
+            font-size: 2.8rem; font-weight: 900; margin-bottom: 20px;
+            line-height: 1.15; letter-spacing: -1px;
+        }
+
+        .com-subtitle {
+            font-size: 1.05rem; color: #555; line-height: 1.7;
+            margin-bottom: 50px; max-width: 650px;
+        }
+
+        .com-section { margin-bottom: 50px; }
+        .com-section h2 {
+            font-size: 0.75rem; font-weight: 900; text-transform: uppercase;
+            letter-spacing: 4px; color: #F6ADC6; margin-bottom: 20px;
+        }
+        .com-section p {
+            font-size: 14px; color: #333; line-height: 1.8; margin-bottom: 12px;
+        }
+
+        .com-instructions {
+            background: #f9f9f9; border-radius: 8px; padding: 30px 35px;
+            margin-bottom: 50px;
+        }
+        .com-instructions h2 {
+            font-size: 0.75rem; font-weight: 900; text-transform: uppercase;
+            letter-spacing: 4px; color: #F6ADC6; margin-bottom: 20px;
+        }
+        .com-instructions ul {
+            list-style: none; padding: 0;
+        }
+        .com-instructions ul li {
+            font-size: 14px; color: #333; line-height: 1.8;
+            margin-bottom: 10px; padding-left: 18px; position: relative;
+        }
+        .com-instructions ul li::before {
+            content: "\2022"; color: #F6ADC6; font-weight: bold;
+            position: absolute; left: 0;
+        }
+
+        .com-form { margin-top: 20px; }
+
+        .form-row { margin-bottom: 20px; }
+        .form-row label {
+            display: block; font-size: 0.8rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1px; color: #333;
+            margin-bottom: 8px;
+        }
+        .form-row label .required { color: #F6ADC6; }
+
+        .form-row input[type="text"],
+        .form-row input[type="email"],
+        .form-row textarea {
+            width: 100%; padding: 12px 16px; border: 1px solid #ddd;
+            border-radius: 6px; font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.9rem; color: #333; background: #fff;
+            transition: border-color 0.3s;
+        }
+        .form-row input:focus,
+        .form-row textarea:focus {
+            outline: none; border-color: #F6ADC6;
+        }
+
+        .form-row textarea { resize: vertical; min-height: 150px; }
+
+        .char-count {
+            text-align: right; font-size: 0.75rem; color: #999; margin-top: 5px;
+        }
+
+        .form-row input[type="file"] {
+            font-size: 0.85rem; color: #555;
+        }
+        .form-row input[type="file"]::file-selector-button {
+            background: #f0f0f0; border: 1px solid #ccc; padding: 8px 16px;
+            border-radius: 6px; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.8rem; font-weight: 600; transition: 0.3s;
+        }
+        .form-row input[type="file"]::file-selector-button:hover {
+            background: #F6ADC6; color: #fff; border-color: #F6ADC6;
+        }
+
+        .form-row .checkbox-label {
+            display: flex; align-items: flex-start; gap: 10px;
+            font-size: 0.85rem; color: #555; line-height: 1.5; cursor: pointer;
+        }
+        .form-row .checkbox-label input[type="checkbox"] {
+            margin-top: 3px; accent-color: #F6ADC6; min-width: 16px;
+        }
+        .form-row .checkbox-label a {
+            color: #F6ADC6; text-decoration: underline;
+        }
+
+        .btn-submit {
+            display: inline-block; background: #F6ADC6; color: #fff;
+            padding: 14px 50px; border-radius: 30px; font-weight: bold;
+            text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;
+            border: none; cursor: pointer; transition: 0.3s;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .btn-submit:hover { background: #000; color: #fff; }
+
+        .site-footer {
+            background: #000; color: #fff; padding: 20px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 11px; width: 100%;
+        }
+        .site-footer a { color: #fff; text-decoration: none; }
+        .site-footer a:hover { color: #F6ADC6; }
+        .social-icons { display: flex; gap: 15px; }
+        .social-icons a { font-size: 14px; transition: 0.3s; }
+        .social-icons a:hover { color: #F6ADC6; }
+
+        @media (max-width: 768px) {
+            .com-container h1 { font-size: 2rem; }
+            .com-hero { flex-direction: column; gap: 10px; }
+            .com-hero-links a { margin: 0 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></div>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo"><a href="index.html"><img src="logo.png" alt="WhiteBox Music"></a></div>
+        <span class="greeting">HOLA!</span>
+        <ul class="menu-list">
+            <li><a href="descubre.html"><i class="fa-solid fa-headphones"></i> DESCUBRE</a></li>
+            <li><a href="entreE.html"><i class="fa-solid fa-microphone-lines"></i> ENTREVISTAS</a></li>
+            <li><a href="comunidad.html" class="active"><i class="fa-solid fa-users"></i> COMUNIDAD</a></li>
+            <li><a href="fotos.html"><i class="fa-solid fa-camera"></i> FOTOS</a></li>
+            <li><a href="quienes.html"><i class="fa-solid fa-users"></i> QUIENES SOMOS</a></li>
+        </ul>
+        <div class="section-title">EQUIPO</div>
+        <ul class="menu-list"><li><a href="#"><i class="fa-solid fa-user"></i> MIRI</a></li></ul>
+        <div class="whitebox-logo-bottom">WHITEBOX<br>MUSIC</div>
+    </aside>
+
+    <main class="main-content">
+        <div class="com-hero">
+            <div class="logo">WHITEBOX MUSIC</div>
+            <div class="com-hero-links">
+                <a href="#">Spotify</a>
+                <a href="#">Tik Tok</a>
+                <a href="#">Instagram</a>
+                <a href="contacto.html">Contacto</a>
+            </div>
+        </div>
+
+        <div class="com-container">
+            <h1>Hay canciones que nos cambiaron, artistas que nos inspiraron y momentos que nunca olvidaremos.</h1>
+            <p class="com-subtitle">
+                Queremos conocer tu historia. Cu&eacute;ntanos ese momento, esa canci&oacute;n o ese artista que dej&oacute; una huella en tu vida. Tu historia podr&iacute;a inspirar a alguien m&aacute;s y formar parte de la comunidad de WhiteBox Music.
+            </p>
+
+            <div class="com-instructions">
+                <h2>Instrucciones</h2>
+                <ul>
+                    <li>Comparte una historia real y personal.</li>
+                    <li>Puedes hablar de un artista, canci&oacute;n, &aacute;lbum, concierto o fanmeeting.</li>
+                    <li>Si tu historia es seleccionada, podr&iacute;amos hacer peque&ntilde;as correcciones de redacci&oacute;n sin cambiar la esencia.</li>
+                    <li>Al enviarla, autorizas a WhiteBox dando el cr&eacute;dito que indiques, aceptando nuestros t&eacute;rminos y condiciones.</li>
+                </ul>
+            </div>
+
+            <div class="com-section">
+                <h2>Comparte tu historia</h2>
+            </div>
+
+            <form class="com-form" id="comunidadForm" onsubmit="handleSubmit(event)">
+                <div class="form-row">
+                    <label for="nombre">Nombre o seud&oacute;nimo <span class="required">*</span></label>
+                    <input type="text" id="nombre" name="nombre" required placeholder="Tu nombre o seud&oacute;nimo">
+                </div>
+
+                <div class="form-row">
+                    <label for="email">Correo electr&oacute;nico <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" required placeholder="tu@email.com">
+                </div>
+
+                <div class="form-row">
+                    <label for="pais">Pa&iacute;s <span class="required">*</span></label>
+                    <input type="text" id="pais" name="pais" required placeholder="Tu pa&iacute;s">
+                </div>
+
+                <div class="form-row">
+                    <label for="titulo">Ponle t&iacute;tulo a tu historia <span class="required">*</span></label>
+                    <input type="text" id="titulo" name="titulo" required placeholder="Escribe un t&iacute;tulo para tu historia">
+                </div>
+
+                <div class="form-row">
+                    <label for="historia">Ahora s&iacute;... Los Detalles <span class="required">*</span></label>
+                    <textarea id="historia" name="historia" required maxlength="1000" placeholder="Cu&eacute;ntanos tu historia..." oninput="updateCharCount()"></textarea>
+                    <div class="char-count"><span id="charCount">0</span> / 1000</div>
+                </div>
+
+                <div class="form-row">
+                    <label>Fotos <small style="font-weight:400; text-transform:none; letter-spacing:0; color:#999;">(M&aacute;ximo 4)</small></label>
+                    <input type="file" id="fotos" name="fotos" accept="image/*" multiple>
+                </div>
+
+                <div class="form-row">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="acepto" name="acepto" required>
+                        <span>Antes de enviarla aceptas nuestros <a href="terminos.html" target="_blank">T&eacute;rminos y condiciones</a> <span class="required">*</span></span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-submit">Enviar mi historia</button>
+            </form>
+        </div>
+
+        <footer class="site-footer">
+            <a href="terminos.html">T&eacute;rminos y condiciones</a>
+            <div class="social-icons">
+                <a href="#" title="Spotify"><i class="fa-brands fa-spotify"></i></a>
+                <a href="#" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+                <a href="#" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        function updateCharCount() {
+            var textarea = document.getElementById('historia');
+            document.getElementById('charCount').textContent = textarea.value.length;
+        }
+
+        function handleSubmit(e) {
+            e.preventDefault();
+            var form = document.getElementById('comunidadForm');
+            var fotos = document.getElementById('fotos').files;
+            if (fotos.length > 4) {
+                alert('Puedes subir un m\u00e1ximo de 4 fotos.');
+                return;
+            }
+            alert('Gracias por compartir tu historia. La revisaremos pronto.');
+            form.reset();
+            updateCharCount();
+        }
+    </script>
+
+</body>
+</html>

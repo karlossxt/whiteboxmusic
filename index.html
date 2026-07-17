@@ -27,8 +27,36 @@
         .photo-container { overflow: hidden; width: 100%; line-height: 0; }
         .photo-item { width: 100%; height: 300px; object-fit: cover; filter: grayscale(100%); transition: 0.5s; display: block; }
         .photo-container:hover .photo-item { filter: grayscale(0%); transform: scale(1.05); }
-        .playlist-section { padding: 40px; background: #000; display: flex; justify-content: center; }
-        .yt-wrapper { width: 100%; max-width: 900px; border-radius: 15px; overflow: hidden; }
+        .soundscapes-section { padding: 60px 40px; background: #0b0b0b; max-width: 1100px; margin: 0 auto; }
+        .soundscapes-header { margin-bottom: 30px; text-align: center; }
+        .soundscapes-header h2 { color: #fff; font-size: 1.8rem; font-weight: 700; margin-bottom: 6px; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .soundscapes-header p { color: #a0a0a0; font-size: 0.95rem; font-weight: 400; }
+        .soundscapes-carousel { position: relative; display: flex; align-items: center; gap: 10px; }
+        .carousel-track { display: flex; gap: 16px; overflow-x: auto; scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none; padding: 10px 4px; flex: 1; }
+        .carousel-track::-webkit-scrollbar { display: none; }
+        .carousel-btn { flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; border: none; background: #fff; color: #000; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.2s, background 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        .carousel-btn:hover { transform: scale(1.1); background: #f0f0f0; }
+        .soundscapes-card { flex: 0 0 180px; background: #121212; border-radius: 8px; overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; }
+        .soundscapes-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+        .card-image-wrapper { position: relative; width: 100%; aspect-ratio: 1/1; overflow: hidden; }
+        .card-image-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s; }
+        .soundscapes-card:hover .card-image-wrapper img { transform: scale(1.05); }
+        .play-btn { position: absolute; bottom: 10px; right: 10px; width: 42px; height: 42px; border-radius: 50%; border: none; background: #fff; color: #000; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transform: translateY(8px); transition: opacity 0.3s, transform 0.3s, background 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+        .play-btn i { margin-left: 2px; }
+        .soundscapes-card:hover .play-btn { opacity: 1; transform: translateY(0); }
+        .play-btn:hover { background: #1db954; color: #fff; }
+        .card-info { padding: 12px 12px 16px; }
+        .card-title { color: #fff; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3; }
+        .card-artist { color: #a0a0a0; font-size: 0.75rem; font-weight: 400; margin-bottom: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-playlist-tag { border: 1px solid #333; border-radius: 50px; padding: 6px 12px; text-align: center; line-height: 1.4; }
+        .card-playlist-tag .tag-label { display: block; color: #888; font-size: 0.6rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-playlist-tag .tag-name { display: block; color: #fff; font-size: 0.7rem; font-weight: 600; }
+        @media (max-width: 768px) {
+            .soundscapes-section { padding: 40px 16px; max-width: 100%; }
+            .soundscapes-header h2 { font-size: 1.4rem; }
+            .soundscapes-card { flex: 0 0 150px; }
+            .carousel-btn { width: 34px; height: 34px; font-size: 0.75rem; }
+        }
         .footer-area { background: #000; padding: 60px 40px; }
         .tags-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-bottom: 50px; }
         .tag { border: 2px solid white; padding: 10px 30px; border-radius: 50px; text-transform: uppercase; font-size: 0.9rem; font-weight: bold; transition: 0.3s; }
@@ -46,7 +74,7 @@
         <ul class="menu-list">
             <li><a href="descubre.html"><i class="fa-solid fa-headphones"></i> DESCUBRE</a></li>
             <li><a href="entreE.html"><i class="fa-solid fa-microphone-lines"></i> ENTREVISTAS</a></li>
-            <li><a href="envia-musica.html"><i class="fa-solid fa-music"></i> ENV&Iacute;A M&Uacute;SICA</a></li>
+            <li><a href="comunidad.html"><i class="fa-solid fa-users"></i> COMUNIDAD</a></li>
             <li><a href="fotos.html"><i class="fa-solid fa-camera"></i> FOTOS</a></li>
             <li><a href="quienes.html"><i class="fa-solid fa-users"></i> QUIENES SOMOS</a></li>
         </ul>
@@ -83,9 +111,86 @@
             <div class="photo-container"><img src="pexels-theshuttervision-15447298.jpg" alt="Micr&oacute;fono en escenario" class="photo-item" loading="lazy"></div>
             <div class="photo-container"><img src="pexels-vitalina-3807093.jpg" alt="Vinilos" class="photo-item" loading="lazy"></div>
         </section>
-        <section class="playlist-section">
-            <div class="yt-wrapper">
-                <iframe width="100%" height="500" src="https://www.youtube.com/embed/videoseries?list=PL7pO5DgcfFcCZbomb6kLJpiICZ8z7s5EI" title="WhiteBox Playlist" frameborder="0" allowfullscreen loading="lazy"></iframe>
+        <section class="soundscapes-section">
+            <div class="soundscapes-header">
+                <h2>Latest Soundscapes</h2>
+                <p>New songs to listen and enjoy</p>
+            </div>
+            <div class="soundscapes-carousel">
+                <button class="carousel-btn carousel-btn-left" onclick="scrollCarousel(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                <div class="carousel-track" id="carouselTrack">
+                    <div class="soundscapes-card">
+                        <div class="card-image-wrapper">
+                            <img src="https://placehold.co/400x400/1a1a1a/ffffff?text=Album+1" alt="春満ちて" loading="lazy">
+                            <button class="play-btn" title="Play"><i class="fa-solid fa-play"></i></button>
+                        </div>
+                        <div class="card-info">
+                            <h3 class="card-title">春満ちて (haru...</h3>
+                            <p class="card-artist">BITTER DONUTS</p>
+                            <div class="card-playlist-tag">
+                                <span class="tag-label">Spotify Playlist:</span>
+                                <span class="tag-name">World Tour</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="soundscapes-card">
+                        <div class="card-image-wrapper">
+                            <img src="https://placehold.co/400x400/1a1a1a/ffffff?text=Album+2" alt="It's A Thang" loading="lazy">
+                            <button class="play-btn" title="Play"><i class="fa-solid fa-play"></i></button>
+                        </div>
+                        <div class="card-info">
+                            <h3 class="card-title">It's A Thang</h3>
+                            <p class="card-artist">Protocole</p>
+                            <div class="card-playlist-tag">
+                                <span class="tag-label">Spotify Playlist:</span>
+                                <span class="tag-name">Sound On</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="soundscapes-card">
+                        <div class="card-image-wrapper">
+                            <img src="https://placehold.co/400x400/1a1a1a/ffffff?text=Album+3" alt="sliding doors" loading="lazy">
+                            <button class="play-btn" title="Play"><i class="fa-solid fa-play"></i></button>
+                        </div>
+                        <div class="card-info">
+                            <h3 class="card-title">sliding doors</h3>
+                            <p class="card-artist">Sidney</p>
+                            <div class="card-playlist-tag">
+                                <span class="tag-label">Spotify Playlist:</span>
+                                <span class="tag-name">Must Listen</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="soundscapes-card">
+                        <div class="card-image-wrapper">
+                            <img src="https://placehold.co/400x400/1a1a1a/ffffff?text=Album+4" alt="The Man Who Lost..." loading="lazy">
+                            <button class="play-btn" title="Play"><i class="fa-solid fa-play"></i></button>
+                        </div>
+                        <div class="card-info">
+                            <h3 class="card-title">The Man Who Lost...</h3>
+                            <p class="card-artist">Boy In Space</p>
+                            <div class="card-playlist-tag">
+                                <span class="tag-label">Spotify Playlist:</span>
+                                <span class="tag-name">Sound On</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="soundscapes-card">
+                        <div class="card-image-wrapper">
+                            <img src="https://placehold.co/400x400/1a1a1a/ffffff?text=Album+5" alt="Woman" loading="lazy">
+                            <button class="play-btn" title="Play"><i class="fa-solid fa-play"></i></button>
+                        </div>
+                        <div class="card-info">
+                            <h3 class="card-title">Woman</h3>
+                            <p class="card-artist">Celine Cairo</p>
+                            <div class="card-playlist-tag">
+                                <span class="tag-label">Spotify Playlist:</span>
+                                <span class="tag-name">Must Listen</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-btn carousel-btn-right" onclick="scrollCarousel(1)"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
         </section>
         <section class="footer-area">
@@ -106,6 +211,11 @@
     </main>
     <script>
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
+        function scrollCarousel(direction) {
+            var track = document.getElementById('carouselTrack');
+            var cardWidth = track.querySelector('.soundscapes-card').offsetWidth + 16;
+            track.scrollBy({ left: direction * cardWidth * 2, behavior: 'smooth' });
+        }
     </script>
 </body>
 </html>
