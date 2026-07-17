@@ -27,27 +27,78 @@
         .photo-container { overflow: hidden; width: 100%; line-height: 0; }
         .photo-item { width: 100%; height: 300px; object-fit: cover; filter: grayscale(100%); transition: 0.5s; display: block; }
         .photo-container:hover .photo-item { filter: grayscale(0%); transform: scale(1.05); }
-        .soundscapes-section { padding: 60px 40px; background: #0b0b0b; }
+        .soundscapes-section { padding: 60px 40px 140px; background: #0b0b0b; }
         .soundscapes-header { margin-bottom: 30px; text-align: center; }
         .soundscapes-header h2 { color: #fff; font-size: 1.8rem; font-weight: 700; margin-bottom: 6px; font-family: 'Plus Jakarta Sans', sans-serif; }
         .soundscapes-header p { color: #a0a0a0; font-size: 0.95rem; font-weight: 400; }
         .soundscapes-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; max-width: 1200px; margin: 0 auto; }
         .soundscapes-card { background: #121212; border-radius: 8px; overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; }
         .soundscapes-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
-        .card-embed { width: 100%; border-radius: 0; }
+        .card-image-wrapper { position: relative; width: 100%; aspect-ratio: 1/1; overflow: hidden; }
+        .card-image-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s; }
+        .soundscapes-card:hover .card-image-wrapper img { transform: scale(1.05); }
+        .card-play-btn { position: absolute; bottom: 10px; right: 10px; width: 44px; height: 44px; border-radius: 50%; border: none; background: #fff; color: #000; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transform: translateY(8px); transition: opacity 0.3s, transform 0.3s, background 0.2s; box-shadow: 0 4px 14px rgba(0,0,0,0.4); }
+        .card-play-btn i { margin-left: 2px; }
+        .soundscapes-card:hover .card-play-btn { opacity: 1; transform: translateY(0); }
+        .card-play-btn:hover { background: #1db954; color: #fff; }
+        .card-play-btn.active { opacity: 1; transform: translateY(0); background: #1db954; color: #fff; }
         .card-info { padding: 12px 12px 16px; }
         .card-title { color: #fff; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3; }
         .card-artist { color: #a0a0a0; font-size: 0.72rem; font-weight: 400; margin-bottom: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .card-playlist-tag { border: 1px solid #333; border-radius: 50px; padding: 6px 12px; text-align: center; line-height: 1.4; }
         .card-playlist-tag .tag-label { display: block; color: #888; font-size: 0.6rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
         .card-playlist-tag .tag-name { display: block; color: #fff; font-size: 0.7rem; font-weight: 600; }
+        .player-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 72px; background: #181818; border-top: 1px solid #282828; display: flex; align-items: center; padding: 0 16px; z-index: 2000; font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; }
+        .player-bar-left { display: flex; align-items: center; gap: 14px; min-width: 240px; width: 30%; }
+        .player-thumb { width: 46px; height: 46px; border-radius: 4px; object-fit: cover; background: #282828; flex-shrink: 0; }
+        .player-track-info { min-width: 0; }
+        .player-track-name { color: #fff; font-size: 0.8rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
+        .player-track-artist { color: #a0a0a0; font-size: 0.68rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
+        .player-like { color: #a0a0a0; font-size: 0.85rem; cursor: pointer; transition: color 0.2s; flex-shrink: 0; margin-left: 10px; }
+        .player-like:hover, .player-like.active { color: #1db954; }
+        .player-bar-center { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0 20px; }
+        .player-controls { display: flex; align-items: center; gap: 18px; }
+        .player-controls button { background: none; border: none; color: #a0a0a0; font-size: 0.85rem; cursor: pointer; transition: color 0.2s; padding: 4px; display: flex; align-items: center; justify-content: center; }
+        .player-controls button:hover { color: #fff; }
+        .player-controls .play-main { width: 32px; height: 32px; border-radius: 50%; background: #fff; color: #000; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; }
+        .player-controls .play-main:hover { transform: scale(1.06); }
+        .player-controls .play-main i { margin-left: 1px; }
+        .player-controls .ctrl-active { color: #1db954; }
+        .player-progress { display: flex; align-items: center; gap: 8px; width: 100%; max-width: 600px; }
+        .player-progress .time { color: #a0a0a0; font-size: 0.65rem; min-width: 35px; font-variant-numeric: tabular-nums; }
+        .player-progress .time.right { text-align: right; }
+        .progress-bar-wrapper { flex: 1; height: 4px; background: #4d4d4d; border-radius: 2px; cursor: pointer; position: relative; }
+        .progress-bar-wrapper:hover .progress-bar-fill { background: #1db954; }
+        .progress-bar-wrapper:hover .progress-bar-dot { opacity: 1; }
+        .progress-bar-fill { height: 100%; background: #fff; border-radius: 2px; width: 0%; transition: width 0.1s linear; position: relative; }
+        .progress-bar-dot { position: absolute; right: -5px; top: 50%; transform: translateY(-50%); width: 10px; height: 10px; background: #fff; border-radius: 50%; opacity: 0; transition: opacity 0.2s; }
+        .player-bar-right { display: flex; align-items: center; gap: 14px; min-width: 240px; width: 30%; justify-content: flex-end; }
+        .player-bar-right button { background: none; border: none; color: #a0a0a0; font-size: 0.85rem; cursor: pointer; transition: color 0.2s; padding: 4px; display: flex; align-items: center; justify-content: center; }
+        .player-bar-right button:hover { color: #fff; }
+        .player-bar-right .playlist-name { color: #a0a0a0; font-size: 0.68rem; white-space: nowrap; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
+        .volume-wrapper { display: flex; align-items: center; gap: 6px; }
+        .volume-bar { width: 80px; height: 4px; background: #4d4d4d; border-radius: 2px; cursor: pointer; position: relative; }
+        .volume-bar:hover .volume-fill { background: #1db954; }
+        .volume-bar:hover .volume-dot { opacity: 1; }
+        .volume-fill { height: 100%; background: #fff; border-radius: 2px; width: 70%; position: relative; }
+        .volume-dot { position: absolute; right: -5px; top: 50%; transform: translateY(-50%); width: 10px; height: 10px; background: #fff; border-radius: 50%; opacity: 0; transition: opacity 0.2s; }
+        .player-inactive .player-controls .play-main,
+        .player-inactive .player-like,
+        .player-inactive .player-bar-right button { opacity: 0.4; pointer-events: none; }
+        .player-inactive .player-track-name { color: #666; }
+        .player-inactive .player-track-artist { color: #555; }
         @media (max-width: 1024px) { .soundscapes-grid { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 768px) {
-            .soundscapes-section { padding: 40px 16px; }
+            .soundscapes-section { padding: 40px 16px 120px; }
             .soundscapes-header h2 { font-size: 1.4rem; }
             .soundscapes-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .player-bar-left { min-width: auto; width: auto; }
+            .player-track-info { display: none; }
+            .player-like { display: none; }
+            .player-bar-right .playlist-name { display: none; }
+            .player-bar-center { padding: 0 8px; }
+            .player-bar-right { min-width: auto; width: auto; gap: 10px; }
         }
-        @media (max-width: 480px) { .soundscapes-grid { grid-template-columns: 1fr; max-width: 300px; } }
         .footer-area { background: #000; padding: 60px 40px; }
         .tags-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-bottom: 50px; }
         .tag { border: 2px solid white; padding: 10px 30px; border-radius: 50px; text-transform: uppercase; font-size: 0.9rem; font-weight: bold; transition: 0.3s; }
@@ -108,8 +159,11 @@
                 <p>New songs to listen and enjoy</p>
             </div>
             <div class="soundscapes-grid">
-                <div class="soundscapes-card">
-                    <iframe class="card-embed" src="https://open.spotify.com/embed/track/4cOdK2wGTSKFh0WuHV7bMO?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                <div class="soundscapes-card" data-index="0">
+                    <div class="card-image-wrapper">
+                        <img src="https://placehold.co/400x400/1a1a1a/ffffff?text=Album+1" alt="春満ちて" loading="lazy">
+                        <button class="card-play-btn" onclick="playTrack(0)"><i class="fa-solid fa-play"></i></button>
+                    </div>
                     <div class="card-info">
                         <h3 class="card-title">春満ちて (haru...</h3>
                         <p class="card-artist">BITTER DONUTS</p>
@@ -119,8 +173,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="soundscapes-card">
-                    <iframe class="card-embed" src="https://open.spotify.com/embed/track/6PQ88X9TkUIAUIZJHW2upE?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                <div class="soundscapes-card" data-index="1">
+                    <div class="card-image-wrapper">
+                        <img src="https://placehold.co/400x400/1a1a1a/ffffff?text=Album+2" alt="It's A Thang" loading="lazy">
+                        <button class="card-play-btn" onclick="playTrack(1)"><i class="fa-solid fa-play"></i></button>
+                    </div>
                     <div class="card-info">
                         <h3 class="card-title">It's A Thang</h3>
                         <p class="card-artist">Protocole</p>
@@ -130,8 +187,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="soundscapes-card">
-                    <iframe class="card-embed" src="https://open.spotify.com/embed/track/5xTtGjxiTz0wC2MbeV0TjJ?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                <div class="soundscapes-card" data-index="2">
+                    <div class="card-image-wrapper">
+                        <img src="https://placehold.co/400x400/1a1a1a/ffffff?text=Album+3" alt="sliding doors" loading="lazy">
+                        <button class="card-play-btn" onclick="playTrack(2)"><i class="fa-solid fa-play"></i></button>
+                    </div>
                     <div class="card-info">
                         <h3 class="card-title">sliding doors</h3>
                         <p class="card-artist">Sidney</p>
@@ -141,8 +201,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="soundscapes-card">
-                    <iframe class="card-embed" src="https://open.spotify.com/embed/track/4xkOaX0Y3X8mFxen3HqBvH?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                <div class="soundscapes-card" data-index="3">
+                    <div class="card-image-wrapper">
+                        <img src="https://placehold.co/400x400/1a1a1a/ffffff?text=Album+4" alt="The Man Who Lost..." loading="lazy">
+                        <button class="card-play-btn" onclick="playTrack(3)"><i class="fa-solid fa-play"></i></button>
+                    </div>
                     <div class="card-info">
                         <h3 class="card-title">The Man Who Lost...</h3>
                         <p class="card-artist">Boy In Space</p>
@@ -152,8 +215,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="soundscapes-card">
-                    <iframe class="card-embed" src="https://open.spotify.com/embed/track/1VvqAUHJCjLbheDtpbxxQz?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                <div class="soundscapes-card" data-index="4">
+                    <div class="card-image-wrapper">
+                        <img src="https://placehold.co/400x400/1a1a1a/ffffff?text=Album+5" alt="Woman" loading="lazy">
+                        <button class="card-play-btn" onclick="playTrack(4)"><i class="fa-solid fa-play"></i></button>
+                    </div>
                     <div class="card-info">
                         <h3 class="card-title">Woman</h3>
                         <p class="card-artist">Celine Cairo</p>
@@ -181,8 +247,184 @@
         </footer>
         </section>
     </main>
+    <aside class="player-bar player-inactive" id="playerBar">
+        <div class="player-bar-left">
+            <img class="player-thumb" id="playerThumb" src="https://placehold.co/48x48/282828/666?text=--" alt="Portada">
+            <div class="player-track-info">
+                <div class="player-track-name" id="playerTrackName">Selecciona una canci&oacute;n</div>
+                <div class="player-track-artist" id="playerTrackArtist">---</div>
+            </div>
+            <i class="fa-regular fa-heart player-like" id="playerLike" onclick="toggleLike()"></i>
+        </div>
+        <div class="player-bar-center">
+            <div class="player-controls">
+                <button id="btnShuffle" onclick="toggleShuffle()" title="Aleatorio"><i class="fa-solid fa-shuffle"></i></button>
+                <button onclick="prevTrack()" title="Anterior"><i class="fa-solid fa-backward-step"></i></button>
+                <button class="play-main" id="btnPlayPause" onclick="togglePlay()" title="Play/Pausa"><i class="fa-solid fa-play" id="playPauseIcon"></i></button>
+                <button onclick="nextTrack()" title="Siguiente"><i class="fa-solid fa-forward-step"></i></button>
+                <button id="btnRepeat" onclick="toggleRepeat()" title="Repetir"><i class="fa-solid fa-repeat"></i></button>
+            </div>
+            <div class="player-progress">
+                <span class="time" id="currentTime">0:00</span>
+                <div class="progress-bar-wrapper" id="progressBar" onclick="seekTrack(event)">
+                    <div class="progress-bar-fill" id="progressFill"><div class="progress-bar-dot"></div></div>
+                </div>
+                <span class="time right" id="totalTime">0:00</span>
+            </div>
+        </div>
+        <div class="player-bar-right">
+            <span class="playlist-name" id="playerPlaylist">---</span>
+            <div class="volume-wrapper">
+                <button onclick="toggleMute()" title="Volumen"><i class="fa-solid fa-volume-high" id="volumeIcon"></i></button>
+                <div class="volume-bar" id="volumeBar" onclick="setVolume(event)">
+                    <div class="volume-fill" id="volumeFill"><div class="volume-dot"></div></div>
+                </div>
+            </div>
+            <button title="Configuraci&oacute;n"><i class="fa-solid fa-sliders"></i></button>
+        </div>
+    </aside>
+
     <script>
         function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
+
+        var tracks = [
+            { title: '春満ちて (haru...', artist: 'BITTER DONUTS', cover: 'https://placehold.co/400x400/1a1a1a/ffffff?text=Album+1', playlist: 'World Tour', duration: '3:24', durationSec: 204 },
+            { title: 'It\'s A Thang', artist: 'Protocole', cover: 'https://placehold.co/400x400/1a1a1a/ffffff?text=Album+2', playlist: 'Sound On', duration: '2:58', durationSec: 178 },
+            { title: 'sliding doors', artist: 'Sidney', cover: 'https://placehold.co/400x400/1a1a1a/ffffff?text=Album+3', playlist: 'Must Listen', duration: '4:12', durationSec: 252 },
+            { title: 'The Man Who Lost...', artist: 'Boy In Space', cover: 'https://placehold.co/400x400/1a1a1a/ffffff?text=Album+4', playlist: 'Sound On', duration: '3:45', durationSec: 225 },
+            { title: 'Woman', artist: 'Celine Cairo', cover: 'https://placehold.co/400x400/1a1a1a/ffffff?text=Album+5', playlist: 'Must Listen', duration: '4:37', durationSec: 277 }
+        ];
+
+        var currentTrack = -1;
+        var isPlaying = false;
+        var progressInterval = null;
+        var currentProgress = 0;
+        var isShuffle = false;
+        var isRepeat = false;
+        var isMuted = false;
+        var isLiked = false;
+        var volume = 70;
+
+        function playTrack(index) {
+            if (currentTrack === index && isPlaying) {
+                pauseTrack();
+                return;
+            }
+            currentTrack = index;
+            isPlaying = true;
+            currentProgress = 0;
+
+            var t = tracks[index];
+            document.getElementById('playerThumb').src = t.cover;
+            document.getElementById('playerTrackName').textContent = t.title;
+            document.getElementById('playerTrackArtist').textContent = t.artist;
+            document.getElementById('playerPlaylist').textContent = 'Spotify Playlist: ' + t.playlist;
+            document.getElementById('totalTime').textContent = t.duration;
+            document.getElementById('currentTime').textContent = '0:00';
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('playPauseIcon').className = 'fa-solid fa-pause';
+            document.getElementById('playerBar').classList.remove('player-inactive');
+
+            document.querySelectorAll('.card-play-btn').forEach(function(btn, i) {
+                btn.classList.toggle('active', i === index);
+                btn.innerHTML = i === index ? '<i class="fa-solid fa-pause"></i>' : '<i class="fa-solid fa-play"></i>';
+            });
+
+            startProgress();
+        }
+
+        function pauseTrack() {
+            isPlaying = false;
+            document.getElementById('playPauseIcon').className = 'fa-solid fa-play';
+            document.querySelectorAll('.soundscapes-card').forEach(function(card, i) {
+                var btn = card.querySelector('.card-play-btn');
+                if (i === currentTrack) {
+                    btn.innerHTML = '<i class="fa-solid fa-play"></i>';
+                }
+            });
+            clearInterval(progressInterval);
+        }
+
+        function togglePlay() {
+            if (currentTrack === -1) return;
+            if (isPlaying) { pauseTrack(); } else { playTrack(currentTrack); }
+        }
+
+        function nextTrack() {
+            if (currentTrack === -1) return;
+            var next = (currentTrack + 1) % tracks.length;
+            playTrack(next);
+        }
+
+        function prevTrack() {
+            if (currentTrack === -1) return;
+            var prev = (currentTrack - 1 + tracks.length) % tracks.length;
+            playTrack(prev);
+        }
+
+        function startProgress() {
+            clearInterval(progressInterval);
+            var total = tracks[currentTrack].durationSec;
+            progressInterval = setInterval(function() {
+                if (!isPlaying) return;
+                currentProgress += 0.5;
+                if (currentProgress >= total) {
+                    if (isRepeat) { currentProgress = 0; } else { nextTrack(); return; }
+                }
+                var pct = (currentProgress / total) * 100;
+                document.getElementById('progressFill').style.width = pct + '%';
+                var mins = Math.floor(currentProgress / 60);
+                var secs = Math.floor(currentProgress % 60);
+                document.getElementById('currentTime').textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
+            }, 500);
+        }
+
+        function seekTrack(e) {
+            if (currentTrack === -1) return;
+            var bar = document.getElementById('progressBar');
+            var rect = bar.getBoundingClientRect();
+            var pct = (e.clientX - rect.left) / rect.width;
+            var total = tracks[currentTrack].durationSec;
+            currentProgress = pct * total;
+            document.getElementById('progressFill').style.width = (pct * 100) + '%';
+            var mins = Math.floor(currentProgress / 60);
+            var secs = Math.floor(currentProgress % 60);
+            document.getElementById('currentTime').textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
+        }
+
+        function toggleShuffle() {
+            isShuffle = !isShuffle;
+            document.getElementById('btnShuffle').classList.toggle('ctrl-active', isShuffle);
+        }
+
+        function toggleRepeat() {
+            isRepeat = !isRepeat;
+            document.getElementById('btnRepeat').classList.toggle('ctrl-active', isRepeat);
+        }
+
+        function toggleLike() {
+            isLiked = !isLiked;
+            var el = document.getElementById('playerLike');
+            el.classList.toggle('active', isLiked);
+            el.className = isLiked ? 'fa-solid fa-heart player-like active' : 'fa-regular fa-heart player-like';
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            document.getElementById('volumeIcon').className = isMuted ? 'fa-solid fa-volume-xmark' : 'fa-solid fa-volume-high';
+            document.getElementById('volumeFill').style.width = isMuted ? '0%' : volume + '%';
+        }
+
+        function setVolume(e) {
+            var bar = document.getElementById('volumeBar');
+            var rect = bar.getBoundingClientRect();
+            volume = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+            volume = Math.max(0, Math.min(100, volume));
+            document.getElementById('volumeFill').style.width = volume + '%';
+            if (isMuted && volume > 0) { isMuted = false; document.getElementById('volumeIcon').className = 'fa-solid fa-volume-high'; }
+        }
+
+        document.getElementById('volumeFill').style.width = volume + '%';
     </script>
 </body>
 </html>
