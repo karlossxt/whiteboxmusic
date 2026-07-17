@@ -32,7 +32,7 @@
         .soundscapes-header h2 { color: #fff; font-size: 1.8rem; font-weight: 700; margin-bottom: 6px; font-family: 'Plus Jakarta Sans', sans-serif; }
         .soundscapes-header p { color: #a0a0a0; font-size: 0.95rem; font-weight: 400; }
         .soundscapes-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; max-width: 1200px; margin: 0 auto; }
-        .soundscapes-card { background: #121212; border-radius: 8px; overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; }
+        .soundscapes-card { background: #121212; border-radius: 8px; overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; }
         .soundscapes-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
         .card-image-wrapper { position: relative; width: 100%; aspect-ratio: 1/1; overflow: hidden; }
         .card-image-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s; }
@@ -42,9 +42,9 @@
         .soundscapes-card:hover .card-play-btn { opacity: 1; transform: translateY(0); }
         .card-play-btn:hover { background: #1db954; color: #fff; }
         .card-play-btn.active { opacity: 1; transform: translateY(0); background: #1db954; color: #fff; }
-        .card-info { padding: 12px 12px 16px; }
-        .card-title { color: #fff; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3; }
-        .card-artist { color: #a0a0a0; font-size: 0.72rem; font-weight: 400; margin-bottom: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-info { padding: 12px 12px 16px; min-width: 0; }
+        .card-title { color: #fff; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3; display: block; max-width: 100%; }
+        .card-artist { color: #a0a0a0; font-size: 0.72rem; font-weight: 400; margin-bottom: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; max-width: 100%; }
         .card-playlist-tag { border: 1px solid #333; border-radius: 50px; padding: 6px 12px; text-align: center; line-height: 1.4; }
         .card-playlist-tag .tag-label { display: block; color: #888; font-size: 0.6rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
         .card-playlist-tag .tag-name { display: block; color: #fff; font-size: 0.7rem; font-weight: 600; }
@@ -162,7 +162,7 @@
                 <div class="soundscapes-card" data-index="0">
                     <div class="card-image-wrapper">
                         <img src="https://placehold.co/400x400/1a1a1a/ffffff?text=Album+1" alt="春満ちて" loading="lazy">
-                        <button class="card-play-btn" onclick="playTrack(0)"><i class="fa-solid fa-play"></i></button>
+                        <button class="card-play-btn"><i class="fa-solid fa-play"></i></button>
                     </div>
                     <div class="card-info">
                         <h3 class="card-title">春満ちて (haru...</h3>
@@ -176,7 +176,7 @@
                 <div class="soundscapes-card" data-index="1">
                     <div class="card-image-wrapper">
                         <img src="https://placehold.co/400x400/1a1a1a/ffffff?text=Album+2" alt="It's A Thang" loading="lazy">
-                        <button class="card-play-btn" onclick="playTrack(1)"><i class="fa-solid fa-play"></i></button>
+                        <button class="card-play-btn"><i class="fa-solid fa-play"></i></button>
                     </div>
                     <div class="card-info">
                         <h3 class="card-title">It's A Thang</h3>
@@ -190,7 +190,7 @@
                 <div class="soundscapes-card" data-index="2">
                     <div class="card-image-wrapper">
                         <img src="https://placehold.co/400x400/1a1a1a/ffffff?text=Album+3" alt="sliding doors" loading="lazy">
-                        <button class="card-play-btn" onclick="playTrack(2)"><i class="fa-solid fa-play"></i></button>
+                        <button class="card-play-btn"><i class="fa-solid fa-play"></i></button>
                     </div>
                     <div class="card-info">
                         <h3 class="card-title">sliding doors</h3>
@@ -204,7 +204,7 @@
                 <div class="soundscapes-card" data-index="3">
                     <div class="card-image-wrapper">
                         <img src="https://placehold.co/400x400/1a1a1a/ffffff?text=Album+4" alt="The Man Who Lost..." loading="lazy">
-                        <button class="card-play-btn" onclick="playTrack(3)"><i class="fa-solid fa-play"></i></button>
+                        <button class="card-play-btn"><i class="fa-solid fa-play"></i></button>
                     </div>
                     <div class="card-info">
                         <h3 class="card-title">The Man Who Lost...</h3>
@@ -218,7 +218,7 @@
                 <div class="soundscapes-card" data-index="4">
                     <div class="card-image-wrapper">
                         <img src="https://placehold.co/400x400/1a1a1a/ffffff?text=Album+5" alt="Woman" loading="lazy">
-                        <button class="card-play-btn" onclick="playTrack(4)"><i class="fa-solid fa-play"></i></button>
+                        <button class="card-play-btn"><i class="fa-solid fa-play"></i></button>
                     </div>
                     <div class="card-info">
                         <h3 class="card-title">Woman</h3>
@@ -285,146 +285,179 @@
     </aside>
 
     <script>
-        function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
+        document.addEventListener('DOMContentLoaded', function() {
 
-        var tracks = [
-            { title: '春満ちて (haru...', artist: 'BITTER DONUTS', cover: 'https://placehold.co/400x400/1a1a1a/ffffff?text=Album+1', playlist: 'World Tour', duration: '3:24', durationSec: 204 },
-            { title: 'It\'s A Thang', artist: 'Protocole', cover: 'https://placehold.co/400x400/1a1a1a/ffffff?text=Album+2', playlist: 'Sound On', duration: '2:58', durationSec: 178 },
-            { title: 'sliding doors', artist: 'Sidney', cover: 'https://placehold.co/400x400/1a1a1a/ffffff?text=Album+3', playlist: 'Must Listen', duration: '4:12', durationSec: 252 },
-            { title: 'The Man Who Lost...', artist: 'Boy In Space', cover: 'https://placehold.co/400x400/1a1a1a/ffffff?text=Album+4', playlist: 'Sound On', duration: '3:45', durationSec: 225 },
-            { title: 'Woman', artist: 'Celine Cairo', cover: 'https://placehold.co/400x400/1a1a1a/ffffff?text=Album+5', playlist: 'Must Listen', duration: '4:37', durationSec: 277 }
-        ];
+            function toggleMenu() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
 
-        var currentTrack = -1;
-        var isPlaying = false;
-        var progressInterval = null;
-        var currentProgress = 0;
-        var isShuffle = false;
-        var isRepeat = false;
-        var isMuted = false;
-        var isLiked = false;
-        var volume = 70;
+            var tracks = [
+                { title: '春満ちて (haru...', artist: 'BITTER DONUTS', cover: 'https://placehold.co/400x400/1a1a1a/ffffff?text=Album+1', playlist: 'World Tour', duration: '3:24', durationSec: 204 },
+                { title: 'It\'s A Thang', artist: 'Protocole', cover: 'https://placehold.co/400x400/1a1a1a/ffffff?text=Album+2', playlist: 'Sound On', duration: '2:58', durationSec: 178 },
+                { title: 'sliding doors', artist: 'Sidney', cover: 'https://placehold.co/400x400/1a1a1a/ffffff?text=Album+3', playlist: 'Must Listen', duration: '4:12', durationSec: 252 },
+                { title: 'The Man Who Lost...', artist: 'Boy In Space', cover: 'https://placehold.co/400x400/1a1a1a/ffffff?text=Album+4', playlist: 'Sound On', duration: '3:45', durationSec: 225 },
+                { title: 'Woman', artist: 'Celine Cairo', cover: 'https://placehold.co/400x400/1a1a1a/ffffff?text=Album+5', playlist: 'Must Listen', duration: '4:37', durationSec: 277 }
+            ];
 
-        function playTrack(index) {
-            if (currentTrack === index && isPlaying) {
-                pauseTrack();
-                return;
+            var currentTrack = -1;
+            var isPlaying = false;
+            var progressInterval = null;
+            var currentProgress = 0;
+            var isShuffle = false;
+            var isRepeat = false;
+            var isMuted = false;
+            var isLiked = false;
+            var volume = 70;
+
+            var elPlayerBar = document.getElementById('playerBar');
+            var elThumb = document.getElementById('playerThumb');
+            var elTrackName = document.getElementById('playerTrackName');
+            var elTrackArtist = document.getElementById('playerTrackArtist');
+            var elPlaylist = document.getElementById('playerPlaylist');
+            var elTotalTime = document.getElementById('totalTime');
+            var elCurrentTime = document.getElementById('currentTime');
+            var elProgressFill = document.getElementById('progressFill');
+            var elPlayPauseIcon = document.getElementById('playPauseIcon');
+            var elProgressBar = document.getElementById('progressBar');
+            var elVolumeFill = document.getElementById('volumeFill');
+            var elVolumeIcon = document.getElementById('volumeIcon');
+            var elVolumeBar = document.getElementById('volumeBar');
+            var elShuffle = document.getElementById('btnShuffle');
+            var elRepeat = document.getElementById('btnRepeat');
+            var elLike = document.getElementById('playerLike');
+            var cardButtons = document.querySelectorAll('.card-play-btn');
+
+            function updatePlayerUI() {
+                var t = tracks[currentTrack];
+                elThumb.src = t.cover;
+                elTrackName.textContent = t.title;
+                elTrackArtist.textContent = t.artist;
+                elPlaylist.textContent = 'Spotify Playlist: ' + t.playlist;
+                elTotalTime.textContent = t.duration;
+                elCurrentTime.textContent = '0:00';
+                elProgressFill.style.width = '0%';
+                elPlayPauseIcon.className = 'fa-solid fa-pause';
+                elPlayerBar.classList.remove('player-inactive');
+
+                cardButtons.forEach(function(btn, i) {
+                    if (i === currentTrack) {
+                        btn.classList.add('active');
+                        btn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+                    } else {
+                        btn.classList.remove('active');
+                        btn.innerHTML = '<i class="fa-solid fa-play"></i>';
+                    }
+                });
             }
-            currentTrack = index;
-            isPlaying = true;
-            currentProgress = 0;
 
-            var t = tracks[index];
-            document.getElementById('playerThumb').src = t.cover;
-            document.getElementById('playerTrackName').textContent = t.title;
-            document.getElementById('playerTrackArtist').textContent = t.artist;
-            document.getElementById('playerPlaylist').textContent = 'Spotify Playlist: ' + t.playlist;
-            document.getElementById('totalTime').textContent = t.duration;
-            document.getElementById('currentTime').textContent = '0:00';
-            document.getElementById('progressFill').style.width = '0%';
-            document.getElementById('playPauseIcon').className = 'fa-solid fa-pause';
-            document.getElementById('playerBar').classList.remove('player-inactive');
+            function playTrack(index) {
+                if (index < 0 || index >= tracks.length) return;
+                if (currentTrack === index && isPlaying) { pauseTrack(); return; }
+                currentTrack = index;
+                isPlaying = true;
+                currentProgress = 0;
+                updatePlayerUI();
+                startProgress();
+            }
 
-            document.querySelectorAll('.card-play-btn').forEach(function(btn, i) {
-                btn.classList.toggle('active', i === index);
-                btn.innerHTML = i === index ? '<i class="fa-solid fa-pause"></i>' : '<i class="fa-solid fa-play"></i>';
+            function pauseTrack() {
+                isPlaying = false;
+                elPlayPauseIcon.className = 'fa-solid fa-play';
+                if (currentTrack >= 0 && currentTrack < tracks.length) {
+                    cardButtons[currentTrack].innerHTML = '<i class="fa-solid fa-play"></i>';
+                }
+                clearInterval(progressInterval);
+            }
+
+            function togglePlay() {
+                if (currentTrack === -1) return;
+                if (isPlaying) pauseTrack(); else playTrack(currentTrack);
+            }
+
+            function nextTrack() {
+                if (currentTrack === -1) return;
+                var next = isShuffle ? Math.floor(Math.random() * tracks.length) : (currentTrack + 1) % tracks.length;
+                playTrack(next);
+            }
+
+            function prevTrack() {
+                if (currentTrack === -1) return;
+                if (currentProgress > 3) { currentProgress = 0; elProgressFill.style.width = '0%'; elCurrentTime.textContent = '0:00'; return; }
+                var prev = (currentTrack - 1 + tracks.length) % tracks.length;
+                playTrack(prev);
+            }
+
+            function startProgress() {
+                clearInterval(progressInterval);
+                var total = tracks[currentTrack].durationSec;
+                progressInterval = setInterval(function() {
+                    if (!isPlaying) return;
+                    currentProgress += 0.5;
+                    if (currentProgress >= total) {
+                        if (isRepeat) { currentProgress = 0; } else { nextTrack(); return; }
+                    }
+                    elProgressFill.style.width = ((currentProgress / total) * 100) + '%';
+                    var m = Math.floor(currentProgress / 60);
+                    var s = Math.floor(currentProgress % 60);
+                    elCurrentTime.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+                }, 500);
+            }
+
+            function seekTrack(e) {
+                if (currentTrack === -1) return;
+                var rect = elProgressBar.getBoundingClientRect();
+                var pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                var total = tracks[currentTrack].durationSec;
+                currentProgress = pct * total;
+                elProgressFill.style.width = (pct * 100) + '%';
+                var m = Math.floor(currentProgress / 60);
+                var s = Math.floor(currentProgress % 60);
+                elCurrentTime.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+            }
+
+            function toggleShuffle() { isShuffle = !isShuffle; elShuffle.classList.toggle('ctrl-active', isShuffle); }
+            function toggleRepeat() { isRepeat = !isRepeat; elRepeat.classList.toggle('ctrl-active', isRepeat); }
+
+            function toggleLike() {
+                isLiked = !isLiked;
+                elLike.className = isLiked ? 'fa-solid fa-heart player-like active' : 'fa-regular fa-heart player-like';
+            }
+
+            function toggleMute() {
+                isMuted = !isMuted;
+                elVolumeIcon.className = isMuted ? 'fa-solid fa-volume-xmark' : 'fa-solid fa-volume-high';
+                elVolumeFill.style.width = isMuted ? '0%' : volume + '%';
+            }
+
+            function setVolume(e) {
+                var rect = elVolumeBar.getBoundingClientRect();
+                volume = Math.max(0, Math.min(100, Math.round(((e.clientX - rect.left) / rect.width) * 100)));
+                elVolumeFill.style.width = volume + '%';
+                if (isMuted && volume > 0) { isMuted = false; elVolumeIcon.className = 'fa-solid fa-volume-high'; }
+            }
+
+            elVolumeFill.style.width = volume + '%';
+
+            document.querySelectorAll('.soundscapes-card').forEach(function(card) {
+                card.addEventListener('click', function(e) {
+                    var idx = parseInt(card.getAttribute('data-index'), 10);
+                    if (!isNaN(idx)) playTrack(idx);
+                });
             });
 
-            startProgress();
-        }
-
-        function pauseTrack() {
-            isPlaying = false;
-            document.getElementById('playPauseIcon').className = 'fa-solid fa-play';
-            document.querySelectorAll('.soundscapes-card').forEach(function(card, i) {
-                var btn = card.querySelector('.card-play-btn');
-                if (i === currentTrack) {
-                    btn.innerHTML = '<i class="fa-solid fa-play"></i>';
-                }
+            cardButtons.forEach(function(btn) {
+                btn.addEventListener('click', function(e) { e.stopPropagation(); });
             });
-            clearInterval(progressInterval);
-        }
 
-        function togglePlay() {
-            if (currentTrack === -1) return;
-            if (isPlaying) { pauseTrack(); } else { playTrack(currentTrack); }
-        }
-
-        function nextTrack() {
-            if (currentTrack === -1) return;
-            var next = (currentTrack + 1) % tracks.length;
-            playTrack(next);
-        }
-
-        function prevTrack() {
-            if (currentTrack === -1) return;
-            var prev = (currentTrack - 1 + tracks.length) % tracks.length;
-            playTrack(prev);
-        }
-
-        function startProgress() {
-            clearInterval(progressInterval);
-            var total = tracks[currentTrack].durationSec;
-            progressInterval = setInterval(function() {
-                if (!isPlaying) return;
-                currentProgress += 0.5;
-                if (currentProgress >= total) {
-                    if (isRepeat) { currentProgress = 0; } else { nextTrack(); return; }
-                }
-                var pct = (currentProgress / total) * 100;
-                document.getElementById('progressFill').style.width = pct + '%';
-                var mins = Math.floor(currentProgress / 60);
-                var secs = Math.floor(currentProgress % 60);
-                document.getElementById('currentTime').textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
-            }, 500);
-        }
-
-        function seekTrack(e) {
-            if (currentTrack === -1) return;
-            var bar = document.getElementById('progressBar');
-            var rect = bar.getBoundingClientRect();
-            var pct = (e.clientX - rect.left) / rect.width;
-            var total = tracks[currentTrack].durationSec;
-            currentProgress = pct * total;
-            document.getElementById('progressFill').style.width = (pct * 100) + '%';
-            var mins = Math.floor(currentProgress / 60);
-            var secs = Math.floor(currentProgress % 60);
-            document.getElementById('currentTime').textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
-        }
-
-        function toggleShuffle() {
-            isShuffle = !isShuffle;
-            document.getElementById('btnShuffle').classList.toggle('ctrl-active', isShuffle);
-        }
-
-        function toggleRepeat() {
-            isRepeat = !isRepeat;
-            document.getElementById('btnRepeat').classList.toggle('ctrl-active', isRepeat);
-        }
-
-        function toggleLike() {
-            isLiked = !isLiked;
-            var el = document.getElementById('playerLike');
-            el.classList.toggle('active', isLiked);
-            el.className = isLiked ? 'fa-solid fa-heart player-like active' : 'fa-regular fa-heart player-like';
-        }
-
-        function toggleMute() {
-            isMuted = !isMuted;
-            document.getElementById('volumeIcon').className = isMuted ? 'fa-solid fa-volume-xmark' : 'fa-solid fa-volume-high';
-            document.getElementById('volumeFill').style.width = isMuted ? '0%' : volume + '%';
-        }
-
-        function setVolume(e) {
-            var bar = document.getElementById('volumeBar');
-            var rect = bar.getBoundingClientRect();
-            volume = Math.round(((e.clientX - rect.left) / rect.width) * 100);
-            volume = Math.max(0, Math.min(100, volume));
-            document.getElementById('volumeFill').style.width = volume + '%';
-            if (isMuted && volume > 0) { isMuted = false; document.getElementById('volumeIcon').className = 'fa-solid fa-volume-high'; }
-        }
-
-        document.getElementById('volumeFill').style.width = volume + '%';
+            window.toggleMenu = toggleMenu;
+            window.togglePlay = togglePlay;
+            window.nextTrack = nextTrack;
+            window.prevTrack = prevTrack;
+            window.toggleShuffle = toggleShuffle;
+            window.toggleRepeat = toggleRepeat;
+            window.toggleLike = toggleLike;
+            window.toggleMute = toggleMute;
+            window.setVolume = setVolume;
+            window.seekTrack = seekTrack;
+        });
     </script>
 </body>
 </html>
