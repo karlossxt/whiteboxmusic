@@ -167,6 +167,7 @@
             <div class="soundscapes-grid">
                 <div class="soundscapes-card" data-titulo="春満ちて (haru..." data-artista="BITTER DONUTS" data-portada="https://placehold.co/400x400/1a1a1a/ffffff?text=Album+1" data-spotify="https://open.spotify.com/track/4cOdK2wGTSKFh0WuHV7bMO" data-playlist="World Tour" data-duracion="204">
                     <div class="card-image-wrapper">
+                        <div class="now-playing-indicator"><div class="now-playing-waves"><span></span><span></span><span></span><span></span></div> Now Playing</div>
                         <img src="https://placehold.co/400x400/1a1a1a/ffffff?text=Album+1" alt="春満ちて" loading="lazy">
                         <button class="card-play-btn"><i class="fa-solid fa-play"></i></button>
                     </div>
@@ -181,6 +182,7 @@
                 </div>
                 <div class="soundscapes-card" data-titulo="It's A Thang" data-artista="Protocole" data-portada="https://placehold.co/400x400/1a1a1a/ffffff?text=Album+2" data-spotify="https://open.spotify.com/track/6PQ88X9TkUIAUIZJHW2upE" data-playlist="Sound On" data-duracion="178">
                     <div class="card-image-wrapper">
+                        <div class="now-playing-indicator"><div class="now-playing-waves"><span></span><span></span><span></span><span></span></div> Now Playing</div>
                         <img src="https://placehold.co/400x400/1a1a1a/ffffff?text=Album+2" alt="It's A Thang" loading="lazy">
                         <button class="card-play-btn"><i class="fa-solid fa-play"></i></button>
                     </div>
@@ -195,6 +197,7 @@
                 </div>
                 <div class="soundscapes-card" data-titulo="sliding doors" data-artista="Sidney" data-portada="https://placehold.co/400x400/1a1a1a/ffffff?text=Album+3" data-spotify="https://open.spotify.com/track/5xTtGjxiTz0wC2MbeV0TjJ" data-playlist="Must Listen" data-duracion="252">
                     <div class="card-image-wrapper">
+                        <div class="now-playing-indicator"><div class="now-playing-waves"><span></span><span></span><span></span><span></span></div> Now Playing</div>
                         <img src="https://placehold.co/400x400/1a1a1a/ffffff?text=Album+3" alt="sliding doors" loading="lazy">
                         <button class="card-play-btn"><i class="fa-solid fa-play"></i></button>
                     </div>
@@ -209,6 +212,7 @@
                 </div>
                 <div class="soundscapes-card" data-titulo="The Man Who Lost..." data-artista="Boy In Space" data-portada="https://placehold.co/400x400/1a1a1a/ffffff?text=Album+4" data-spotify="https://open.spotify.com/track/4xkOaX0Y3X8mFxen3HqBvH" data-playlist="Sound On" data-duracion="225">
                     <div class="card-image-wrapper">
+                        <div class="now-playing-indicator"><div class="now-playing-waves"><span></span><span></span><span></span><span></span></div> Now Playing</div>
                         <img src="https://placehold.co/400x400/1a1a1a/ffffff?text=Album+4" alt="The Man Who Lost..." loading="lazy">
                         <button class="card-play-btn"><i class="fa-solid fa-play"></i></button>
                     </div>
@@ -223,6 +227,7 @@
                 </div>
                 <div class="soundscapes-card" data-titulo="Woman" data-artista="Celine Cairo" data-portada="https://placehold.co/400x400/1a1a1a/ffffff?text=Album+5" data-spotify="https://open.spotify.com/track/1VvqAUHJCjLbheDtpbxxQz" data-playlist="Must Listen" data-duracion="277">
                     <div class="card-image-wrapper">
+                        <div class="now-playing-indicator"><div class="now-playing-waves"><span></span><span></span><span></span><span></span></div> Now Playing</div>
                         <img src="https://placehold.co/400x400/1a1a1a/ffffff?text=Album+5" alt="Woman" loading="lazy">
                         <button class="card-play-btn"><i class="fa-solid fa-play"></i></button>
                     </div>
@@ -346,16 +351,33 @@
             }
 
             function updatePlayerUI(data) {
-                elThumb.src = data.portada;
-                elTrackName.textContent = data.titulo;
-                elTrackArtist.textContent = data.artista;
-                elPlaylist.textContent = 'Spotify Playlist: ' + data.playlist;
-                elTotalTime.textContent = formatTime(data.duracion);
-                elCurrentTime.textContent = '0:00';
-                elProgressFill.style.width = '0%';
-                elPlayPauseIcon.className = 'fa-solid fa-pause';
-                elPlayerBar.classList.remove('player-inactive');
-                elSpotify.href = data.spotify;
+                var trackInfo = document.querySelector('.player-track-info');
+                trackInfo.classList.add('fade-out');
+                
+                setTimeout(function() {
+                    elThumb.src = data.portada;
+                    elTrackName.textContent = data.titulo;
+                    elTrackArtist.textContent = data.artista;
+                    elPlaylist.textContent = 'Spotify Playlist: ' + data.playlist;
+                    elTotalTime.textContent = formatTime(data.duracion);
+                    elCurrentTime.textContent = '0:00';
+                    elProgressFill.style.width = '0%';
+                    elPlayPauseIcon.className = 'fa-solid fa-pause';
+                    elPlayerBar.classList.remove('player-inactive');
+                    
+                    if (data.spotify && data.spotify !== '#' && data.spotify.includes('spotify.com/track/')) {
+                        elSpotify.href = data.spotify;
+                        elSpotify.classList.remove('disabled');
+                    } else {
+                        elSpotify.href = '#';
+                        elSpotify.classList.add('disabled');
+                    }
+                    
+                    trackInfo.classList.remove('fade-out');
+                }, 150);
+
+                cards.forEach(function(c) { c.classList.remove('active-card'); });
+                if (currentCard) currentCard.classList.add('active-card');
 
                 cardButtons.forEach(function(btn) { btn.classList.remove('active'); btn.innerHTML = '<i class="fa-solid fa-play"></i>'; });
                 var activeBtn = currentCard.querySelector('.card-play-btn');
@@ -466,6 +488,25 @@
             window.toggleMute = toggleMute;
             window.setVolume = setVolume;
             window.seekTrack = seekTrack;
+
+            document.addEventListener('keydown', function(e) {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+                
+                switch(e.code) {
+                    case 'Space':
+                        e.preventDefault();
+                        togglePlay();
+                        break;
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        nextTrack();
+                        break;
+                    case 'ArrowLeft':
+                        e.preventDefault();
+                        prevTrack();
+                        break;
+                }
+            });
         });
     </script>
 </body>
