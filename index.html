@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,8 +19,11 @@
         .top-bar { background: #000; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
         .search-container { background: #222; padding: 8px 15px; border-radius: 20px; width: 40%; display: flex; justify-content: space-between; color: #888; font-size: 0.9rem; }
         .top-links { display: flex; gap: 20px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; }
+        .top-links a { color: #fff; text-decoration: none; transition: 0.3s; }
+        .top-links a:hover { color: #F6ADC6; }
         .hero { height: 500px; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('pexels-myatezhny39-2938205.jpg') center/cover no-repeat; display: flex; align-items: center; justify-content: center; text-align: center; }
         .hero h1 { font-size: 3.5rem; line-height: 1.1; margin-bottom: 20px; font-weight: 800; }
+        .hero-overlay p, .hero-overlay h1 { color: #fff; }
         .btn-discover { background: transparent; border: 2px solid white; color: white; padding: 12px 60px; border-radius: 30px; text-transform: uppercase; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-discover:hover { background: white; color: black; }
         .photo-grid { display: grid; grid-template-columns: repeat(4, 1fr); width: 100%; background: black; }
@@ -107,66 +110,54 @@
         }
         .footer-area { background: #000; padding: 60px 40px; }
         .tags-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-bottom: 50px; }
-        .tag { border: 2px solid white; padding: 10px 30px; border-radius: 50px; text-transform: uppercase; font-size: 0.9rem; font-weight: bold; transition: 0.3s; }
+        .tag { border: 2px solid white; padding: 10px 30px; border-radius: 50px; text-transform: uppercase; font-size: 0.9rem; font-weight: bold; color: #fff; text-decoration: none; transition: 0.3s; }
         .tag:hover { background: white; color: black; }
-        footer { text-align: right; font-size: 0.8rem; color: #666; }
+        .site-footer { text-align: right; font-size: 0.8rem; }
+        .site-footer a { color: #fff; text-decoration: none; }
+        .site-footer a:hover { color: #F6ADC6; }
+        .social-icons { display: flex; gap: 15px; }
+        .social-icons a { color: #fff; font-size: 14px; transition: 0.3s; }
+        .social-icons a:hover { color: #F6ADC6; }
         @media (max-width: 768px) { .hero h1 { font-size: 2.2rem; } .photo-grid { grid-template-columns: repeat(2, 1fr); } }
 
-        .hero-overlay p,
-        .hero-overlay h1 {
-            color: #FF6B8E;
-        }
-        .hero-overlay p {
-            font-size: 1.1rem;
-            font-weight: 600;
-            letter-spacing: 1px;
-        }
-        .btn-discover {
-            border: 2px solid #FF6B8E;
-            color: #FF6B8E;
-        }
-        .btn-discover:hover {
-            background: #FF6B8E;
-            color: #000;
-        }
-            .hero-overlay p,
-.hero-overlay h1 {
-    color: #FF6B8E;
-    text-shadow: 2px 2px 12px rgba(0,0,0,0.6);
-}
+        .sidebar .greeting,
+        .sidebar .menu-list a,
+        .sidebar .section-title,
+        .sidebar .whitebox-logo-bottom { color: #fff; }
+        .scrolling-banner .scroll-text span { color: #fff; }
     </style>
 </head>
 <body>
     <div class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></div>
     <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
     <aside class="sidebar" id="sidebar">
-        <div class="sidebar-logo"><a href="index.html"><img src="logo.png" alt="WhiteBox Music"></a></div>
-        <span class="greeting">HOLA!</span>
+        <div class="sidebar-logo"><a href="index_en.html"><img src="logo.png" alt="WhiteBox Music"></a></div>
+        <span class="greeting">HELLO!</span>
         <ul class="menu-list">
-            <li><a href="descubre.html"><i class="fa-solid fa-headphones"></i> DESCUBRE</a></li>
-            <li><a href="entreE.html"><i class="fa-solid fa-microphone-lines"></i> ENTREVISTAS</a></li>
-            <li><a href="comunidad.html"><i class="fa-solid fa-users"></i> COMUNIDAD</a></li>
-            <li><a href="fotos.html"><i class="fa-solid fa-camera"></i> FOTOS</a></li>
-            <li><a href="quienes.html"><i class="fa-solid fa-users"></i> QUIENES SOMOS</a></li>
+            <li><a href="descubre.html"><i class="fa-solid fa-headphones"></i> DISCOVER</a></li>
+            <li><a href="entreE.html"><i class="fa-solid fa-microphone-lines"></i> INTERVIEWS</a></li>
+            <li><a href="comunidad.html"><i class="fa-solid fa-users"></i> COMMUNITY</a></li>
+            <li><a href="fotos.html"><i class="fa-solid fa-camera"></i> PHOTOS</a></li>
+            <li><a href="quienes.html"><i class="fa-solid fa-users"></i> ABOUT US</a></li>
         </ul>
-        <div class="section-title">EQUIPO</div>
+        <div class="section-title">TEAM</div>
         <ul class="menu-list"><li><a href="#"><i class="fa-solid fa-user"></i> MIRI</a></li></ul>
         <div class="whitebox-logo-bottom">WHITEBOX<br>MUSIC</div>
     </aside>
     <main class="main-content">
         <div class="scrolling-banner">
             <div class="scroll-text">
-                <span>Si llegaste hasta aqu&iacute; es por algo... Sigue <span class="emoji-spacer">&#x263A;&#xFE0F;</span></span>
-                <span>Si llegaste hasta aqu&iacute; es por algo... Sigue <span class="emoji-spacer">&#x263A;&#xFE0F;</span></span>
-                <span>Si llegaste hasta aqu&iacute; es por algo... Sigue <span class="emoji-spacer">&#x263A;&#xFE0F;</span></span>
-                <span>Si llegaste hasta aqu&iacute; es por algo... Sigue <span class="emoji-spacer">&#x263A;&#xFE0F;</span></span>
-                <span>Si llegaste hasta aqu&iacute; es por algo... Sigue <span class="emoji-spacer">&#x263A;&#xFE0F;</span></span>
+                <span>If you made it this far it's for a reason... Keep going <span class="emoji-spacer">&#x263A;&#xFE0F;</span></span>
+                <span>If you made it this far it's for a reason... Keep going <span class="emoji-spacer">&#x263A;&#xFE0F;</span></span>
+                <span>If you made it this far it's for a reason... Keep going <span class="emoji-spacer">&#x263A;&#xFE0F;</span></span>
+                <span>If you made it this far it's for a reason... Keep going <span class="emoji-spacer">&#x263A;&#xFE0F;</span></span>
+                <span>If you made it this far it's for a reason... Keep going <span class="emoji-spacer">&#x263A;&#xFE0F;</span></span>
             </div>
         </div>
         <div class="top-bar">
-            <div class="search-container"><span>Buscar...</span><i class="fa-solid fa-magnifying-glass"></i></div>
+            <div class="search-container"><span>Search...</span><i class="fa-solid fa-magnifying-glass"></i></div>
             <div class="top-links">
-                <a href="#">SPOTIFY</a><a href="#">TIK TOK</a><a href="#">INSTAGRAM</a><a href="contacto.html">CONTACTO</a>
+                <a href="#">SPOTIFY</a><a href="#">TIK TOK</a><a href="#">INSTAGRAM</a><a href="contacto.html">CONTACT</a>
             </div>
         </div>
         <section class="hero">
@@ -177,10 +168,10 @@
             </div>
         </section>
         <section class="photo-grid">
-            <div class="photo-container"><img src="pexels-rdne-7502181.jpg" alt="Concierto" class="photo-item" loading="lazy"></div>
-            <div class="photo-container"><img src="pexels-rdne-8197303.jpg" alt="Audiencia" class="photo-item" loading="lazy"></div>
-            <div class="photo-container"><img src="pexels-theshuttervision-15447298.jpg" alt="Micr&oacute;fono en escenario" class="photo-item" loading="lazy"></div>
-            <div class="photo-container"><img src="pexels-vitalina-3807093.jpg" alt="Vinilos" class="photo-item" loading="lazy"></div>
+            <div class="photo-container"><img src="pexels-rdne-7502181.jpg" alt="Concert" class="photo-item" loading="lazy"></div>
+            <div class="photo-container"><img src="pexels-rdne-8197303.jpg" alt="Audience" class="photo-item" loading="lazy"></div>
+            <div class="photo-container"><img src="pexels-theshuttervision-15447298.jpg" alt="Microphone on stage" class="photo-item" loading="lazy"></div>
+            <div class="photo-container"><img src="pexels-vitalina-3807093.jpg" alt="Vinyls" class="photo-item" loading="lazy"></div>
         </section>
         <section class="soundscapes-section">
             <div class="soundscapes-header">
@@ -268,10 +259,10 @@
         <section class="footer-area">
             <div class="tags-container">
                 <a href="descubre.html" class="tag">pop</a><a href="descubre.html" class="tag">r&amp;b</a><a href="descubre.html" class="tag">rock</a>
-                <a href="descubre.html" class="tag">indie</a><a href="descubre.html" class="tag">kpop</a><a href="descubre.html" class="tag">independiente</a>
+                <a href="descubre.html" class="tag">indie</a><a href="descubre.html" class="tag">kpop</a><a href="descubre.html" class="tag">independent</a>
             </div>
         <footer class="site-footer">
-            <a href="terminos.html">T&eacute;rminos y condiciones</a>
+            <a href="terminos.html">Terms and conditions</a>
             <div class="social-icons">
                 <a href="#" title="Spotify"><i class="fa-brands fa-spotify"></i></a>
                 <a href="#" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
@@ -283,20 +274,20 @@
     </main>
     <aside class="player-bar player-inactive" id="playerBar">
         <div class="player-bar-left">
-            <img class="player-thumb" id="playerThumb" src="https://placehold.co/48x48/282828/666?text=--" alt="Portada">
+            <img class="player-thumb" id="playerThumb" src="https://placehold.co/48x48/282828/666?text=--" alt="Cover">
             <div class="player-track-info">
-                <div class="player-track-name" id="playerTrackName">Selecciona una canci&oacute;n</div>
+                <div class="player-track-name" id="playerTrackName">Select a song</div>
                 <div class="player-track-artist" id="playerTrackArtist">---</div>
             </div>
             <i class="fa-regular fa-heart player-like" id="playerLike" onclick="toggleLike()"></i>
         </div>
         <div class="player-bar-center">
             <div class="player-controls">
-                <button id="btnShuffle" onclick="toggleShuffle()" title="Aleatorio"><i class="fa-solid fa-shuffle"></i></button>
-                <button onclick="prevTrack()" title="Anterior"><i class="fa-solid fa-backward-step"></i></button>
-                <button class="play-main" id="btnPlayPause" onclick="togglePlay()" title="Play/Pausa"><i class="fa-solid fa-play" id="playPauseIcon"></i></button>
-                <button onclick="nextTrack()" title="Siguiente"><i class="fa-solid fa-forward-step"></i></button>
-                <button id="btnRepeat" onclick="toggleRepeat()" title="Repetir"><i class="fa-solid fa-repeat"></i></button>
+                <button id="btnShuffle" onclick="toggleShuffle()" title="Shuffle"><i class="fa-solid fa-shuffle"></i></button>
+                <button onclick="prevTrack()" title="Previous"><i class="fa-solid fa-backward-step"></i></button>
+                <button class="play-main" id="btnPlayPause" onclick="togglePlay()" title="Play/Pause"><i class="fa-solid fa-play" id="playPauseIcon"></i></button>
+                <button onclick="nextTrack()" title="Next"><i class="fa-solid fa-forward-step"></i></button>
+                <button id="btnRepeat" onclick="toggleRepeat()" title="Repeat"><i class="fa-solid fa-repeat"></i></button>
             </div>
             <div class="player-progress">
                 <span class="time" id="currentTime">0:00</span>
@@ -307,15 +298,15 @@
             </div>
         </div>
         <div class="player-bar-right">
-            <a class="btn-spotify" id="btnSpotify" href="#" target="_blank" rel="noopener noreferrer" title="Escuchar en Spotify"><i class="fa-brands fa-spotify"></i> <span>Escuchar en Spotify</span></a>
+            <a class="btn-spotify" id="btnSpotify" href="#" target="_blank" rel="noopener noreferrer" title="Listen on Spotify"><i class="fa-brands fa-spotify"></i> <span>Listen on Spotify</span></a>
             <span class="playlist-name" id="playerPlaylist">---</span>
             <div class="volume-wrapper">
-                <button onclick="toggleMute()" title="Volumen"><i class="fa-solid fa-volume-high" id="volumeIcon"></i></button>
+                <button onclick="toggleMute()" title="Volume"><i class="fa-solid fa-volume-high" id="volumeIcon"></i></button>
                 <div class="volume-bar" id="volumeBar" onclick="setVolume(event)">
                     <div class="volume-fill" id="volumeFill"><div class="volume-dot"></div></div>
                 </div>
             </div>
-            <button title="Configuraci&oacute;n"><i class="fa-solid fa-sliders"></i></button>
+            <button title="Settings"><i class="fa-solid fa-sliders"></i></button>
         </div>
     </aside>
 
@@ -364,8 +355,8 @@
 
             function readCardData(card) {
                 return {
-                    titulo: card.getAttribute('data-titulo') || 'Desconocido',
-                    artista: card.getAttribute('data-artista') || 'Desconocido',
+                    titulo: card.getAttribute('data-titulo') || 'Unknown',
+                    artista: card.getAttribute('data-artista') || 'Unknown',
                     portada: card.getAttribute('data-portada') || '',
                     spotify: card.getAttribute('data-spotify') || '#',
                     playlist: card.getAttribute('data-playlist') || '',
