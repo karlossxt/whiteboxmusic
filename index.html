@@ -125,6 +125,462 @@
         .sidebar .section-title,
         .sidebar .whitebox-logo-bottom { color: #fff; }
         .scrolling-banner .scroll-text span { color: #fff; }
+
+        /* STORIES FROM THE SCENE */
+        .stories-section {
+            padding: 80px 40px 100px;
+            background: #080808;
+            border-top: 1px solid #1a1a1a;
+        }
+        .stories-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        .stories-header h2 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+        .stories-header p {
+            font-family: 'Inter', sans-serif;
+            color: #888;
+            font-size: 0.95rem;
+            font-weight: 300;
+            font-style: italic;
+        }
+        .stories-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto 60px;
+        }
+        .story-card {
+            background: #111;
+            border: 1px solid #1e1e1e;
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .story-card:hover {
+            transform: translateY(-4px);
+            border-color: #333;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.6);
+        }
+        .story-card:focus-visible {
+            outline: 2px solid var(--pink);
+            outline-offset: 2px;
+        }
+        .story-card-image {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/10;
+            overflow: hidden;
+        }
+        .story-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            filter: saturate(0.85) contrast(1.05);
+            transition: filter 0.4s ease, transform 0.4s ease;
+        }
+        .story-card:hover .story-card-image img {
+            filter: saturate(1) contrast(1);
+            transform: scale(1.04);
+        }
+        .story-card-category {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            color: #ccc;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.6rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 4px 10px;
+            border-radius: 3px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .story-card-body {
+            padding: 20px 20px 16px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .story-card-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        .story-card-excerpt {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            color: #999;
+            line-height: 1.55;
+            margin-bottom: 16px;
+            flex: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .story-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            border-top: 1px solid #1a1a1a;
+            background: #0d0d0d;
+        }
+        .story-card-author {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.72rem;
+            color: #777;
+            font-weight: 400;
+        }
+        .story-card-author strong {
+            color: #ccc;
+            font-weight: 600;
+        }
+        .story-card-actions {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .story-like-btn {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.2s ease;
+            padding: 4px;
+            font-family: 'Inter', sans-serif;
+        }
+        .story-like-btn:hover {
+            color: var(--pink);
+        }
+        .story-like-btn:focus-visible {
+            outline: 2px solid var(--pink);
+            outline-offset: 2px;
+            border-radius: 3px;
+        }
+        .story-like-btn.liked {
+            color: var(--pink);
+        }
+        .story-like-btn.liked i {
+            animation: storyHeartBeat 0.4s ease;
+        }
+        @keyframes storyHeartBeat {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.3); }
+            60% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+        .story-like-count {
+            font-size: 0.72rem;
+            color: #666;
+            font-variant-numeric: tabular-nums;
+        }
+        .story-read-link {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.7rem;
+            color: var(--pink);
+            text-decoration: none;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: opacity 0.2s;
+        }
+        .story-read-link:hover {
+            opacity: 0.8;
+        }
+        .stories-cta {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .stories-cta a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            border: 1px solid #333;
+            color: #ccc;
+            padding: 14px 36px;
+            border-radius: 50px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+            transition: border-color 0.3s, color 0.3s, background 0.3s;
+        }
+        .stories-cta a:hover {
+            border-color: var(--pink);
+            color: var(--pink);
+            background: rgba(231,114,167,0.05);
+        }
+        .stories-cta a:focus-visible {
+            outline: 2px solid var(--pink);
+            outline-offset: 3px;
+        }
+
+        /* STORIES MODAL */
+        .stories-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(6px);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .stories-modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+        .stories-modal {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 680px;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            transform: translateY(20px) scale(0.97);
+            transition: transform 0.3s ease;
+        }
+        .stories-modal-overlay.active .stories-modal {
+            transform: translateY(0) scale(1);
+        }
+        .stories-modal::-webkit-scrollbar {
+            width: 6px;
+        }
+        .stories-modal::-webkit-scrollbar-track {
+            background: #111;
+        }
+        .stories-modal::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 3px;
+        }
+        .stories-modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            border: 1px solid #333;
+            color: #ccc;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            transition: background 0.2s, color 0.2s;
+        }
+        .stories-modal-close:hover {
+            background: #333;
+            color: #fff;
+        }
+        .stories-modal-close:focus-visible {
+            outline: 2px solid var(--pink);
+            outline-offset: 2px;
+        }
+        .stories-modal-image {
+            width: 100%;
+            aspect-ratio: 16/9;
+            overflow: hidden;
+            border-radius: 8px 8px 0 0;
+        }
+        .stories-modal-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            filter: saturate(0.9);
+        }
+        .stories-modal-content {
+            padding: 32px 36px 28px;
+        }
+        .stories-modal-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .stories-modal-meta span {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.72rem;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .stories-modal-meta .modal-divider {
+            width: 3px;
+            height: 3px;
+            background: #444;
+            border-radius: 50%;
+        }
+        .stories-modal-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 20px;
+            line-height: 1.25;
+        }
+        .stories-modal-author {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.82rem;
+            color: #999;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #1e1e1e;
+        }
+        .stories-modal-author strong {
+            color: #ddd;
+            font-weight: 600;
+        }
+        .stories-modal-story {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            color: #bbb;
+            line-height: 1.75;
+            margin-bottom: 28px;
+        }
+        .stories-modal-song {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #0d0d0d;
+            border: 1px solid #1e1e1e;
+            border-radius: 6px;
+            padding: 14px 18px;
+            margin-bottom: 28px;
+        }
+        .stories-modal-song i {
+            color: var(--pink);
+            font-size: 0.9rem;
+        }
+        .stories-modal-song span {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.78rem;
+            color: #999;
+        }
+        .stories-modal-song strong {
+            color: #ddd;
+            font-weight: 600;
+        }
+        .stories-modal-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 20px;
+            border-top: 1px solid #1e1e1e;
+        }
+        .stories-modal-like-btn {
+            background: none;
+            border: 1px solid #2a2a2a;
+            color: #888;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: border-color 0.2s, color 0.2s, background 0.2s;
+        }
+        .stories-modal-like-btn:hover {
+            border-color: var(--pink);
+            color: var(--pink);
+        }
+        .stories-modal-like-btn:focus-visible {
+            outline: 2px solid var(--pink);
+            outline-offset: 2px;
+        }
+        .stories-modal-like-btn.liked {
+            border-color: var(--pink);
+            color: var(--pink);
+            background: rgba(231,114,167,0.08);
+        }
+        .stories-modal-like-btn.liked i {
+            animation: storyHeartBeat 0.4s ease;
+        }
+        .stories-modal-date {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.72rem;
+            color: #555;
+        }
+
+        /* STORIES RESPONSIVE */
+        @media (max-width: 1024px) {
+            .stories-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 768px) {
+            .stories-section {
+                padding: 50px 16px 70px;
+            }
+            .stories-header h2 {
+                font-size: 1.6rem;
+            }
+            .stories-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .story-card-body {
+                padding: 16px 16px 12px;
+            }
+            .story-card-footer {
+                padding: 12px 16px;
+            }
+            .stories-modal {
+                max-height: 90vh;
+                border-radius: 6px;
+            }
+            .stories-modal-content {
+                padding: 24px 20px 20px;
+            }
+            .stories-modal-title {
+                font-size: 1.3rem;
+            }
+            .stories-modal-overlay {
+                padding: 10px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -137,6 +593,7 @@
             <li><a href="descubre.html"><i class="fa-solid fa-headphones"></i> DESCUBRE</a></li>
             <li><a href="entreE.html"><i class="fa-solid fa-microphone-lines"></i> ENTREVISTAS</a></li>
             <li><a href="comunidad.html"><i class="fa-solid fa-users"></i> COMUNIDAD</a></li>
+            <li><a href="#storiesSection"><i class="fa-solid fa-book-open"></i> HISTORIAS</a></li>
             <li><a href="fotos.html"><i class="fa-solid fa-camera"></i> FOTOS</a></li>
             <li><a href="quienes.html"><i class="fa-solid fa-users"></i> QUIENES SOMOS</a></li>
         </ul>
@@ -256,6 +713,43 @@
                 </div>
             </div>
         </section>
+        <section class="stories-section" id="storiesSection">
+            <div class="stories-header">
+                <h2>Stories From The Scene</h2>
+                <p>Real stories. Real people. Music that left a mark.</p>
+            </div>
+            <div class="stories-grid" id="storiesGrid">
+                <!-- Tarjetas generadas por JavaScript -->
+            </div>
+            <div class="stories-cta">
+                <a href="envia-historia.html">Share Your Story</a>
+            </div>
+        </section>
+        <div class="stories-modal-overlay" id="storiesModalOverlay" role="dialog" aria-modal="true" aria-labelledby="storiesModalTitle">
+            <div class="stories-modal" id="storiesModal">
+                <button class="stories-modal-close" id="storiesModalClose" aria-label="Cerrar historia"><i class="fa-solid fa-xmark"></i></button>
+                <div class="stories-modal-image">
+                    <img id="storiesModalImage" src="" alt="">
+                </div>
+                <div class="stories-modal-content">
+                    <div class="stories-modal-meta" id="storiesModalMeta"></div>
+                    <h2 class="stories-modal-title" id="storiesModalTitle"></h2>
+                    <p class="stories-modal-author" id="storiesModalAuthor"></p>
+                    <div class="stories-modal-story" id="storiesModalStory"></div>
+                    <div class="stories-modal-song" id="storiesModalSong" style="display:none;">
+                        <i class="fa-solid fa-music"></i>
+                        <span id="storiesModalSongText"></span>
+                    </div>
+                    <div class="stories-modal-footer">
+                        <button class="stories-modal-like-btn" id="storiesModalLikeBtn" aria-label="Dar like a esta historia">
+                            <i class="fa-regular fa-heart"></i>
+                            <span id="storiesModalLikeCount">0</span>
+                        </button>
+                        <span class="stories-modal-date" id="storiesModalDate"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
         <section class="footer-area">
             <div class="tags-container">
                 <a href="descubre.html" class="tag">pop</a><a href="descubre.html" class="tag">r&amp;b</a><a href="descubre.html" class="tag">rock</a>
@@ -521,6 +1015,271 @@
                         break;
                 }
             });
+        });
+    </script>
+
+    <!--
+        STORIES FROM THE SCENE - JavaScript
+        Los likes se almacenan en localStorage, son locales por navegador y no globales.
+        No se usa ningún backend (Firebase, Supabase, etc.) en esta primera versión.
+        Cada historia tiene un id único para persistir el estado de likes por navegador.
+    -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            var storiesData = [
+                {
+                    id: 'story-1',
+                    image: 'https://placehold.co/800x500/1a1a1a/ffffff?text=Blackpink+Concert',
+                    category: 'Ciudad de México, MX',
+                    title: 'Cuando conocí a Blackpink',
+                    author: 'Daniela Reyes',
+                    excerpt: 'Esperé meses para ese concierto y, aun así, cuando se apagaron las luces sentí que no estaba preparada para lo que iba a vivir.',
+                    fullStory: 'Cuando conocí a Blackpink: Esperé meses para ese concierto y, aun así, cuando se apagaron las luces sentí que no estaba preparada para lo que iba a vivir. En cuanto sonó la primera canción y vi a Jisoo, Jennie, Rosé y Lisa salir al escenario, se me llenaron los ojos de lágrimas. Después de tantos videos y transmisiones, por fin las estaba viendo frente a mí.\n\nCanté cada canción con personas que ni siquiera conocía, pero que sentían la misma emoción que yo. Hubo momentos en los que solo me quedé observando el mar de lightsticks rosas iluminando todo el recinto. Fue una imagen que nunca voy a olvidar.\n\nEse concierto no solo me dejó fotos y videos. Me recordó lo bonito que es compartir la música con miles de personas al mismo tiempo. Desde ese día, cada vez que escucho una canción de Blackpink, vuelvo por un momento a esa noche que siempre llevaré en el corazón.',
+                    song: 'Blackpink - Forever Young',
+                    date: 'Octubre 2023',
+                    initialLikes: 124
+                },
+                {
+                    id: 'story-2',
+                    image: 'https://placehold.co/800x500/1a1a1a/ffffff?text=Garage+Band+Session',
+                    category: 'Buenos Aires, AR',
+                    title: 'La noche que ensayamos en el garage y nació nuestra banda',
+                    author: 'Tomas Aguirre',
+                    excerpt: 'Éramos cuatro amigos que solo queríamos hacer ruido. Un garage inundado, amplificadores prestados y una batería que se tambaleaba. Fue todo lo que necesitamos.',
+                    fullStory: 'La noche que ensayamos en el garage y nació nuestra banda: Éramos cuatro amigos que solo queríamos hacer ruido. Un garage inundado, amplificadores prestados y una batería que se tambaleaba. Fue todo lo que necesitamos.\n\nEra invierno del 2021, estábamos todos encerrados por la pandemia y no teníamos nada que hacer. Alguien dijo "¿por qué no ensayamos?" y nadie dijo que no. Armamos los equipos en el garage de Martín, en Villa Crespo. No había silla para todos, el techo goteaba y el bajo hacía un ruido que no era del todo musical.\n\nPero algo mágico pasó esa noche. Las canciones salieron solas. No éramos buenos técnicamente, pero había una energía cruda que hacía que todo sonara real. Martín grabó todo con el celular y esa misma noche subimos dos temas a SoundCloud.\n\nA la mañana siguiente teníamos 200 reproducciones. Hoy somos Los Carport y tenemos un EP que nos grabamos nosotros mismos. Todo empezó con cuatro pendejos y un garage mojado. La música no necesita permiso para existir.\n',
+                    song: 'Los Carport - Garage Sessions',
+                    date: 'Agosto 2021',
+                    initialLikes: 87
+                },
+                {
+                    id: 'story-3',
+                    image: 'https://placehold.co/800x500/1a1a1a/ffffff?text=Record+Store+Discovery',
+                    category: 'Tokyo, JP',
+                    title: 'La tienda de vinilos que cambió la forma en que escucho música',
+                    author: 'Kenji Watanabe',
+                    excerpt: 'Entré a Disk Union en Shimokitazawa buscando un regalo. Tres horas después salí con una nueva comprensión de lo que el sonido realmente significa.',
+                    fullStory: 'La tienda de vinilos que cambió la forma en que escucho música: Entré a Disk Union en Shimokitazawa buscando un regalo. Tres horas después salí con una nueva comprensión de lo que el sonido realmente significa. El dueño, un hombre mayor llamado Tanaka-san, me notó hojeando discos sin dirección.\n\nSe acercó y sin decir una palabra sacó una edición de un disco de jazz japonés de 1978 que nunca había escuchado. Lo puso en la tornamesa de la tienda y subió el volumen. Toda la tienda en silencio. Era crudo, imperfecto y hermoso.\n\nEse momento me enseñó que la música independiente no es solo un género. Es una filosofía. Se trata de encontrar belleza en las cosas que no están pulidas para el consumo masivo. Desde entonces colecciono vinilos y ahora dirijo un fanzine digital dedicado a la música underground japonesa. Todo porque un desconocido decidió compartir un disco conmigo.\n',
+                    song: 'Naniwa Jazz Collective - Twilight in Osaka',
+                    date: 'Noviembre 2022',
+                    initialLikes: 63
+                },
+                {
+                    id: 'story-4',
+                    image: 'https://placehold.co/800x500/1a1a1a/ffffff?text=Festival+Sunset',
+                    category: 'Barcelona, ES',
+                    title: 'El festival donde perdí el miedo a cantar frente a la gente',
+                    author: 'Carla Domínguez',
+                    excerpt: 'Nunca había cantado en público. Tenía tanto miedo que una semana antes dejé de dormir. Pero subí al escenario y lo que pasó después lo cambió todo.',
+                    fullStory: 'El festival donde perdí el miedo a cantar frente a la gente: Nunca había cantado en público. Tenía tanto miedo que una semana antes dejé de dormir. Pero subí al escenario y lo que pasó después lo cambió todo.\n\nEra un festival pequeño en un pueblo costero de Cataluña. No había más de 200 personas, pero para mí era el Madison Square Garden. Mi amiga Laura me había inscrito sin decirme y cuando lo supe ya estaba demasiado tarde para cancelar.\n\nSubí al escenario con las manos temblando. Empecé a cantar la primera nota y cerré los ojos. Cuando los abrí, vi a la primera fila: un hombre mayor moviéndose con la música, una pareja abrazada, una niña bailando descalza. Nadie me estaba juzgando. Todos simplemente estaban sintiendo.\n\nTerminé la canción y el silencio duró un segundo que me pareció una eternidad. Luego vino la ovación. Me derrumbé de emoción backstage. Laura me abrazó y me dijo "¿ves? Siempre pudiste." Desde ese día toco en bares pequeños cada fin de semana. No busco ser famosa. Solo quiero volver a sentir eso.',
+                    song: 'Vera Blue - Private',
+                    date: 'Julio 2023',
+                    initialLikes: 102
+                }
+            ];
+
+            var STORAGE_KEY = 'wbox_story_likes';
+            var storiesGrid = document.getElementById('storiesGrid');
+            var overlay = document.getElementById('storiesModalOverlay');
+            var modal = document.getElementById('storiesModal');
+            var modalClose = document.getElementById('storiesModalClose');
+            var modalImage = document.getElementById('storiesModalImage');
+            var modalMeta = document.getElementById('storiesModalMeta');
+            var modalTitle = document.getElementById('storiesModalTitle');
+            var modalAuthor = document.getElementById('storiesModalAuthor');
+            var modalStory = document.getElementById('storiesModalStory');
+            var modalSong = document.getElementById('storiesModalSong');
+            var modalSongText = document.getElementById('storiesModalSongText');
+            var modalLikeBtn = document.getElementById('storiesModalLikeBtn');
+            var modalLikeCount = document.getElementById('storiesModalLikeCount');
+            var modalDate = document.getElementById('storiesModalDate');
+            var previousFocus = null;
+            var currentStoryId = null;
+
+            function getLikes() {
+                try {
+                    var data = localStorage.getItem(STORAGE_KEY);
+                    return data ? JSON.parse(data) : {};
+                } catch (e) {
+                    return {};
+                }
+            }
+
+            function setLike(storyId, liked) {
+                var likes = getLikes();
+                if (liked) {
+                    likes[storyId] = true;
+                } else {
+                    delete likes[storyId];
+                }
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(likes));
+            }
+
+            function isLiked(storyId) {
+                var likes = getLikes();
+                return !!likes[storyId];
+            }
+
+            function getLikeCount(story) {
+                var base = story.initialLikes;
+                if (isLiked(story.id)) {
+                    return base + 1;
+                }
+                return base;
+            }
+
+            function renderCards() {
+                storiesGrid.innerHTML = '';
+                storiesData.forEach(function(story) {
+                    var liked = isLiked(story.id);
+                    var count = getLikeCount(story);
+                    var card = document.createElement('article');
+                    card.className = 'story-card';
+                    card.setAttribute('tabindex', '0');
+                    card.setAttribute('role', 'button');
+                    card.setAttribute('aria-label', 'Leer historia: ' + story.title);
+                    card.setAttribute('data-story-id', story.id);
+                    card.innerHTML =
+                        '<div class="story-card-image">' +
+                            '<img src="' + story.image + '" alt="' + story.title + '" loading="lazy">' +
+                            '<span class="story-card-category">' + story.category + '</span>' +
+                        '</div>' +
+                        '<div class="story-card-body">' +
+                            '<h3 class="story-card-title">' + story.title + '</h3>' +
+                            '<p class="story-card-excerpt">' + story.excerpt + '</p>' +
+                        '</div>' +
+                        '<div class="story-card-footer">' +
+                            '<span class="story-card-author">by <strong>' + story.author + '</strong></span>' +
+                            '<div class="story-card-actions">' +
+                                '<button class="story-like-btn' + (liked ? ' liked' : '') + '" data-story-id="' + story.id + '" aria-label="Like">' +
+                                    '<i class="fa-' + (liked ? 'solid' : 'regular') + ' fa-heart"></i>' +
+                                    '<span class="story-like-count">' + count + '</span>' +
+                                '</button>' +
+                                '<span class="story-read-link">Read Story</span>' +
+                            '</div>' +
+                        '</div>';
+                    storiesGrid.appendChild(card);
+                });
+
+                var cards = storiesGrid.querySelectorAll('.story-card');
+                cards.forEach(function(card) {
+                    card.addEventListener('click', function(e) {
+                        if (e.target.closest('.story-like-btn')) return;
+                        openModal(card.getAttribute('data-story-id'));
+                    });
+                    card.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            openModal(card.getAttribute('data-story-id'));
+                        }
+                    });
+                });
+
+                var likeBtns = storiesGrid.querySelectorAll('.story-like-btn');
+                likeBtns.forEach(function(btn) {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        var storyId = btn.getAttribute('data-story-id');
+                        toggleLike(storyId);
+                    });
+                });
+            }
+
+            function toggleLike(storyId) {
+                var liked = isLiked(storyId);
+                setLike(storyId, !liked);
+                renderCards();
+                if (currentStoryId === storyId) {
+                    updateModalLikeUI(storyId);
+                }
+            }
+
+            function updateModalLikeUI(storyId) {
+                var liked = isLiked(storyId);
+                var story = storiesData.find(function(s) { return s.id === storyId; });
+                if (!story) return;
+                var count = getLikeCount(story);
+                modalLikeCount.textContent = count;
+                if (liked) {
+                    modalLikeBtn.classList.add('liked');
+                    modalLikeBtn.querySelector('i').className = 'fa-solid fa-heart';
+                } else {
+                    modalLikeBtn.classList.remove('liked');
+                    modalLikeBtn.querySelector('i').className = 'fa-regular fa-heart';
+                }
+            }
+
+            function openModal(storyId) {
+                var story = storiesData.find(function(s) { return s.id === storyId; });
+                if (!story) return;
+                currentStoryId = storyId;
+                previousFocus = document.activeElement;
+
+                modalImage.src = story.image;
+                modalImage.alt = story.title;
+                modalMeta.innerHTML =
+                    '<span>' + story.category + '</span>' +
+                    '<span class="modal-divider"></span>' +
+                    '<span>' + story.date + '</span>';
+                modalTitle.textContent = story.title;
+                modalAuthor.innerHTML = 'by <strong>' + story.author + '</strong>';
+                modalStory.innerHTML = story.fullStory.replace(/\n\n/g, '</p><p class="stories-modal-story" style="margin-top:16px;">').replace(/^/, '<p>').replace(/$/, '</p>');
+                modalDate.textContent = story.date;
+
+                if (story.song) {
+                    modalSong.style.display = 'flex';
+                    modalSongText.innerHTML = '<strong>' + story.song.split(' - ')[0] + '</strong> &mdash; ' + story.song.split(' - ').slice(1).join(' - ');
+                } else {
+                    modalSong.style.display = 'none';
+                }
+
+                updateModalLikeUI(storyId);
+
+                document.body.style.overflow = 'hidden';
+                overlay.style.display = 'flex';
+                requestAnimationFrame(function() {
+                    overlay.classList.add('active');
+                });
+
+                modalClose.focus();
+
+                modalLikeBtn.onclick = function() {
+                    toggleLike(storyId);
+                };
+            }
+
+            function closeModal() {
+                overlay.classList.remove('active');
+                setTimeout(function() {
+                    overlay.style.display = 'none';
+                    document.body.style.overflow = '';
+                    currentStoryId = null;
+                    if (previousFocus) {
+                        previousFocus.focus();
+                        previousFocus = null;
+                    }
+                }, 300);
+            }
+
+            modalClose.addEventListener('click', closeModal);
+
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) {
+                    closeModal();
+                }
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && overlay.classList.contains('active')) {
+                    closeModal();
+                }
+            });
+
+            modal.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+
+            renderCards();
         });
     </script>
 </body>
