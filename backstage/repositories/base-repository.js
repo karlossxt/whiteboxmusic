@@ -15,10 +15,27 @@
     }
 
     BaseRepository.prototype.getAll = function(defaultData) {
-        var raw = this.datasource.getWithDefault(this.storageKey, defaultData || []);
-        return raw.map(function(item) {
-            return new this.ModelClass(item);
-        }.bind(this));
+        var raw;
+        try {
+            raw = this.datasource.getWithDefault(this.storageKey, defaultData || []);
+        } catch (e) {
+            console.error('[Backstage] Error reading data for ' + this.storageKey, e);
+            raw = defaultData || [];
+        }
+        if (!Array.isArray(raw)) {
+            console.warn('[Backstage] Data for ' + this.storageKey + ' is not an array, resetting.');
+            raw = [];
+        }
+        var self = this;
+        var items = [];
+        for (var i = 0; i < raw.length; i++) {
+            try {
+                items.push(new self.ModelClass(raw[i]));
+            } catch (e) {
+                console.warn('[Backstage] Skipping corrupt item at index ' + i, e);
+            }
+        }
+        return items;
     };
 
     BaseRepository.prototype.getById = function(id) {

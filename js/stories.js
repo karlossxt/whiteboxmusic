@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             var categorySpan = document.createElement('span');
             categorySpan.className = 'story-card-category';
-            categorySpan.textContent = story.location;
+            categorySpan.textContent = story.category || story.location;
             imageDiv.appendChild(categorySpan);
 
             var bodyDiv = document.createElement('div');

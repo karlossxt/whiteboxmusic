@@ -1,6 +1,6 @@
 /* ============================================
    BACKSTAGE STUDIO — Dashboard Service
-   Estadísticas agregadas para el dashboard.
+   Estadisticas agregadas para el dashboard.
    ============================================ */
 
 (function() {
@@ -21,11 +21,20 @@
     DashboardService.prototype.getStatCards = function() {
         var s = this.storyService.getStats();
         var ss = this.soundscapeService.getStats();
+        var lastModText = '-';
+        if (s.lastModified) {
+            try {
+                var d = new Date(s.lastModified);
+                var day = d.getDate();
+                var months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+                lastModText = day + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+            } catch (e) { lastModText = '-'; }
+        }
         return [
             { value: s.total, label: 'Historias' },
-            { value: s.published, label: 'Historias publicadas' },
-            { value: ss.total, label: 'Canciones' },
-            { value: ss.published, label: 'Canciones publicadas' }
+            { value: s.published, label: 'Publicadas' },
+            { value: s.draft, label: 'Borradores' },
+            { value: s.featured, label: 'Destacadas' }
         ];
     };
 

@@ -1,6 +1,6 @@
 /* ============================================
    BACKSTAGE STUDIO — Empty State Template
-   Genera el componente de estado vacío reutilizable.
+   Genera el componente de estado vacio reutilizable.
    ============================================ */
 
 (function() {
@@ -23,6 +23,15 @@
         var p = document.createElement('p');
         p.textContent = config.text || '';
         el.appendChild(p);
+
+        if (config.buttonLabel) {
+            var btn = document.createElement('button');
+            btn.className = 'btn-primary';
+            btn.style.marginTop = '16px';
+            btn.innerHTML = '<i class="fa-solid fa-plus"></i> ' + config.buttonLabel;
+            if (config.onButtonClick) btn.addEventListener('click', config.onButtonClick);
+            el.appendChild(btn);
+        }
 
         return el;
     };

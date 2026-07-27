@@ -16,8 +16,19 @@
     LocalDatasource.prototype.get = function(key) {
         try {
             var raw = localStorage.getItem(PREFIX + key);
-            if (raw) return JSON.parse(raw);
-        } catch (e) { /* ignore */ }
+            if (raw) {
+                var parsed = JSON.parse(raw);
+                return parsed;
+            }
+        } catch (e) {
+            console.error('[Backstage] Corrupt data for key ' + PREFIX + key + ', keeping backup.');
+            try {
+                var backupKey = PREFIX + key + '_backup';
+                if (!localStorage.getItem(backupKey)) {
+                    localStorage.setItem(backupKey, localStorage.getItem(PREFIX + key));
+                }
+            } catch (backupErr) { /* best effort */ }
+        }
         return null;
     };
 
