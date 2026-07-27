@@ -631,6 +631,21 @@
             <div class="photo-container"><img src="pexels-theshuttervision-15447298.jpg" alt="Microphone on stage" class="photo-item" loading="lazy"></div>
             <div class="photo-container"><img src="pexels-vitalina-3807093.jpg" alt="Vinyls" class="photo-item" loading="lazy"></div>
         </section>
+        <section class="stories-section" id="storiesSection">
+            <div class="stories-header">
+                <h2>Stories From The Scene</h2>
+                <p>Real stories. Real people. Music that left a mark.</p>
+            </div>
+            <div class="stories-grid" id="storiesGrid">
+                <!-- Tarjetas generadas por JavaScript -->
+            </div>
+            <div class="stories-load-more" id="storiesLoadMore" style="display:none;">
+                <button id="storiesLoadMoreBtn" class="stories-load-more-btn">Ver más historias</button>
+            </div>
+            <div class="stories-cta">
+                <a href="comunidad.html">Share Your Story</a>
+            </div>
+        </section>
         <section class="soundscapes-section" id="soundscapesSection">
             <div class="soundscapes-header">
                 <h2>Latest Soundscapes</h2>
@@ -712,18 +727,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
-        <section class="stories-section" id="storiesSection">
-            <div class="stories-header">
-                <h2>Stories From The Scene</h2>
-                <p>Real stories. Real people. Music that left a mark.</p>
-            </div>
-            <div class="stories-grid" id="storiesGrid">
-                <!-- Tarjetas generadas por JavaScript -->
-            </div>
-            <div class="stories-cta">
-                <a href="comunidad.html">Share Your Story</a>
             </div>
         </section>
         <div class="stories-modal-overlay" id="storiesModalOverlay" role="dialog" aria-modal="true" aria-labelledby="storiesModalTitle">
@@ -1080,7 +1083,11 @@
             ];
 
             var STORAGE_KEY = 'wbox_story_likes';
+            var INITIAL_STORIES = 3;
             var storiesGrid = document.getElementById('storiesGrid');
+            var storiesLoadMore = document.getElementById('storiesLoadMore');
+            var storiesLoadMoreBtn = document.getElementById('storiesLoadMoreBtn');
+            var showingAll = false;
             var overlay = document.getElementById('storiesModalOverlay');
             var modal = document.getElementById('storiesModal');
             var modalClose = document.getElementById('storiesModalClose');
@@ -1131,7 +1138,8 @@
 
             function renderCards() {
                 storiesGrid.innerHTML = '';
-                storiesData.forEach(function(story) {
+                var storiesToShow = showingAll ? storiesData : storiesData.slice(0, INITIAL_STORIES);
+                storiesToShow.forEach(function(story) {
                     var liked = isLiked(story.id);
                     var count = getLikeCount(story);
                     var card = document.createElement('article');
@@ -1162,6 +1170,12 @@
                     storiesGrid.appendChild(card);
                 });
 
+                if (storiesData.length > INITIAL_STORIES && !showingAll) {
+                    storiesLoadMore.style.display = 'block';
+                } else {
+                    storiesLoadMore.style.display = 'none';
+                }
+
                 var cards = storiesGrid.querySelectorAll('.story-card');
                 cards.forEach(function(card) {
                     card.addEventListener('click', function(e) {
@@ -1185,6 +1199,12 @@
                     });
                 });
             }
+
+            storiesLoadMoreBtn.addEventListener('click', function() {
+                showingAll = true;
+                renderCards();
+                document.getElementById('storiesSection').scrollIntoView({ behavior: 'smooth' });
+            });
 
             function toggleLike(storyId) {
                 var liked = isLiked(storyId);
