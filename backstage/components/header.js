@@ -40,6 +40,7 @@
 
         addAction: function(config) {
             if (!this._actionsContainer) return;
+            if (config.id && document.getElementById(config.id)) return;
             var btn = document.createElement('button');
             btn.className = 'btn-primary';
             if (config.id) btn.id = config.id;

@@ -16,6 +16,8 @@
         this.service = soundscapeService;
         this.view = soundscapeView;
         this._formBound = false;
+        this._eventsBound = false;
+        this._saving = false;
     }
 
     SoundscapeController.prototype.mount = function() {
@@ -88,6 +90,8 @@
     };
 
     SoundscapeController.prototype._bindEvents = function() {
+        if (this._eventsBound) return;
+        this._eventsBound = true;
         var self = this;
         window.Backstage.EventBus.on('soundscapes:created', function() { self._renderAll(); });
         window.Backstage.EventBus.on('soundscapes:updated', function() { self._renderAll(); });
@@ -136,6 +140,9 @@
     };
 
     SoundscapeController.prototype._handleFormSubmit = function() {
+        if (this._saving) return;
+        this._saving = true;
+
         var data = {
             title: document.getElementById('ssFormTitle').value,
             artist: document.getElementById('ssFormArtist').value,
@@ -157,11 +164,13 @@
         }
 
         if (result.success) {
+            this._saving = false;
             Toast.show(existingId ? 'Cancion actualizada' : 'Cancion creada', 'success');
             this._renderAll();
             window.Backstage.EventBus.emit('dashboard:refresh');
             Modal.closeAll();
         } else {
+            this._saving = false;
             Toast.show(result.errors.join('. '), 'error');
         }
     };

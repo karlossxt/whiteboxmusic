@@ -25,25 +25,30 @@
         }
     }
 
+    function clearCallback() {
+        currentCallback = null;
+    }
+
     function bindEvents() {
         if (bound) return;
 
         deleteBtn.addEventListener('click', function() {
             if (currentCallback) {
-                currentCallback();
+                var cb = currentCallback;
                 currentCallback = null;
+                cb();
             }
             window.Backstage.Components.Modal.closeAll();
         });
 
         cancelBtn.addEventListener('click', function() {
-            currentCallback = null;
+            clearCallback();
             window.Backstage.Components.Modal.closeAll();
         });
 
         overlay.addEventListener('click', function(e) {
             if (e.target === overlay) {
-                currentCallback = null;
+                clearCallback();
                 window.Backstage.Components.Modal.closeAll();
             }
         });
@@ -61,6 +66,9 @@
 
             currentCallback = onConfirm;
             window.Backstage.Components.Modal.open(overlay);
+        },
+        clearCallback: function() {
+            clearCallback();
         }
     };
 })();

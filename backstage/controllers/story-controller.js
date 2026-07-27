@@ -47,12 +47,14 @@
 
         this.view.renderStats(stats);
 
+        var savedFilters = this.view.getFilters();
+
         var callbacks = {
             onSearch: function() { self._applyFilters(); },
             onFilter: function() { self._applyFilters(); },
             onSort: function() { self._applyFilters(); }
         };
-        this.view.renderFilterBar(callbacks);
+        this.view.renderFilterBar(callbacks, savedFilters);
 
         this._applyFilters();
     };
@@ -60,9 +62,11 @@
     StoryController.prototype._applyFilters = function() {
         var filters = this.view.getFilters();
         var stories = this.service.getAll();
+        var isFiltered = false;
 
         if (filters.search) {
             stories = this.service.search(filters.search);
+            isFiltered = true;
         }
 
         if (filters.status && filters.status !== 'all') {
@@ -70,10 +74,12 @@
                 if (filters.status === 'featured') return s.isPublished() && s.isFeatured();
                 return s.status === filters.status;
             });
+            isFiltered = true;
         }
 
         if (filters.category && filters.category !== 'all') {
             stories = stories.filter(function(s) { return s.category === filters.category; });
+            isFiltered = true;
         }
 
         var sort = filters.sort || 'newest';
@@ -108,7 +114,7 @@
             remove: function(id, title) { self._openConfirm(id, title); }
         };
 
-        this.view.renderTable(stories, actions);
+        this.view.renderTable(stories, actions, isFiltered);
     };
 
     StoryController.prototype._bindHeader = function() {
@@ -212,6 +218,13 @@
             }
         };
         document.addEventListener('keydown', this._keyHandler);
+
+        window.addEventListener('beforeunload', function(e) {
+            if (self._formDirty) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
     };
 
     StoryController.prototype._unbindGlobalKeys = function() {
@@ -302,9 +315,10 @@
         var imgDiv = document.createElement('div');
         imgDiv.className = 'preview-card-image';
         var img = document.createElement('img');
-        img.src = data.image || '';
+        img.src = this._safeImageUrl(data.image);
         img.alt = data.title || '';
         img.onerror = function() {
+            img.onerror = null;
             img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="680" height="340" fill="%231a1a1a"%3E%3Crect width="680" height="340"/%3E%3Ctext x="50%25" y="50%25" fill="%23444" font-size="16" text-anchor="middle" dy=".3em"%3ESin imagen%3C/text%3E%3C/svg%3E';
         };
         imgDiv.appendChild(img);
@@ -334,7 +348,11 @@
         footer.className = 'preview-card-footer';
         var authorEl = document.createElement('span');
         authorEl.className = 'preview-card-author';
-        authorEl.innerHTML = 'by <strong>' + (data.author || '-') + '</strong>';
+        var byTextNode = document.createTextNode('by ');
+        authorEl.appendChild(byTextNode);
+        var authorStrong = document.createElement('strong');
+        authorStrong.textContent = data.author || '-';
+        authorEl.appendChild(authorStrong);
         footer.appendChild(authorEl);
         if (data.date) {
             var dateEl = document.createElement('span');
@@ -454,8 +472,9 @@
         var previewImg = document.getElementById('imagePreviewImg');
         if (!preview || !previewImg) return;
         if (url && url.trim()) {
-            previewImg.src = url;
+            previewImg.src = this._safeImageUrl(url);
             previewImg.onerror = function() {
+                previewImg.onerror = null;
                 previewImg.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="100" fill="%231a1a1a"%3E%3Crect width="200" height="100" rx="4"/%3E%3Ctext x="50%25" y="50%25" fill="%23555" font-size="12" text-anchor="middle" dy=".3em"%3EURL invalida%3C/text%3E%3C/svg%3E';
             };
             preview.style.display = 'block';
@@ -467,6 +486,16 @@
     StoryController.prototype._hideImagePreview = function() {
         var preview = document.getElementById('imagePreview');
         if (preview) preview.style.display = 'none';
+    };
+
+    StoryController.prototype._safeImageUrl = function(url) {
+        if (!url || typeof url !== 'string') return '';
+        var trimmed = url.trim();
+        if (!trimmed) return '';
+        var lower = trimmed.toLowerCase();
+        if (lower.indexOf('javascript:') === 0) return '';
+        if (lower.indexOf('data:text/html') === 0) return '';
+        return trimmed;
     };
 
     window.Backstage.Controllers.Story = StoryController;

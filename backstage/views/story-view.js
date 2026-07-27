@@ -10,6 +10,16 @@
 
     var T = window.Backstage.Templates;
 
+    function safeImageUrl(url) {
+        if (!url || typeof url !== 'string') return '';
+        var trimmed = url.trim();
+        if (!trimmed) return '';
+        var lower = trimmed.toLowerCase();
+        if (lower.indexOf('javascript:') === 0) return '';
+        if (lower.indexOf('data:text/html') === 0) return '';
+        return trimmed;
+    }
+
     var columns = [
         { key: 'image', label: 'Miniatura' },
         { key: 'title', label: 'Titulo' },
@@ -46,7 +56,7 @@
             this._statsContainer.appendChild(cards);
         },
 
-        renderFilterBar: function(callbacks) {
+        renderFilterBar: function(callbacks, savedFilters) {
             if (!this._filterBar) return;
             this._filterBar.textContent = '';
 
@@ -63,6 +73,7 @@
             searchInput.placeholder = 'Buscar por titulo, autor, resumen...';
             searchInput.id = 'filterSearch';
             searchInput.setAttribute('aria-label', 'Buscar historias');
+            if (savedFilters && savedFilters.search) searchInput.value = savedFilters.search;
             searchWrap.appendChild(searchInput);
             bar.appendChild(searchWrap);
 
@@ -74,6 +85,7 @@
                 opt.value = o.v; opt.textContent = o.t;
                 statusSelect.appendChild(opt);
             });
+            if (savedFilters && savedFilters.status) statusSelect.value = savedFilters.status;
             bar.appendChild(statusSelect);
 
             var catSelect = document.createElement('select');
@@ -84,6 +96,7 @@
                 opt.value = o.v; opt.textContent = o.t;
                 catSelect.appendChild(opt);
             });
+            if (savedFilters && savedFilters.category) catSelect.value = savedFilters.category;
             bar.appendChild(catSelect);
 
             var sortSelect = document.createElement('select');
@@ -94,6 +107,7 @@
                 opt.value = o.v; opt.textContent = o.t;
                 sortSelect.appendChild(opt);
             });
+            if (savedFilters && savedFilters.sort) sortSelect.value = savedFilters.sort;
             bar.appendChild(sortSelect);
 
             this._filterBar.appendChild(bar);
@@ -127,13 +141,25 @@
             };
         },
 
-        renderTable: function(stories, actions) {
+        renderTable: function(stories, actions, isFiltered) {
             this._ensureStructure();
             this._tableBody.textContent = '';
             if (this._mobileGrid) this._mobileGrid.textContent = '';
 
             if (!stories || stories.length === 0) {
                 this._emptyEl.style.display = 'block';
+                var emptyIcon = this._emptyEl.querySelector('i');
+                var emptyH3 = this._emptyEl.querySelector('h3');
+                var emptyP = this._emptyEl.querySelector('p');
+                if (isFiltered) {
+                    if (emptyIcon) emptyIcon.className = 'fa-solid fa-magnifying-glass';
+                    if (emptyH3) emptyH3.textContent = 'Sin resultados';
+                    if (emptyP) emptyP.textContent = 'No se encontraron historias que coincidan con tu busqueda.';
+                } else {
+                    if (emptyIcon) emptyIcon.className = 'fa-solid fa-book-open';
+                    if (emptyH3) emptyH3.textContent = 'Aun no hay historias';
+                    if (emptyP) emptyP.textContent = 'Crea tu primera historia para que aparezca en el sitio.';
+                }
                 if (this._tableWrapper) this._tableWrapper.style.display = 'none';
                 if (this._mobileGrid) this._mobileGrid.style.display = 'none';
                 return;
@@ -164,10 +190,11 @@
                 thumbTd.textContent = '';
                 var thumb = document.createElement('img');
                 thumb.className = 'table-thumb';
-                thumb.src = story.image || '';
+                thumb.src = safeImageUrl(story.image);
                 thumb.alt = story.title || '';
                 thumb.loading = 'lazy';
                 thumb.onerror = function() {
+                    thumb.onerror = null;
                     thumb.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="48" height="32" fill="%23222"%3E%3Crect width="48" height="32" rx="3"/%3E%3C/svg%3E';
                 };
                 thumbTd.appendChild(thumb);
@@ -255,13 +282,13 @@
             var imgDiv = document.createElement('div');
             imgDiv.className = 'mobile-card-img';
             var img = document.createElement('img');
-            img.src = story.image || '';
+            img.src = safeImageUrl(story.image);
             img.alt = story.title || '';
             img.onerror = function() {
+                img.onerror = null;
                 img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="120" fill="%23222"%3E%3Crect width="200" height="120" rx="4"/%3E%3C/svg%3E';
             };
             imgDiv.appendChild(img);
-            card.appendChild(imgDiv);
 
             var body = document.createElement('div');
             body.className = 'mobile-card-body';

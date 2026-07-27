@@ -83,6 +83,7 @@
                 thumb.alt = item.title || '';
                 thumb.loading = 'lazy';
                 thumb.onerror = function() {
+                    thumb.onerror = null;
                     thumb.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="48" height="32" fill="%23222"%3E%3Crect width="48" height="32" rx="3"/%3E%3C/svg%3E';
                 };
                 thumbTd.appendChild(thumb);

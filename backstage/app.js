@@ -148,11 +148,22 @@
             dashboardCtrl.refresh();
         });
 
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                window.Backstage.Components.Modal.closeAll();
+        /* Multi-tab sync via storage event */
+        window.addEventListener('storage', function(e) {
+            if (!e.key) return;
+            if (e.key === 'backstage_stories_data' || e.key === 'backstage_stories_data_backup') {
+                var current = router.getCurrent();
+                if (current === 'stories') storyCtrl.refresh();
+                if (current === 'dashboard') dashboardCtrl.refresh();
+            }
+            if (e.key === 'backstage_soundscapes_data' || e.key === 'backstage_soundscapes_data_backup') {
+                var current = router.getCurrent();
+                if (current === 'soundscapes') soundscapeCtrl.refresh();
+                if (current === 'dashboard') dashboardCtrl.refresh();
             }
         });
+
+        /* Escape key handled by Modal component */
 
         /* ------------------------------------------
            10. START

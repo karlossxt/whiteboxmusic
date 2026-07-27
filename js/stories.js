@@ -24,6 +24,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var FOCUSABLE_SELECTORS = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
+    function safeImageUrl(url) {
+        if (!url || typeof url !== 'string') return '';
+        var trimmed = url.trim();
+        if (!trimmed) return '';
+        var lower = trimmed.toLowerCase();
+        if (lower.indexOf('javascript:') === 0) return '';
+        if (lower.indexOf('data:text/html') === 0) return '';
+        return trimmed;
+    }
+
     function getPublishedStories() {
         var isIndex = !!document.getElementById('storiesSection');
         var stories = storiesData
@@ -87,6 +97,10 @@ document.addEventListener('DOMContentLoaded', function() {
             img.src = story.image;
             img.alt = story.title;
             img.loading = 'lazy';
+            img.onerror = function() {
+                img.onerror = null;
+                img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="680" height="340" fill="%231a1a1a"%3E%3Crect width="680" height="340"/%3E%3Ctext x="50%25" y="50%25" fill="%23444" font-size="16" text-anchor="middle" dy=".3em"%3ESin imagen%3C/text%3E%3C/svg%3E';
+            };
             imageDiv.appendChild(img);
 
             var categorySpan = document.createElement('span');
@@ -236,8 +250,12 @@ document.addEventListener('DOMContentLoaded', function() {
         currentStoryId = storyId;
         previousFocus = document.activeElement;
 
-        modalImage.src = story.image;
+        modalImage.src = safeImageUrl(story.image);
         modalImage.alt = story.title;
+        modalImage.onerror = function() {
+            modalImage.onerror = null;
+            modalImage.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="680" height="340" fill="%231a1a1a"%3E%3Crect width="680" height="340"/%3E%3Ctext x="50%25" y="50%25" fill="%23444" font-size="16" text-anchor="middle" dy=".3em"%3ESin imagen%3C/text%3E%3C/svg%3E';
+        };
 
         modalMeta.textContent = '';
         var locSpan = document.createElement('span');
