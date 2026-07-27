@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - WhiteBox Music</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <a href="../index.html"><img src="../logo.png" alt="WhiteBox Music"></a>
+                <span class="admin-badge">ADMIN</span>
+            </div>
+            <nav class="admin-nav">
+                <a href="#" class="admin-nav-item active" data-section="stories">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>Historias</span>
+                </a>
+                <a href="../index.html" class="admin-nav-item" target="_blank">
+                    <i class="fa-solid fa-external-link"></i>
+                    <span>Ver sitio</span>
+                </a>
+            </nav>
+            <div class="admin-sidebar-footer">
+                <span>WhiteBox Music Panel</span>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            <header class="admin-header">
+                <div class="admin-header-left">
+                    <h1>Gestionar Historias</h1>
+                    <p class="admin-subtitle">Administra las tarjetas de la seccion "Stories From The Scene"</p>
+                </div>
+                <div class="admin-header-right">
+                    <button class="btn-primary" id="btnAddStory">
+                        <i class="fa-solid fa-plus"></i>
+                        Nueva Historia
+                    </button>
+                </div>
+            </header>
+
+            <section class="admin-content">
+                <div class="admin-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="statTotal">0</div>
+                        <div class="stat-label">Total historias</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="statPublished">0</div>
+                        <div class="stat-label">Publicadas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="statDraft">0</div>
+                        <div class="stat-label">Borradores</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="statFeatured">0</div>
+                        <div class="stat-label">Destacadas</div>
+                    </div>
+                </div>
+
+                <div class="admin-table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Orden</th>
+                                <th>Imagen</th>
+                                <th>Titulo</th>
+                                <th>Autor</th>
+                                <th>Ubicacion</th>
+                                <th>Likes</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="storiesTableBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="admin-empty" id="emptyState" style="display:none;">
+                    <i class="fa-solid fa-book-open"></i>
+                    <h3>No hay historias</h3>
+                    <p>Crea tu primera historia para que aparezca en el sitio.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="modal-overlay" id="storyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Nueva Historia</h2>
+                <button class="modal-close" id="modalClose" aria-label="Cerrar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="storyForm" novalidate>
+                <input type="hidden" id="formId">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="formTitle">Titulo <span class="required">*</span></label>
+                        <input type="text" id="formTitle" required placeholder="Titulo de la historia">
+                    </div>
+                    <div class="form-group">
+                        <label for="formAuthor">Autor <span class="required">*</span></label>
+                        <input type="text" id="formAuthor" required placeholder="Nombre o alias">
+                    </div>
+                    <div class="form-group">
+                        <label for="formLocation">Ubicacion</label>
+                        <input type="text" id="formLocation" placeholder="Ciudad, Pais">
+                    </div>
+                    <div class="form-group">
+                        <label for="formImage">URL de imagen</label>
+                        <input type="url" id="formImage" placeholder="https://...">
+                    </div>
+                    <div class="form-group">
+                        <label for="formDate">Fecha</label>
+                        <input type="text" id="formDate" placeholder="Ej: Octubre 2023">
+                    </div>
+                    <div class="form-group">
+                        <label for="formRelatedSong">Cancion relacionada</label>
+                        <input type="text" id="formRelatedSong" placeholder="Artista - Cancion">
+                    </div>
+                    <div class="form-group">
+                        <label for="formInitialLikes">Likes iniciales</label>
+                        <input type="number" id="formInitialLikes" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="formOrder">Orden</label>
+                        <input type="number" id="formOrder" min="1" value="1">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="formExcerpt">Extracto <span class="required">*</span></label>
+                        <textarea id="formExcerpt" rows="2" required placeholder="Resumen corto (maximo 3 lineas)"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="formContent">Historia completa <span class="required">*</span></label>
+                        <textarea id="formContent" rows="8" required placeholder="Contenido completo de la historia. Separa parrafos con doble salto de linea (Enter x2)."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="formStatus">Estado</label>
+                        <select id="formStatus">
+                            <option value="published">Publicada</option>
+                            <option value="draft">Borrador</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="formFeatured">Destacada</label>
+                        <select id="formFeatured">
+                            <option value="false">No</option>
+                            <option value="true">Si</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="btnCancel">Cancelar</button>
+                    <button type="submit" class="btn-primary" id="btnSave">
+                        <i class="fa-solid fa-check"></i>
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-content modal-confirm">
+            <div class="confirm-icon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 id="confirmTitle">Eliminar historia</h3>
+            <p id="confirmText">Esta accion no se puede deshacer. La historia se eliminara permanentemente.</p>
+            <div class="confirm-actions">
+                <button class="btn-secondary" id="confirmCancel">Cancelar</button>
+                <button class="btn-danger" id="confirmDelete">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="../js/stories-data.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

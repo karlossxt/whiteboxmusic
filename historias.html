@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historias | WhiteBox Music</title>
+    <meta name="description" content="Todas las historias de la comunidad WhiteBox Music. Real stories, real people, music that left a mark.">
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/stories.css">
+    <link rel="stylesheet" href="css/historias.css">
+</head>
+<body>
+    <div class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></div>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo"><a href="index.html"><img src="logo.png" alt="WhiteBox Music"></a></div>
+        <span class="greeting">HOLA!</span>
+        <ul class="menu-list">
+            <li><a href="descubre.html"><i class="fa-solid fa-headphones"></i> DESCUBRE</a></li>
+            <li><a href="entreE.html"><i class="fa-solid fa-microphone-lines"></i> ENTREVISTAS</a></li>
+            <li><a href="comunidad.html"><i class="fa-solid fa-users"></i> COMUNIDAD</a></li>
+            <li><a href="historias.html" class="active"><i class="fa-solid fa-book-open"></i> HISTORIAS</a></li>
+            <li><a href="fotos.html"><i class="fa-solid fa-camera"></i> FOTOS</a></li>
+            <li><a href="quienes.html"><i class="fa-solid fa-users"></i> QUIENES SOMOS</a></li>
+        </ul>
+        <div class="section-title">EQUIPO</div>
+        <ul class="menu-list"><li><a href="#"><i class="fa-solid fa-user"></i> MIRI</a></li></ul>
+        <div class="whitebox-logo-bottom">WHITEBOX<br>MUSIC</div>
+    </aside>
+
+    <main class="main-content">
+        <div class="scrolling-banner">
+            <div class="scroll-text">
+                <span>Si llegaste hasta aqu&iacute; es por algo... Sigue <span class="emoji-spacer">&#x263A;&#xFE0F;</span></span>
+                <span>Si llegaste hasta aqu&iacute; es por algo... Sigue <span class="emoji-spacer">&#x263A;&#xFE0F;</span></span>
+                <span>Si llegaste hasta aqu&iacute; es por algo... Sigue <span class="emoji-spacer">&#x263A;&#xFE0F;</span></span>
+                <span>Si llegaste hasta aqu&iacute; es por algo... Sigue <span class="emoji-spacer">&#x263A;&#xFE0F;</span></span>
+                <span>Si llegaste hasta aqu&iacute; es por algo... Sigue <span class="emoji-spacer">&#x263A;&#xFE0F;</span></span>
+            </div>
+        </div>
+
+        <section class="hist-page-header">
+            <a href="index.html" class="hist-back-link"><i class="fa-solid fa-arrow-left"></i> Volver al inicio</a>
+            <h1>Stories From The Scene</h1>
+            <p class="hist-subtitle">Real stories. Real people. Music that left a mark.</p>
+            <span class="hist-count" id="histCount"></span>
+        </section>
+
+        <section class="hist-stories-section">
+            <div class="hist-stories-grid" id="histGrid">
+            </div>
+            <div class="hist-empty" id="histEmpty" style="display:none;">
+                <i class="fa-solid fa-book-open"></i>
+                <h3>No hay historias todavia</h3>
+                <p>Pronto la comunidad compartira sus historias.</p>
+            </div>
+        </section>
+
+        <div class="hist-cta">
+            <a href="comunidad.html">Share Your Story</a>
+        </div>
+
+        <section class="hist-footer">
+            <div class="tags-container">
+                <a href="descubre.html" class="tag">pop</a>
+                <a href="descubre.html" class="tag">r&amp;b</a>
+                <a href="descubre.html" class="tag">rock</a>
+                <a href="descubre.html" class="tag">indie</a>
+                <a href="descubre.html" class="tag">kpop</a>
+                <a href="descubre.html" class="tag">independent</a>
+            </div>
+            <footer class="site-footer">
+                <a href="terminos.html">Terms and conditions</a>
+                <div class="social-icons">
+                    <a href="#" title="Spotify"><i class="fa-brands fa-spotify"></i></a>
+                    <a href="#" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+                    <a href="#" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                </div>
+            </footer>
+        </section>
+    </main>
+
+    <div class="hist-modal-overlay" id="histModalOverlay" role="dialog" aria-modal="true" aria-labelledby="histModalTitle">
+        <div class="hist-modal" id="histModal">
+            <button class="hist-modal-close" id="histModalClose" aria-label="Cerrar historia"><i class="fa-solid fa-xmark"></i></button>
+            <div class="hist-modal-image">
+                <img id="histModalImage" src="" alt="">
+            </div>
+            <div class="hist-modal-content">
+                <div class="hist-modal-meta" id="histModalMeta"></div>
+                <h2 class="hist-modal-title" id="histModalTitle"></h2>
+                <p class="hist-modal-author" id="histModalAuthor"></p>
+                <div class="hist-modal-story" id="histModalStory"></div>
+                <div class="hist-modal-song is-hidden" id="histModalSong">
+                    <i class="fa-solid fa-music"></i>
+                    <span id="histModalSongText"></span>
+                </div>
+                <div class="hist-modal-footer">
+                    <button class="hist-modal-like-btn" id="histModalLikeBtn" aria-label="Dar like a esta historia">
+                        <i class="fa-regular fa-heart"></i>
+                        <span id="histModalLikeCount">0</span>
+                    </button>
+                    <span class="hist-modal-date" id="histModalDate"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/stories-data.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var STORAGE_KEY = 'wbox_story_likes';
+        var grid = document.getElementById('histGrid');
+        var empty = document.getElementById('histEmpty');
+        var countEl = document.getElementById('histCount');
+        var overlay = document.getElementById('histModalOverlay');
+        var modal = document.getElementById('histModal');
+        var modalClose = document.getElementById('histModalClose');
+        var modalImage = document.getElementById('histModalImage');
+        var modalMeta = document.getElementById('histModalMeta');
+        var modalTitle = document.getElementById('histModalTitle');
+        var modalAuthor = document.getElementById('histModalAuthor');
+        var modalStory = document.getElementById('histModalStory');
+        var modalSong = document.getElementById('histModalSong');
+        var modalSongText = document.getElementById('histModalSongText');
+        var modalLikeBtn = document.getElementById('histModalLikeBtn');
+        var modalLikeCount = document.getElementById('histModalLikeCount');
+        var modalDate = document.getElementById('histModalDate');
+        var previousFocus = null;
+        var currentStoryId = null;
+
+        function getLikes() {
+            try {
+                var d = localStorage.getItem(STORAGE_KEY);
+                return d ? JSON.parse(d) : {};
+            } catch (e) { return {}; }
+        }
+
+        function setLike(id, liked) {
+            var likes = getLikes();
+            if (liked) likes[id] = true; else delete likes[id];
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(likes)); } catch (e) {}
+        }
+
+        function isLiked(id) { return !!getLikes()[id]; }
+
+        function getLikeCount(story) {
+            return isLiked(story.id) ? story.initialLikes + 1 : story.initialLikes;
+        }
+
+        function renderAll() {
+            var all = storiesData.slice().sort(function(a, b) {
+                return (a.order || 999) - (b.order || 999);
+            });
+
+            countEl.textContent = all.length + ' historias publicadas';
+            grid.textContent = '';
+
+            if (all.length === 0) {
+                empty.style.display = 'block';
+                return;
+            }
+            empty.style.display = 'none';
+
+            all.forEach(function(story) {
+                var liked = isLiked(story.id);
+                var count = getLikeCount(story);
+
+                var card = document.createElement('article');
+                card.className = 'story-card';
+                card.setAttribute('data-story-id', story.id);
+                card.setAttribute('tabindex', '0');
+                card.setAttribute('role', 'button');
+                card.setAttribute('aria-label', 'Leer historia: ' + story.title);
+
+                card.innerHTML =
+                    '<div class="story-card-image">' +
+                        '<img src="' + story.image + '" alt="' + story.title + '" loading="lazy">' +
+                        '<span class="story-card-category">' + story.location + '</span>' +
+                    '</div>' +
+                    '<div class="story-card-body">' +
+                        '<h3 class="story-card-title">' + story.title + '</h3>' +
+                        '<p class="story-card-excerpt">' + story.excerpt + '</p>' +
+                    '</div>' +
+                    '<div class="story-card-footer">' +
+                        '<span class="story-card-author">by <strong>' + story.author + '</strong></span>' +
+                        '<div class="story-card-actions">' +
+                            '<button class="story-like-btn' + (liked ? ' liked' : '') + '" data-story-id="' + story.id + '" aria-label="Like">' +
+                                '<i class="fa-' + (liked ? 'solid' : 'regular') + ' fa-heart"></i>' +
+                                '<span class="story-like-count">' + count + '</span>' +
+                            '</button>' +
+                            '<button class="story-read-button" data-story-id="' + story.id + '" aria-label="Leer historia: ' + story.title + '">Read Story</button>' +
+                        '</div>' +
+                    '</div>';
+
+                grid.appendChild(card);
+            });
+
+            grid.querySelectorAll('.story-card').forEach(function(card) {
+                card.addEventListener('click', function(e) {
+                    if (e.target.closest('.story-like-btn') || e.target.closest('.story-read-button')) return;
+                    openModal(card.getAttribute('data-story-id'));
+                });
+                card.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        openModal(card.getAttribute('data-story-id'));
+                    }
+                });
+            });
+
+            grid.querySelectorAll('.story-read-button').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    openModal(btn.getAttribute('data-story-id'));
+                });
+            });
+
+            grid.querySelectorAll('.story-like-btn').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    var id = btn.getAttribute('data-story-id');
+                    var liked = isLiked(id);
+                    setLike(id, !liked);
+                    renderAll();
+                    if (currentStoryId === id) updateModalLike(id);
+                });
+            });
+        }
+
+        function updateModalLike(id) {
+            var liked = isLiked(id);
+            var story = storiesData.find(function(s) { return s.id === id; });
+            if (!story) return;
+            var count = getLikeCount(story);
+            modalLikeCount.textContent = count;
+            if (liked) {
+                modalLikeBtn.classList.add('liked');
+                modalLikeBtn.querySelector('i').className = 'fa-solid fa-heart';
+            } else {
+                modalLikeBtn.classList.remove('liked');
+                modalLikeBtn.querySelector('i').className = 'fa-regular fa-heart';
+            }
+        }
+
+        function openModal(id) {
+            var story = storiesData.find(function(s) { return s.id === id; });
+            if (!story) return;
+            currentStoryId = id;
+            previousFocus = document.activeElement;
+
+            modalImage.src = story.image;
+            modalImage.alt = story.title;
+            modalMeta.innerHTML =
+                '<span>' + story.location + '</span>' +
+                '<span class="modal-divider"></span>' +
+                '<span>' + story.date + '</span>';
+            modalTitle.textContent = story.title;
+            modalAuthor.innerHTML = 'by <strong>' + story.author + '</strong>';
+
+            modalStory.innerHTML = '';
+            var paragraphs = story.content.split('\n\n');
+            paragraphs.forEach(function(text) {
+                var p = document.createElement('p');
+                p.textContent = text;
+                modalStory.appendChild(p);
+            });
+
+            modalDate.textContent = story.date;
+
+            if (story.relatedSong) {
+                modalSong.classList.remove('is-hidden');
+                var parts = story.relatedSong.split(' - ');
+                modalSongText.innerHTML = '<strong>' + parts[0] + '</strong> \u2014 ' + parts.slice(1).join(' - ');
+            } else {
+                modalSong.classList.add('is-hidden');
+            }
+
+            updateModalLike(id);
+
+            document.body.style.overflow = 'hidden';
+            overlay.classList.remove('is-hidden');
+            requestAnimationFrame(function() { overlay.classList.add('active'); });
+            modalClose.focus();
+
+            modalLikeBtn.onclick = function() {
+                var liked = isLiked(id);
+                setLike(id, !liked);
+                renderAll();
+                updateModalLike(id);
+            };
+        }
+
+        function closeModal() {
+            overlay.classList.remove('active');
+            setTimeout(function() {
+                overlay.classList.add('is-hidden');
+                document.body.style.overflow = '';
+                currentStoryId = null;
+                if (previousFocus) { previousFocus.focus(); previousFocus = null; }
+            }, 300);
+        }
+
+        modalClose.addEventListener('click', closeModal);
+        overlay.addEventListener('click', function(e) { if (e.target === overlay) closeModal(); });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && overlay.classList.contains('active')) closeModal();
+        });
+
+        modal.addEventListener('click', function(e) { e.stopPropagation(); });
+
+        renderAll();
+    });
+    </script>
+</body>
+</html>

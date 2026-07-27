@@ -1,0 +1,180 @@
+Quiero que revises este repositorio:
+
+https://github.com/karlossxt/whiteboxmusic
+
+Necesito agregar una nueva sección en el archivo `index.html`, colocada inmediatamente debajo de la sección donde aparecen las tarjetas de Spotify.
+
+## Objetivo
+
+Crear una sección comunitaria de historias relacionadas con música independiente.
+
+La sección debe mostrar tarjetas con:
+
+* Imagen principal.
+* Título de la historia.
+* Nombre o alias del autor.
+* Ciudad o país.
+* Extracto corto de la historia.
+* Número de likes.
+* Texto o botón que diga `Read Story`.
+
+Cuando el usuario haga clic en una tarjeta, debe abrirse una ventana modal con la historia completa.
+
+## Diseño
+
+La nueva sección debe conservar la identidad visual actual de WhiteBox Music.
+
+Quiero un estilo:
+
+* Indie.
+* Editorial.
+* Similar a un fanzine musical digital.
+* Fondo oscuro.
+* Bordes finos.
+* Fotografías con aspecto artístico.
+* Tipografía clara y legible.
+* Uso moderado del color rosa que ya existe en el sitio.
+* Animaciones suaves.
+* Diseño profesional, sin verse genérico.
+
+La sección puede llamarse:
+
+`Stories From The Scene`
+
+Y usar como subtítulo:
+
+`Real stories. Real people. Music that left a mark.`
+
+No quiero que las tarjetas sean una copia exacta de las tarjetas de Spotify. Deben diferenciarse visualmente, pero seguir formando parte del mismo sitio.
+
+## Tarjetas
+
+En escritorio deben mostrarse tres tarjetas por fila.
+
+En tablet pueden mostrarse dos.
+
+En móvil deben aparecer una debajo de otra.
+
+Cada tarjeta debe tener:
+
+* Imagen.
+* Categoría o ubicación pequeña.
+* Título.
+* Extracto máximo de tres líneas.
+* Autor.
+* Contador de likes.
+* Indicador `Read Story`.
+
+Toda la tarjeta debe ser clickeable.
+
+Agrega inicialmente tres historias de ejemplo con contenido ficticio, pero realista y relacionado con música independiente.
+
+## Modal
+
+Al hacer clic en una tarjeta, abre un modal responsive.
+
+El modal debe incluir:
+
+* Imagen principal.
+* Título completo.
+* Autor.
+* Ciudad o país.
+* Fecha opcional.
+* Historia completa.
+* Canción o artista relacionado, si existe.
+* Botón de like con icono de corazón.
+* Contador de likes.
+* Botón para cerrar.
+
+El modal debe:
+
+* Abrirse con una animación suave.
+* Cerrarse con el botón `X`.
+* Cerrarse al hacer clic fuera del contenido.
+* Cerrarse con la tecla `Escape`.
+* Bloquear el scroll de la página mientras está abierto.
+* Restaurar el scroll al cerrarse.
+* Funcionar correctamente en móvil.
+* Tener un `z-index` superior al reproductor musical fijo del sitio.
+
+## Likes
+
+Implementa un sistema inicial de likes usando `localStorage`.
+
+Requisitos:
+
+* Cada historia debe tener un identificador único.
+* El usuario puede dar like y quitar el like.
+* El estado debe conservarse al recargar la página.
+* El corazón debe cambiar visualmente cuando la historia tenga like.
+* El contador debe actualizarse inmediatamente.
+* Evita que el contador aumente cada vez que se recarga la página.
+* Agrega una nota en los comentarios del código indicando que estos likes son locales por navegador y no globales.
+
+No uses Firebase, Supabase ni backend en esta primera versión.
+
+## Botón para enviar historias
+
+Al final de la sección agrega un botón:
+
+`Share Your Story`
+
+Por ahora puede dirigir a:
+
+`envia-historia.html`
+
+Si esa página todavía no existe, no la crees en este cambio. Solo deja el enlace preparado.
+
+## Requisitos técnicos
+
+Antes de modificar archivos:
+
+1. Revisa la estructura completa del repositorio.
+2. Identifica dónde están los estilos y scripts actuales.
+3. Reutiliza las variables CSS, fuentes, colores y patrones existentes.
+4. Evita duplicar reglas CSS.
+5. No agregues frameworks ni librerías externas.
+6. No uses Bootstrap, React, Vue ni jQuery.
+7. Usa únicamente HTML, CSS y JavaScript nativo.
+8. No cambies el reproductor, el header, las tarjetas de Spotify ni el footer.
+9. No elimines código existente.
+10. No modifiques archivos que no sean necesarios.
+11. Conserva el comportamiento responsive actual.
+12. Evita estilos inline.
+13. Evita JavaScript inline si el proyecto ya utiliza archivos separados.
+14. Usa nombres de clases específicos para evitar conflictos con estilos existentes.
+15. Usa HTML semántico y atributos de accesibilidad.
+
+## Accesibilidad
+
+El modal debe incluir:
+
+* `role="dialog"`.
+* `aria-modal="true"`.
+* Etiqueta accesible para el botón de cerrar.
+* Soporte para navegación con teclado.
+* Foco inicial dentro del modal.
+* Restauración del foco al elemento que abrió el modal.
+
+Las imágenes deben incluir textos `alt` descriptivos.
+
+Los botones deben tener estados `hover`, `focus-visible` y `active`.
+
+## Entrega
+
+Realiza los cambios directamente en los archivos correspondientes.
+
+Al finalizar, entrégame:
+
+1. Lista de archivos modificados.
+2. Resumen de los cambios.
+3. Explicación de cómo funcionan las tarjetas.
+4. Explicación de cómo funciona el modal.
+5. Explicación de cómo funcionan los likes con `localStorage`.
+6. Cualquier posible conflicto encontrado.
+7. Instrucciones para probarlo localmente.
+8. El código completo de cada archivo modificado o un diff claro de los cambios.
+
+Antes de escribir código, revisa el proyecto completo y dime brevemente qué archivos necesitas modificar y por qué.
+
+No hagas una remodelación completa del sitio. El objetivo es agregar esta nueva función respetando el diseño y la estructura actual.

@@ -1,0 +1,128 @@
+/* SOUNDSCAPES - Tarjetas Spotify y Reproductor */
+
+/* Sección */
+.soundscapes-section { padding: 60px 40px 140px; background: #0b0b0b; }
+.soundscapes-header { margin-bottom: 30px; text-align: center; }
+.soundscapes-header h2 { color: #fff; font-size: 1.8rem; font-weight: 700; margin-bottom: 6px; font-family: 'Plus Jakarta Sans', sans-serif; }
+.soundscapes-header p { color: #a0a0a0; font-size: 0.95rem; font-weight: 400; }
+
+/* Grid */
+.soundscapes-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; max-width: 1200px; margin: 0 auto; }
+
+/* Tarjeta */
+.soundscapes-card { background: #121212; border-radius: 8px; overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; }
+.soundscapes-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+
+/* Imagen */
+.card-image-wrapper { position: relative; width: 100%; aspect-ratio: 1/1; overflow: hidden; }
+.card-image-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s; }
+.soundscapes-card:hover .card-image-wrapper img { transform: scale(1.05); }
+
+/* Botón play */
+.card-play-btn { position: absolute; bottom: 10px; right: 10px; width: 44px; height: 44px; border-radius: 50%; border: none; background: #fff; color: #000; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transform: translateY(8px); transition: opacity 0.3s, transform 0.3s, background 0.2s; box-shadow: 0 4px 14px rgba(0,0,0,0.4); }
+.card-play-btn i { margin-left: 2px; }
+.soundscapes-card:hover .card-play-btn { opacity: 1; transform: translateY(0); }
+.card-play-btn:hover { background: #1db954; color: #fff; }
+.card-play-btn.active { opacity: 1; transform: translateY(0); background: #1db954; color: #fff; }
+
+/* Info tarjeta */
+.card-info { padding: 12px 12px 16px; min-width: 0; }
+.card-title { color: #fff; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3; display: block; max-width: 100%; }
+.card-artist { color: #a0a0a0; font-size: 0.72rem; font-weight: 400; margin-bottom: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; max-width: 100%; }
+.card-playlist-tag { border: 1px solid #333; border-radius: 50px; padding: 6px 12px; text-align: center; line-height: 1.4; }
+.card-playlist-tag .tag-label { display: block; color: #888; font-size: 0.6rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+.card-playlist-tag .tag-name { display: block; color: #fff; font-size: 0.7rem; font-weight: 600; }
+
+/* Tarjeta activa */
+.soundscapes-card.active-card { box-shadow: 0 0 20px rgba(29, 185, 84, 0.4), 0 0 40px rgba(29, 185, 84, 0.2); border: 1px solid rgba(29, 185, 84, 0.5); }
+.soundscapes-card.active-card .card-image-wrapper::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(29, 185, 84, 0.1) 0%, transparent 50%); pointer-events: none; }
+
+/* Now Playing */
+.now-playing-indicator { position: absolute; top: 10px; left: 10px; background: rgba(29, 185, 84, 0.9); color: #000; padding: 4px 8px; border-radius: 4px; font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 4px; opacity: 0; transform: translateY(-5px); transition: opacity 0.3s, transform 0.3s; z-index: 10; }
+.soundscapes-card.active-card .now-playing-indicator { opacity: 1; transform: translateY(0); }
+.now-playing-waves { display: flex; gap: 2px; height: 12px; align-items: flex-end; }
+.now-playing-waves span { width: 2px; background: #000; border-radius: 1px; animation: wave 0.8s ease-in-out infinite; }
+.now-playing-waves span:nth-child(1) { height: 40%; animation-delay: 0s; }
+.now-playing-waves span:nth-child(2) { height: 70%; animation-delay: 0.1s; }
+.now-playing-waves span:nth-child(3) { height: 50%; animation-delay: 0.2s; }
+.now-playing-waves span:nth-child(4) { height: 90%; animation-delay: 0.3s; }
+@keyframes wave { 0%, 100% { height: 30%; } 50% { height: 100%; } }
+
+/* ===================== REPRODUCTOR ===================== */
+.player-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 72px; background: #181818; border-top: 1px solid #282828; display: flex; align-items: center; padding: 0 16px; z-index: 2000; font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; }
+
+/* Izquierda */
+.player-bar-left { display: flex; align-items: center; gap: 14px; min-width: 240px; width: 30%; }
+.player-thumb { width: 46px; height: 46px; border-radius: 4px; object-fit: cover; background: #282828; flex-shrink: 0; }
+.player-track-info { min-width: 0; transition: opacity 0.3s ease; }
+.player-track-info.fade-out { opacity: 0; }
+.player-track-name { color: #fff; font-size: 0.8rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
+.player-track-artist { color: #a0a0a0; font-size: 0.68rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
+.player-like { color: #a0a0a0; font-size: 0.85rem; cursor: pointer; transition: color 0.2s; flex-shrink: 0; margin-left: 10px; }
+.player-like:hover, .player-like.active { color: #1db954; }
+
+/* Centro */
+.player-bar-center { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0 20px; }
+.player-controls { display: flex; align-items: center; gap: 18px; }
+.player-controls button { background: none; border: none; color: #a0a0a0; font-size: 0.85rem; cursor: pointer; transition: color 0.2s; padding: 4px; display: flex; align-items: center; justify-content: center; }
+.player-controls button:hover { color: #fff; }
+.player-controls .play-main { width: 32px; height: 32px; border-radius: 50%; background: #fff; color: #000; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; }
+.player-controls .play-main:hover { transform: scale(1.06); }
+.player-controls .play-main i { margin-left: 1px; }
+.player-controls .ctrl-active { color: #1db954; }
+
+/* Progreso */
+.player-progress { display: flex; align-items: center; gap: 8px; width: 100%; max-width: 600px; }
+.player-progress .time { color: #a0a0a0; font-size: 0.65rem; min-width: 35px; font-variant-numeric: tabular-nums; }
+.player-progress .time.right { text-align: right; }
+.progress-bar-wrapper { flex: 1; height: 4px; background: #4d4d4d; border-radius: 2px; cursor: pointer; position: relative; }
+.progress-bar-wrapper:hover .progress-bar-fill { background: #1db954; }
+.progress-bar-wrapper:hover .progress-bar-dot { opacity: 1; }
+.progress-bar-fill { height: 100%; background: #fff; border-radius: 2px; width: 0%; transition: width 0.1s linear; position: relative; }
+.progress-bar-dot { position: absolute; right: -5px; top: 50%; transform: translateY(-50%); width: 10px; height: 10px; background: #fff; border-radius: 50%; opacity: 0; transition: opacity 0.2s; }
+
+/* Derecha */
+.player-bar-right { display: flex; align-items: center; gap: 14px; min-width: 240px; width: 30%; justify-content: flex-end; }
+.player-bar-right button { background: none; border: none; color: #a0a0a0; font-size: 0.85rem; cursor: pointer; transition: color 0.2s; padding: 4px; display: flex; align-items: center; justify-content: center; }
+.player-bar-right button:hover { color: #fff; }
+.player-bar-right .playlist-name { color: #a0a0a0; font-size: 0.68rem; white-space: nowrap; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
+
+/* Volumen */
+.volume-wrapper { display: flex; align-items: center; gap: 6px; }
+.volume-bar { width: 80px; height: 4px; background: #4d4d4d; border-radius: 2px; cursor: pointer; position: relative; }
+.volume-bar:hover .volume-fill { background: #1db954; }
+.volume-bar:hover .volume-dot { opacity: 1; }
+.volume-fill { height: 100%; background: #fff; border-radius: 2px; width: 70%; position: relative; }
+.volume-dot { position: absolute; right: -5px; top: 50%; transform: translateY(-50%); width: 10px; height: 10px; background: #fff; border-radius: 50%; opacity: 0; transition: opacity 0.2s; }
+
+/* Estado inactivo */
+.player-inactive .player-controls .play-main,
+.player-inactive .player-like,
+.player-inactive .player-bar-right button,
+.player-inactive .btn-spotify { opacity: 0.4; pointer-events: none; }
+.player-inactive .player-track-name { color: #666; }
+.player-inactive .player-track-artist { color: #555; }
+
+/* Botón Spotify */
+.btn-spotify { display: inline-flex; align-items: center; gap: 6px; background: #1db954; color: #000; padding: 7px 16px; border-radius: 50px; font-size: 0.7rem; font-weight: 700; text-decoration: none; white-space: nowrap; transition: background 0.2s, transform 0.2s; flex-shrink: 0; }
+.btn-spotify:hover { background: #1ed760; transform: scale(1.04); }
+.btn-spotify i { font-size: 1rem; }
+.btn-spotify.disabled { opacity: 0.3; pointer-events: none; cursor: not-allowed; }
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 1024px) {
+    .soundscapes-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 768px) {
+    .soundscapes-section { padding: 40px 16px 120px; }
+    .soundscapes-header h2 { font-size: 1.4rem; }
+    .soundscapes-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .player-bar-left { min-width: auto; width: auto; }
+    .player-track-info { display: none; }
+    .player-like { display: none; }
+    .player-bar-right .playlist-name { display: none; }
+    .btn-spotify span { display: none; }
+    .btn-spotify { padding: 8px; border-radius: 50%; }
+    .player-bar-center { padding: 0 8px; }
+    .player-bar-right { min-width: auto; width: auto; gap: 10px; }
+}
