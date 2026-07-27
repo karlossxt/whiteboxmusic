@@ -1,14 +1,9 @@
 /* STORIES DATA - Datos de las historias de la comunidad */
 
 /*
-    Los likes se almacenan en localStorage, son locales por navegador y no globales.
-    No se usa ningún backend (Firebase, Supabase, etc.) en esta primera versión.
-    Cada historia tiene un id único para persistir el estado de likes por navegador.
-
-    ADMIN: El panel de administración guarda las historias en localStorage bajo la clave
-    'wbox_stories_data'. Esta variable se carga primero desde localStorage y, si no
-    existe, se usa el array por defecto (fallback). El sitio público nunca modifica
-    localStorage para los datos de historias, solo para los likes.
+    Fuente de datos unificada: backstage_stories_data (panel oficial Backstage).
+    Fallback: wbox_stories_data (panel legado), luego datos predeterminados.
+    Los likes se almacenan en wbox_story_likes y son independientes del contenido.
 */
 
 var storiesDataDefault = [
@@ -75,15 +70,22 @@ var storiesDataDefault = [
 ];
 
 (function() {
-    var STORAGE_KEY = 'wbox_stories_data';
+    var BACKSTAGE_KEY = 'backstage_stories_data';
+    var LEGACY_KEY = 'wbox_stories_data';
+    var data = null;
     try {
-        var saved = localStorage.getItem(STORAGE_KEY);
+        var saved = localStorage.getItem(BACKSTAGE_KEY);
         if (saved) {
-            storiesData = JSON.parse(saved);
-        } else {
-            storiesData = storiesDataDefault;
+            data = JSON.parse(saved);
         }
-    } catch (e) {
-        storiesData = storiesDataDefault;
+    } catch (e) { data = null; }
+    if (!data || !data.length) {
+        try {
+            var legacy = localStorage.getItem(LEGACY_KEY);
+            if (legacy) {
+                data = JSON.parse(legacy);
+            }
+        } catch (e) { data = null; }
     }
+    storiesData = (data && data.length) ? data : storiesDataDefault;
 })();

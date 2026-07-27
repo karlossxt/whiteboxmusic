@@ -29,19 +29,11 @@
 
         /* ------------------------------------------
            2. MIGRATION
-           Lee datos legacy (wbox_*) si existen.
+           Migra datos legacy (wbox_*) a backstage_*.
+           La migración es idempotente y crea backup.
            ------------------------------------------ */
         local.migrateFromLegacy('stories_data', 'stories_data');
         local.migrateFromLegacy('soundscapes_data', 'soundscapes_data');
-
-        /* Force refresh soundscapes if data version changed */
-        var SS_VERSION_KEY = 'soundscapes_data_version';
-        var SS_CURRENT_VERSION = 2;
-        var storedVersion = local.get(SS_VERSION_KEY);
-        if (storedVersion !== SS_CURRENT_VERSION) {
-            local.remove('soundscapes_data');
-            local.set(SS_VERSION_KEY, SS_CURRENT_VERSION);
-        }
 
         /* ------------------------------------------
            3. REPOSITORIES
@@ -53,8 +45,8 @@
         if (typeof storiesDataDefault !== 'undefined') {
             storyRepo.migrateFromDefaults(storiesDataDefault);
         }
-        if (typeof soundscapesData !== 'undefined') {
-            soundscapeRepo.migrateFromDefaults(soundscapesData);
+        if (typeof soundscapesDataDefault !== 'undefined') {
+            soundscapeRepo.migrateFromDefaults(soundscapesDataDefault);
         }
 
         /* ------------------------------------------

@@ -7,7 +7,6 @@
     window.Backstage = window.Backstage || {};
 
     var STORAGE_KEY = 'stories_data';
-    var LEGACY_KEY = 'stories_data';
 
     function StoryRepository(datasource) {
         window.Backstage.BaseRepository.call(this, STORAGE_KEY, datasource, window.Backstage.Story);

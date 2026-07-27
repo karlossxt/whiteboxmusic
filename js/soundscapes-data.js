@@ -1,6 +1,6 @@
 /* SOUNDSCAPES DATA - Latest Soundscapes - WhiteBox Music */
 
-var soundscapesData = [
+var soundscapesDataDefault = [
     {
         id: "cobra-geese",
         title: "Cobra",
@@ -57,3 +57,20 @@ var soundscapesData = [
         order: 5
     }
 ];
+
+(function() {
+    var BACKSTAGE_KEY = 'backstage_soundscapes_data';
+    var LEGACY_KEY = 'wbox_soundscapes_data';
+    var data = null;
+    try {
+        var saved = localStorage.getItem(BACKSTAGE_KEY);
+        if (saved) { data = JSON.parse(saved); }
+    } catch (e) { data = null; }
+    if (!data || !data.length) {
+        try {
+            var legacy = localStorage.getItem(LEGACY_KEY);
+            if (legacy) { data = JSON.parse(legacy); }
+        } catch (e) { data = null; }
+    }
+    soundscapesData = (data && data.length) ? data : soundscapesDataDefault;
+})();

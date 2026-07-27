@@ -1031,7 +1031,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 
-            var storiesData = [
+            var storiesDataDefault = [
                 {
                     id: 'story-1',
                     image: 'Blackpint2.jpg',
@@ -1081,6 +1081,32 @@
                     initialLikes: 102
                 }
             ];
+
+            var storiesData = (function() {
+                var BACKSTAGE_KEY = 'backstage_stories_data';
+                var data = null;
+                try {
+                    var saved = localStorage.getItem(BACKSTAGE_KEY);
+                    if (saved) { data = JSON.parse(saved); }
+                } catch (e) { data = null; }
+                if (data && data.length) {
+                    return data.map(function(s) {
+                        return {
+                            id: s.id,
+                            image: s.image || '',
+                            category: s.location || '',
+                            title: s.title || '',
+                            author: s.author || '',
+                            excerpt: s.excerpt || '',
+                            fullStory: s.content || '',
+                            song: s.relatedSong || '',
+                            date: s.date || '',
+                            initialLikes: s.initialLikes || 0
+                        };
+                    });
+                }
+                return storiesDataDefault;
+            })();
 
             var STORAGE_KEY = 'wbox_story_likes';
             var INITIAL_STORIES = 3;
