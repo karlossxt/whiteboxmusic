@@ -1,12 +1,7 @@
 /* ============================================
    BACKSTAGE STUDIO — Datasource Registry
    Selecciona y expone el datasource activo.
-   
-   Para cambiar a Firestore en el futuro:
-   1. Crear datasources/firestore/firestore-datasource.js
-   2. Importarlo y configurarlo aquí
-   3. Cambiar this.active = firestoreDatasource
-   Ningún otro archivo se modifica.
+   Soporta 'local' (localStorage) y 'firestore'.
    ============================================ */
 
 (function() {
@@ -27,6 +22,19 @@
         }
     };
 
+    DatasourceRegistry.prototype.getActiveType = function() {
+        return this.active ? this.active.type : 'none';
+    };
+
+    DatasourceRegistry.prototype.isFirestore = function() {
+        return this.getActiveType() === 'firestore';
+    };
+
+    DatasourceRegistry.prototype.isLocal = function() {
+        return this.getActiveType() === 'local';
+    };
+
+    /* Synchronous interface (works with local datasource) */
     DatasourceRegistry.prototype.get = function(key) {
         return this.active.get(key);
     };
@@ -43,8 +51,37 @@
         return this.active.getWithDefault(key, defaultData);
     };
 
-    DatasourceRegistry.prototype.getActiveType = function() {
-        return this.active ? this.active.type : 'none';
+    /* Async interface (works with both, wraps local in Promise) */
+    DatasourceRegistry.prototype.getAsync = function(key) {
+        var result = this.active.get(key);
+        if (result && typeof result.then === 'function') {
+            return result;
+        }
+        return Promise.resolve(result);
+    };
+
+    DatasourceRegistry.prototype.setAsync = function(key, value) {
+        var result = this.active.set(key, value);
+        if (result && typeof result.then === 'function') {
+            return result;
+        }
+        return Promise.resolve(result);
+    };
+
+    DatasourceRegistry.prototype.removeAsync = function(key) {
+        var result = this.active.remove(key);
+        if (result && typeof result.then === 'function') {
+            return result;
+        }
+        return Promise.resolve(result);
+    };
+
+    DatasourceRegistry.prototype.getWithDefaultAsync = function(key, defaultData) {
+        var result = this.active.getWithDefault(key, defaultData);
+        if (result && typeof result.then === 'function') {
+            return result;
+        }
+        return Promise.resolve(result);
     };
 
     window.Backstage.DatasourceRegistry = DatasourceRegistry;

@@ -1,7 +1,8 @@
 /* ============================================
    BACKSTAGE STUDIO — Story Controller
    Conecta StoryService con StoryView.
-   Maneja CRUD, formularios, busqueda, filtros, vista previa.
+   CRUD asíncrono: espera confirmación de Firestore
+   antes de cerrar modal o mostrar toast de éxito.
    ============================================ */
 
 (function() {
@@ -30,6 +31,7 @@
         this._bindForm();
         this._bindEvents();
         this._bindGlobalKeys();
+        this._bindImportAction();
     };
 
     StoryController.prototype.unmount = function() {
@@ -96,20 +98,26 @@
             preview: function(id) { self._openPreview(id); },
             edit: function(id) { self._openEditModal(id); },
             toggleFeatured: function(id) {
-                self.service.toggleFeatured(id);
-                self._renderAll();
-                window.Backstage.EventBus.emit('dashboard:refresh');
-                Toast.show('Destacado actualizado', 'success');
-            },
-            duplicate: function(id) {
-                var result = self.service.duplicate(id);
-                if (result.success) {
+                self.service.toggleFeatured(id).then(function() {
                     self._renderAll();
                     window.Backstage.EventBus.emit('dashboard:refresh');
-                    Toast.show('Historia duplicada', 'success');
-                } else {
-                    Toast.show(result.errors[0] || 'Error al duplicar', 'error');
-                }
+                    Toast.show('Destacado actualizado', 'success');
+                }).catch(function(err) {
+                    Toast.show('Error al actualizar destacado: ' + (err.message || 'Error desconocido'), 'error');
+                });
+            },
+            duplicate: function(id) {
+                self.service.duplicate(id).then(function(result) {
+                    if (result.success) {
+                        self._renderAll();
+                        window.Backstage.EventBus.emit('dashboard:refresh');
+                        Toast.show('Historia duplicada', 'success');
+                    } else {
+                        Toast.show(result.errors[0] || 'Error al duplicar', 'error');
+                    }
+                }).catch(function(err) {
+                    Toast.show('Error al duplicar: ' + (err.message || 'Error desconocido'), 'error');
+                });
             },
             remove: function(id, title) { self._openConfirm(id, title); }
         };
@@ -234,6 +242,92 @@
         }
     };
 
+    StoryController.prototype._bindImportAction = function() {
+        var ds = window.Backstage.storyDatasourceRegistry;
+        if (!ds || !ds.isFirestore()) return;
+
+        var repo = this.service.repository;
+        if (!repo.importLocalStories) return;
+
+        var bannerEl = document.getElementById('migrationBanner');
+        if (!bannerEl) return;
+
+        var hasLocal = false;
+        try {
+            var raw = localStorage.getItem('backstage_stories_data');
+            if (raw) {
+                var data = JSON.parse(raw);
+                if (data && data.length > 0) hasLocal = true;
+            }
+        } catch (e) {}
+
+        if (!hasLocal) {
+            try {
+                var legacyRaw = localStorage.getItem('wbox_stories_data');
+                if (legacyRaw) {
+                    var legacyData = JSON.parse(legacyRaw);
+                    if (legacyData && legacyData.length > 0) hasLocal = true;
+                }
+            } catch (e) {}
+        }
+
+        if (!hasLocal) {
+            bannerEl.style.display = 'none';
+            return;
+        }
+
+        var self = this;
+        bannerEl.style.display = '';
+        var importBtn = document.getElementById('migrationImportBtn');
+        var importCount = document.getElementById('migrationCount');
+        var countLocal = 0;
+        try {
+            var raw2 = localStorage.getItem('backstage_stories_data') || localStorage.getItem('wbox_stories_data');
+            if (raw2) {
+                var arr = JSON.parse(raw2);
+                if (arr) countLocal = arr.length;
+            }
+        } catch (e) {}
+
+        if (importCount && countLocal > 0) {
+            importCount.textContent = countLocal + ' historias encontradas en localStorage.';
+        }
+
+        if (importBtn) {
+            importBtn.addEventListener('click', function() {
+                Confirm.show(
+                    'Importar historias locales',
+                    'Se subiran ' + countLocal + ' historias a Firestore. Esta accion no se puede deshacer.',
+                    function() {
+                        importBtn.disabled = true;
+                        importBtn.textContent = 'Importando...';
+                        repo.importLocalStories().then(function(result) {
+                            if (result.success === false) {
+                                Toast.show(result.message, 'error');
+                                if (result.blocked) {
+                                    importBtn.textContent = 'Importacion no disponible';
+                                    importBtn.disabled = true;
+                                } else {
+                                    importBtn.disabled = false;
+                                    importBtn.textContent = 'Importar historias locales';
+                                }
+                                return;
+                            }
+                            Toast.show(result.message, 'success');
+                            self._renderAll();
+                            window.Backstage.EventBus.emit('dashboard:refresh');
+                            bannerEl.style.display = 'none';
+                        }).catch(function(err) {
+                            Toast.show('Error al importar: ' + (err.message || 'Error de Firestore'), 'error');
+                            importBtn.disabled = false;
+                            importBtn.textContent = 'Importar historias locales';
+                        });
+                    }
+                );
+            });
+        }
+    };
+
     StoryController.prototype._openAddModal = function() {
         document.getElementById('modalTitle').textContent = 'Nueva Historia';
         document.getElementById('storyForm').reset();
@@ -287,10 +381,13 @@
             : 'Esta accion no se puede deshacer.';
 
         Confirm.show('Eliminar historia', text, function() {
-            self.service.remove(id);
-            self._renderAll();
-            window.Backstage.EventBus.emit('dashboard:refresh');
-            Toast.show('Historia eliminada', 'success');
+            self.service.remove(id).then(function() {
+                self._renderAll();
+                window.Backstage.EventBus.emit('dashboard:refresh');
+                Toast.show('Historia eliminada', 'success');
+            }).catch(function(err) {
+                Toast.show('Error al eliminar: ' + (err.message || 'Error de Firestore'), 'error');
+            });
         });
     };
 
@@ -405,32 +502,38 @@
 
         var self = this;
         var existingId = document.getElementById('formId').value;
-        var result;
+        var promise;
 
         if (existingId) {
-            result = this.service.update(existingId, data);
+            promise = this.service.update(existingId, data);
         } else {
-            result = this.service.create(data);
+            promise = this.service.create(data);
         }
 
-        this._saving = false;
-        this._setButtonsDisabled(false);
+        promise.then(function(result) {
+            self._saving = false;
+            self._setButtonsDisabled(false);
 
-        if (result.success) {
-            this._formDirty = false;
-            Toast.show(existingId ? 'Historia actualizada' : (isPublish ? 'Historia publicada' : 'Borrador guardado'), 'success');
-            this._renderAll();
-            window.Backstage.EventBus.emit('dashboard:refresh');
-            Modal.closeAll();
-        } else {
-            if (result.errors && result.errors.length) {
-                if (typeof result.errors[0] === 'object') {
-                    this._showFieldErrors(result.errors);
-                } else {
-                    Toast.show(result.errors.join('. '), 'error');
+            if (result.success) {
+                self._formDirty = false;
+                Toast.show(existingId ? 'Historia actualizada' : (isPublish ? 'Historia publicada' : 'Borrador guardado'), 'success');
+                self._renderAll();
+                window.Backstage.EventBus.emit('dashboard:refresh');
+                Modal.closeAll();
+            } else {
+                if (result.errors && result.errors.length) {
+                    if (typeof result.errors[0] === 'object') {
+                        self._showFieldErrors(result.errors);
+                    } else {
+                        Toast.show(result.errors.join('. '), 'error');
+                    }
                 }
             }
-        }
+        }).catch(function(err) {
+            self._saving = false;
+            self._setButtonsDisabled(false);
+            Toast.show('Error al guardar: ' + (err.message || 'Error de Firestore'), 'error');
+        });
     };
 
     StoryController.prototype._showFieldErrors = function(errors) {

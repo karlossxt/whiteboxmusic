@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — Backstage Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-card">
+            <div class="login-logo">
+                <img src="../logo.png" alt="WhiteBox Music" onerror="this.style.display='none'">
+            </div>
+            <h1 class="login-title">Backstage Studio</h1>
+            <p class="login-subtitle">Inicia sesión para continuar</p>
+
+            <form id="loginForm" novalidate>
+                <div class="login-field">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required placeholder="admin@whitebox.music" autocomplete="email">
+                </div>
+                <div class="login-field">
+                    <label for="loginPassword">Contraseña</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••" autocomplete="current-password">
+                </div>
+                <div class="login-error" id="loginError" style="display:none;"></div>
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <span class="login-btn-text">Entrar</span>
+                    <span class="login-btn-spinner" style="display:none;">
+                        <span class="login-spinner-ring"></span>
+                    </span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script>
+    (function() {
+        var form = document.getElementById('loginForm');
+        var emailInput = document.getElementById('loginEmail');
+        var passwordInput = document.getElementById('loginPassword');
+        var errorEl = document.getElementById('loginError');
+        var btnText = document.querySelector('.login-btn-text');
+        var btnSpinner = document.querySelector('.login-btn-spinner');
+        var loginBtn = document.getElementById('loginBtn');
+
+        var auth = window.WhiteBoxFirebase.auth;
+
+        function setLoading(loading) {
+            if (loading) {
+                loginBtn.disabled = true;
+                btnText.style.display = 'none';
+                btnSpinner.style.display = '';
+            } else {
+                loginBtn.disabled = false;
+                btnText.style.display = '';
+                btnSpinner.style.display = 'none';
+            }
+        }
+
+        function showError(msg) {
+            errorEl.textContent = msg;
+            errorEl.style.display = 'block';
+        }
+
+        function hideError() {
+            errorEl.style.display = 'none';
+        }
+
+        auth.onAuthStateChanged(function(user) {
+            if (user) {
+                if (user.uid === 'qtguil5JI0ejOeJ0fpiXrxTJvIq2') {
+                    window.location.href = 'index.html';
+                } else {
+                    auth.signOut();
+                    showError('Acceso no autorizado.');
+                }
+            }
+        });
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            hideError();
+
+            var email = (emailInput.value || '').trim();
+            var password = passwordInput.value;
+
+            if (!email || !password) {
+                showError('Completa todos los campos.');
+                return;
+            }
+
+            setLoading(true);
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then(function(cred) {
+                    if (cred.user.uid !== 'qtguil5JI0ejOeJ0fpiXrxTJvIq2') {
+                        auth.signOut();
+                        showError('Acceso no autorizado.');
+                        setLoading(false);
+                        return;
+                    }
+                    window.location.href = 'index.html';
+                })
+                .catch(function(err) {
+                    setLoading(false);
+                    if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+                        showError('Email o contraseña incorrectos.');
+                    } else if (err.code === 'auth/too-many-requests') {
+                        showError('Demasiados intentos. Espera un momento.');
+                    } else {
+                        showError('Error al iniciar sesión. Intenta de nuevo.');
+                    }
+                });
+        });
+    })();
+    </script>
+</body>
+</html>

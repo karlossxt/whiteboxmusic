@@ -747,6 +747,32 @@ a { color: inherit; text-decoration: none; }
     object-fit: cover;
 }
 
+.form-image-preview {
+    position: relative;
+}
+
+.ss-cover-remove {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.7);
+    border: none;
+    color: #fff;
+    font-size: 11px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.ss-cover-remove:hover {
+    background: var(--red);
+}
+
 /* ===================== FILTER BAR ===================== */
 .filter-bar-container {
     margin-bottom: 24px;
@@ -1008,4 +1034,163 @@ a { color: inherit; text-decoration: none; }
     .preview-card-image {
         height: 160px;
     }
+}
+
+/* ===================== LOADING SCREEN ===================== */
+.admin-loading {
+    position: fixed;
+    inset: 0;
+    background: var(--bg-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.admin-loading-spinner {
+    text-align: center;
+}
+
+.admin-loading-logo img {
+    height: 48px;
+    margin-bottom: 16px;
+}
+
+.admin-loading-spinner p {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+/* ===================== USER INFO ===================== */
+.admin-user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-user-email {
+    font-size: 13px;
+    color: var(--text-secondary);
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.btn-sm {
+    padding: 6px 10px;
+    font-size: 13px;
+}
+
+/* ===================== MIGRATION BANNER ===================== */
+.migration-banner {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.migration-banner-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.migration-banner-text strong {
+    color: var(--text-primary);
+}
+
+.migration-banner .btn-primary {
+    white-space: nowrap;
+}
+
+/* ===================== PRELOAD ERROR SCREEN (Blocker #8) ===================== */
+.admin-preload-error {
+    position: fixed;
+    inset: 0;
+    background: var(--bg-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.preload-error-inner {
+    text-align: center;
+    max-width: 400px;
+    padding: 40px 20px;
+}
+
+.preload-error-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--red-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+
+.preload-error-icon i {
+    font-size: 1.6rem;
+    color: var(--red);
+}
+
+.preload-error-title {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+}
+
+.preload-error-msg {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 28px;
+    line-height: 1.6;
+}
+
+.preload-error-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.preload-error-spinner-ring {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--border-light);
+    border-top-color: var(--pink);
+    border-radius: 50%;
+    animation: preload-spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+}
+
+@keyframes preload-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ===================== LOCAL MODE BANNER ===================== */
+.local-mode-banner {
+    background: rgba(241,196,15,0.08);
+    border: 1px solid rgba(241,196,15,0.25);
+    border-radius: var(--radius);
+    padding: 10px 16px;
+    margin: 16px 40px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.8rem;
+    color: var(--yellow);
+}
+
+.local-mode-banner i {
+    font-size: 0.9rem;
+    flex-shrink: 0;
 }

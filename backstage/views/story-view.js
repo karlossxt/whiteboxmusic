@@ -378,7 +378,12 @@
 
         _ensureStructure: function() {
             if (this._statsContainer) return;
+
+            var migrationBanner = document.getElementById('migrationBanner');
             this._section.textContent = '';
+            if (migrationBanner) {
+                this._section.appendChild(migrationBanner);
+            }
 
             this._statsContainer = document.createElement('div');
             this._section.appendChild(this._statsContainer);

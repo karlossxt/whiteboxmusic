@@ -89,3 +89,54 @@ var storiesDataDefault = [
     }
     storiesData = (data && data.length) ? data : storiesDataDefault;
 })();
+
+/* Async loader: tries Firestore first, falls back to localStorage/default */
+window.WhiteBoxStories = window.WhiteBoxStories || {};
+window.WhiteBoxStories.lastSource = null;
+window.WhiteBoxStories.lastError = null;
+
+window.WhiteBoxStories.loadPublished = function() {
+    var wbf = window.WhiteBoxFirebase;
+    if (wbf && wbf.db) {
+        return wbf.db.collection('stories')
+            .where('status', '==', 'published')
+            .get()
+            .then(function(snapshot) {
+                var items = [];
+                snapshot.forEach(function(doc) {
+                    var d = doc.data();
+                    d.id = doc.id;
+                    items.push(d);
+                });
+
+                window.WhiteBoxStories.lastError = null;
+
+                if (items.length > 0) {
+                    window.WhiteBoxStories.lastSource = 'firestore';
+                    return items.sort(function(a, b) {
+                        return (a.order || 999) - (b.order || 999);
+                    });
+                }
+
+                window.WhiteBoxStories.lastSource = 'fallback';
+                window.WhiteBoxStories.lastError = null;
+                return storiesData
+                    .filter(function(s) { return s.status === 'published'; })
+                    .sort(function(a, b) { return (a.order || 999) - (b.order || 999); });
+            })
+            .catch(function(err) {
+                window.WhiteBoxStories.lastSource = 'fallback';
+                window.WhiteBoxStories.lastError = err && err.message ? err.message : 'Error de Firestore';
+                return storiesData
+                    .filter(function(s) { return s.status === 'published'; })
+                    .sort(function(a, b) { return (a.order || 999) - (b.order || 999); });
+            });
+    }
+    window.WhiteBoxStories.lastSource = 'local';
+    window.WhiteBoxStories.lastError = null;
+    return Promise.resolve(
+        storiesData
+            .filter(function(s) { return s.status === 'published'; })
+            .sort(function(a, b) { return (a.order || 999) - (b.order || 999); })
+    );
+};

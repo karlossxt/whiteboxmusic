@@ -87,6 +87,68 @@
         document.getElementById('soundscapeModal').addEventListener('click', function(e) {
             if (e.target === document.getElementById('soundscapeModal')) Modal.closeAll();
         });
+
+        var fileInput = document.getElementById('ssFormCoverFile');
+        var removeBtn = document.getElementById('ssCoverRemove');
+        if (fileInput) {
+            fileInput.addEventListener('change', function() {
+                self._handleCoverFile(fileInput.files);
+            });
+        }
+        if (removeBtn) {
+            removeBtn.addEventListener('click', function() {
+                self._clearCoverFile();
+            });
+        }
+    };
+
+    SoundscapeController.prototype._handleCoverFile = function(files) {
+        if (!files || !files.length) return;
+        var file = files[0];
+        if (!file.type.startsWith('image/')) {
+            Toast.show('Selecciona un archivo de imagen', 'error');
+            return;
+        }
+        var self = this;
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            self._compressImage(e.target.result, 400, 0.7, function(compressed) {
+                document.getElementById('ssFormCover').value = compressed;
+                var preview = document.getElementById('ssCoverPreview');
+                var previewImg = document.getElementById('ssCoverPreviewImg');
+                if (preview && previewImg) {
+                    previewImg.src = compressed;
+                    preview.style.display = '';
+                }
+            });
+        };
+        reader.readAsDataURL(file);
+    };
+
+    SoundscapeController.prototype._compressImage = function(dataUrl, maxSize, quality, callback) {
+        var img = new Image();
+        img.onload = function() {
+            var w = img.width;
+            var h = img.height;
+            if (w > maxSize || h > maxSize) {
+                if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+                else { w = Math.round(w * maxSize / h); h = maxSize; }
+            }
+            var canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            callback(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.src = dataUrl;
+    };
+
+    SoundscapeController.prototype._clearCoverFile = function() {
+        var fileInput = document.getElementById('ssFormCoverFile');
+        var preview = document.getElementById('ssCoverPreview');
+        if (fileInput) fileInput.value = '';
+        if (preview) preview.style.display = 'none';
+        document.getElementById('ssFormCover').value = '';
     };
 
     SoundscapeController.prototype._bindEvents = function() {
@@ -105,6 +167,10 @@
         document.getElementById('ssFormDuration').value = '180';
         document.getElementById('ssFormPublished').value = 'true';
         document.getElementById('ssFormOrder').value = String(this.service.getMaxOrder() + 1);
+        var preview = document.getElementById('ssCoverPreview');
+        if (preview) preview.style.display = 'none';
+        var fileInput = document.getElementById('ssFormCoverFile');
+        if (fileInput) fileInput.value = '';
         Modal.open(document.getElementById('soundscapeModal'));
     };
 
@@ -122,6 +188,18 @@
         document.getElementById('ssFormDuration').value = String(item.duration || 180);
         document.getElementById('ssFormOrder').value = String(item.order || 1);
         document.getElementById('ssFormPublished').value = item.published ? 'true' : 'false';
+
+        var preview = document.getElementById('ssCoverPreview');
+        var previewImg = document.getElementById('ssCoverPreviewImg');
+        var fileInput = document.getElementById('ssFormCoverFile');
+        if (fileInput) fileInput.value = '';
+        if (preview && previewImg && item.cover) {
+            previewImg.src = item.cover;
+            preview.style.display = '';
+        } else if (preview) {
+            preview.style.display = 'none';
+        }
+
         Modal.open(document.getElementById('soundscapeModal'));
     };
 

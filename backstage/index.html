@@ -10,7 +10,35 @@
     <link rel="stylesheet" href="css/backstage.css">
 </head>
 <body>
-    <div class="admin-layout">
+    <!-- Loading Screen -->
+    <div class="admin-loading" id="adminLoading">
+        <div class="admin-loading-spinner">
+            <div class="admin-loading-logo">
+                <img src="../logo.png" alt="WhiteBox Music">
+            </div>
+            <p>Cargando Backstage Studio...</p>
+        </div>
+    </div>
+
+    <!-- Preload Error Screen (Blocker #8) -->
+    <div class="admin-preload-error" id="adminPreloadError" style="display:none;">
+        <div class="preload-error-inner">
+            <div class="preload-error-spinner" style="display:none;">
+                <div class="preload-error-spinner-ring"></div>
+            </div>
+            <div class="preload-error-icon">
+                <i class="fa-solid fa-cloud-bolt"></i>
+            </div>
+            <h2 class="preload-error-title">Sin conexion a Firestore</h2>
+            <p class="preload-error-msg">No se pudo conectar a Firestore. Verifica tu conexion e intenta de nuevo.</p>
+            <div class="preload-error-actions">
+                <button class="btn-primary" id="preloadRetryBtn">Reintentar</button>
+                <button class="btn-secondary" id="preloadLocalBtn">Continuar en modo local</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-layout" style="display:none;" id="adminLayout">
         <aside class="admin-sidebar">
             <div class="admin-logo">
                 <a href="../index.html"><img src="../logo.png" alt="WhiteBox Music"></a>
@@ -37,7 +65,7 @@
             </nav>
             <div class="admin-sidebar-footer">
                 Backstage Studio
-                <span>v0.1 Alpha</span>
+                <span>v0.3A</span>
                 <span>Built for WhiteBox Music</span>
             </div>
         </aside>
@@ -48,11 +76,29 @@
                     <h1>Dashboard</h1>
                     <p class="admin-subtitle">Vista general del sitio</p>
                 </div>
-                <div class="admin-header-right"></div>
+                <div class="admin-header-right">
+                    <div class="admin-user-info" id="adminUserInfo">
+                        <span class="admin-user-email" id="adminUserEmail"></span>
+                        <button class="btn-secondary btn-sm" id="adminLogoutBtn" title="Cerrar sesion">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </button>
+                    </div>
+                </div>
             </header>
 
+            <div class="local-mode-banner" id="localModeBanner" style="display:none;">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>Modo local activo — Los cambios no se sincronizan con Firestore.</span>
+            </div>
             <section class="admin-section" id="section-dashboard"></section>
-            <section class="admin-section" id="section-stories" style="display:none;"></section>
+            <section class="admin-section" id="section-stories" style="display:none;">
+                <div class="migration-banner" id="migrationBanner" style="display:none;">
+                    <div class="migration-banner-text">
+                        <strong>Hay historias en localStorage.</strong> Importalas a Firestore para sincronizar con el sitio publico.
+                    </div>
+                    <button class="btn-primary" id="migrationImportBtn">Importar historias locales</button>
+                </div>
+            </section>
             <section class="admin-section" id="section-soundscapes" style="display:none;"></section>
         </main>
     </div>
@@ -188,8 +234,19 @@
                         <label for="ssFormPlaylist">Playlist</label>
                         <input type="text" id="ssFormPlaylist" placeholder="Ej: World Tour, Sound On">
                     </div>
-                    <div class="form-group">
-                        <label for="ssFormCover">URL de portada</label>
+                    <div class="form-group full-width">
+                        <label for="ssFormCoverFile">Caratula del album</label>
+                        <input type="file" id="ssFormCoverFile" accept="image/*">
+                        <span class="form-hint">Sube una imagen (max 400x400). Se comprimira automaticamente.</span>
+                        <div class="form-image-preview" id="ssCoverPreview" style="display:none;">
+                            <img id="ssCoverPreviewImg" src="" alt="Vista previa de caratula">
+                            <button type="button" class="ss-cover-remove" id="ssCoverRemove" title="Quitar imagen">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="ssFormCover">O ingresa una URL de portada</label>
                         <input type="url" id="ssFormCover" placeholder="https://...">
                     </div>
                     <div class="form-group">
@@ -240,6 +297,15 @@
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
 
+    <!-- Firebase SDK (compat) -->
+    <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
+    <script src="../js/firebase-config.js"></script>
+
+    <!-- Auth Guard (checks session before loading) -->
+    <script src="auth/auth-guard.js"></script>
+
     <!-- Legacy data (read-only, used for first-run migration) -->
     <script src="../js/stories-data.js"></script>
     <script src="../js/soundscapes-data.js"></script>
@@ -254,11 +320,13 @@
 
     <!-- Datasources -->
     <script src="datasources/local/local-datasource.js"></script>
+    <script src="datasources/firestore/firestore-datasource.js"></script>
     <script src="datasources/datasource-registry.js"></script>
 
     <!-- Repositories -->
     <script src="repositories/base-repository.js"></script>
     <script src="repositories/story-repository.js"></script>
+    <script src="repositories/firestore-story-repository.js"></script>
     <script src="repositories/soundscape-repository.js"></script>
 
     <!-- Services -->

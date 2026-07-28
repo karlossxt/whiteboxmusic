@@ -21,8 +21,14 @@ document.addEventListener('DOMContentLoaded', function() {
     var modalDate = document.getElementById('storiesModalDate');
     var previousFocus = null;
     var currentStoryId = null;
+    var loadedStories = [];
+
+    var storiesSeeMore = document.getElementById('storiesSeeMore');
+    var MAX_INDEX_STORIES = 3;
 
     var FOCUSABLE_SELECTORS = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+    var FALLBACK_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="680" height="340" fill="%231a1a1a"%3E%3Crect width="680" height="340"/%3E%3Ctext x="50%25" y="50%25" fill="%23444" font-size="16" text-anchor="middle" dy=".3em"%3ESin imagen%3C/text%3E%3C/svg%3E';
 
     function safeImageUrl(url) {
         if (!url || typeof url !== 'string') return '';
@@ -35,14 +41,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function getPublishedStories() {
-        var isIndex = !!document.getElementById('storiesSection');
+        if (window.WhiteBoxStories && window.WhiteBoxStories.loadPublished) {
+            return window.WhiteBoxStories.loadPublished();
+        }
         var stories = storiesData
             .filter(function(s) { return s.status === 'published'; })
-            .sort(function(a, b) { return a.order - b.order; });
-        if (isIndex) {
-            stories = stories.slice(0, 3);
+            .sort(function(a, b) { return (a.order || 999) - (b.order || 999); });
+        return Promise.resolve(stories);
+    }
+
+    function showFallbackBanner() {
+        var wbs = window.WhiteBoxStories;
+        var banner = document.getElementById('storiesFallbackBanner');
+        if (!banner) return;
+        if (wbs && wbs.lastSource === 'fallback') {
+            banner.style.display = '';
+        } else {
+            banner.style.display = 'none';
         }
-        return stories;
     }
 
     function getLikes() {
@@ -72,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function getLikeCount(story) {
-        var base = story.initialLikes;
+        var base = Number(story.initialLikes) || 0;
         if (isLiked(story.id)) {
             return base + 1;
         }
@@ -80,91 +96,109 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderCards() {
-        var published = getPublishedStories();
-        storiesGrid.textContent = '';
-        published.forEach(function(story) {
-            var liked = isLiked(story.id);
-            var count = getLikeCount(story);
+        getPublishedStories().then(function(published) {
+            loadedStories = published;
+            var isIndex = !!document.getElementById('storiesSection');
+            var storiesToShow = isIndex ? published.slice(0, MAX_INDEX_STORIES) : published;
 
-            var card = document.createElement('article');
-            card.className = 'story-card';
-            card.setAttribute('data-story-id', story.id);
+            showFallbackBanner();
 
-            var imageDiv = document.createElement('div');
-            imageDiv.className = 'story-card-image';
+            storiesGrid.textContent = '';
+            storiesToShow.forEach(function(story) {
+                var liked = isLiked(story.id);
+                var count = getLikeCount(story);
 
-            var img = document.createElement('img');
-            img.src = story.image;
-            img.alt = story.title;
-            img.loading = 'lazy';
-            img.onerror = function() {
-                img.onerror = null;
-                img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="680" height="340" fill="%231a1a1a"%3E%3Crect width="680" height="340"/%3E%3Ctext x="50%25" y="50%25" fill="%23444" font-size="16" text-anchor="middle" dy=".3em"%3ESin imagen%3C/text%3E%3C/svg%3E';
-            };
-            imageDiv.appendChild(img);
+                var card = document.createElement('article');
+                card.className = 'story-card';
+                card.setAttribute('tabindex', '0');
+                card.setAttribute('role', 'button');
+                card.setAttribute('aria-label', 'Leer historia: ' + story.title);
+                card.setAttribute('data-story-id', story.id);
 
-            var categorySpan = document.createElement('span');
-            categorySpan.className = 'story-card-category';
-            categorySpan.textContent = story.category || story.location;
-            imageDiv.appendChild(categorySpan);
+                var imageDiv = document.createElement('div');
+                imageDiv.className = 'story-card-image';
 
-            var bodyDiv = document.createElement('div');
-            bodyDiv.className = 'story-card-body';
+                var img = document.createElement('img');
+                img.src = safeImageUrl(story.image) || FALLBACK_IMAGE;
+                img.alt = story.title;
+                img.loading = 'lazy';
+                img.onerror = function() {
+                    img.onerror = null;
+                    img.src = FALLBACK_IMAGE;
+                };
+                imageDiv.appendChild(img);
 
-            var titleH3 = document.createElement('h3');
-            titleH3.className = 'story-card-title';
-            titleH3.textContent = story.title;
-            bodyDiv.appendChild(titleH3);
+                var categorySpan = document.createElement('span');
+                categorySpan.className = 'story-card-category';
+                categorySpan.textContent = story.category || story.location;
+                imageDiv.appendChild(categorySpan);
 
-            var excerptP = document.createElement('p');
-            excerptP.className = 'story-card-excerpt';
-            excerptP.textContent = story.excerpt;
-            bodyDiv.appendChild(excerptP);
+                var bodyDiv = document.createElement('div');
+                bodyDiv.className = 'story-card-body';
 
-            var footerDiv = document.createElement('div');
-            footerDiv.className = 'story-card-footer';
+                var titleH3 = document.createElement('h3');
+                titleH3.className = 'story-card-title';
+                titleH3.textContent = story.title;
+                bodyDiv.appendChild(titleH3);
 
-            var authorSpan = document.createElement('span');
-            authorSpan.className = 'story-card-author';
-            var byText = document.createTextNode('by ');
-            authorSpan.appendChild(byText);
-            var strongAuthor = document.createElement('strong');
-            strongAuthor.textContent = story.author;
-            authorSpan.appendChild(strongAuthor);
-            footerDiv.appendChild(authorSpan);
+                var excerptP = document.createElement('p');
+                excerptP.className = 'story-card-excerpt';
+                excerptP.textContent = story.excerpt;
+                bodyDiv.appendChild(excerptP);
 
-            var actionsDiv = document.createElement('div');
-            actionsDiv.className = 'story-card-actions';
+                var footerDiv = document.createElement('div');
+                footerDiv.className = 'story-card-footer';
 
-            var likeBtn = document.createElement('button');
-            likeBtn.className = 'story-like-btn' + (liked ? ' liked' : '');
-            likeBtn.setAttribute('data-story-id', story.id);
-            likeBtn.setAttribute('aria-label', 'Like');
-            likeBtn.setAttribute('aria-pressed', liked ? 'true' : 'false');
-            var heartIcon = document.createElement('i');
-            heartIcon.className = 'fa-' + (liked ? 'solid' : 'regular') + ' fa-heart';
-            likeBtn.appendChild(heartIcon);
-            var likeCountSpan = document.createElement('span');
-            likeCountSpan.className = 'story-like-count';
-            likeCountSpan.textContent = String(count);
-            likeBtn.appendChild(likeCountSpan);
-            actionsDiv.appendChild(likeBtn);
+                var authorSpan = document.createElement('span');
+                authorSpan.className = 'story-card-author';
+                var byText = document.createTextNode('by ');
+                authorSpan.appendChild(byText);
+                var strongAuthor = document.createElement('strong');
+                strongAuthor.textContent = story.author;
+                authorSpan.appendChild(strongAuthor);
+                footerDiv.appendChild(authorSpan);
 
-            var readBtn = document.createElement('button');
-            readBtn.className = 'story-read-button';
-            readBtn.setAttribute('aria-label', 'Leer historia: ' + story.title);
-            readBtn.setAttribute('data-story-id', story.id);
-            readBtn.textContent = 'Read Story';
-            actionsDiv.appendChild(readBtn);
+                var actionsDiv = document.createElement('div');
+                actionsDiv.className = 'story-card-actions';
 
-            footerDiv.appendChild(actionsDiv);
-            card.appendChild(imageDiv);
-            card.appendChild(bodyDiv);
-            card.appendChild(footerDiv);
-            storiesGrid.appendChild(card);
+                var likeBtn = document.createElement('button');
+                likeBtn.className = 'story-like-btn' + (liked ? ' liked' : '');
+                likeBtn.setAttribute('data-story-id', story.id);
+                likeBtn.setAttribute('aria-label', 'Like');
+                likeBtn.setAttribute('aria-pressed', liked ? 'true' : 'false');
+                var heartIcon = document.createElement('i');
+                heartIcon.className = 'fa-' + (liked ? 'solid' : 'regular') + ' fa-heart';
+                likeBtn.appendChild(heartIcon);
+                var likeCountSpan = document.createElement('span');
+                likeCountSpan.className = 'story-like-count';
+                likeCountSpan.textContent = String(count);
+                likeBtn.appendChild(likeCountSpan);
+                actionsDiv.appendChild(likeBtn);
+
+                var readBtn = document.createElement('button');
+                readBtn.className = 'story-read-button';
+                readBtn.setAttribute('aria-label', 'Leer historia: ' + story.title);
+                readBtn.setAttribute('data-story-id', story.id);
+                readBtn.textContent = 'Read Story';
+                actionsDiv.appendChild(readBtn);
+
+                footerDiv.appendChild(actionsDiv);
+                card.appendChild(imageDiv);
+                card.appendChild(bodyDiv);
+                card.appendChild(footerDiv);
+                storiesGrid.appendChild(card);
+            });
+
+            if (isIndex && storiesSeeMore) {
+                if (published.length > MAX_INDEX_STORIES) {
+                    storiesSeeMore.style.display = '';
+                } else {
+                    storiesSeeMore.style.display = 'none';
+                }
+            }
+
+            attachCardListeners();
         });
-
-        attachCardListeners();
     }
 
     function attachCardListeners() {
@@ -186,6 +220,16 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
+        var cards = storiesGrid.querySelectorAll('.story-card');
+        cards.forEach(function(card) {
+            card.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openModal(card.getAttribute('data-story-id'));
+                }
+            });
+        });
+
         var likeBtns = storiesGrid.querySelectorAll('.story-like-btn');
         likeBtns.forEach(function(btn) {
             btn.addEventListener('click', function(e) {
@@ -198,7 +242,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateCardLikeUI(storyId) {
         var liked = isLiked(storyId);
-        var story = storiesData.find(function(s) { return s.id === storyId; });
+        var story = loadedStories.find(function(s) { return s.id === storyId; });
         if (!story) return;
         var count = getLikeCount(story);
 
@@ -230,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateModalLikeUI(storyId) {
         var liked = isLiked(storyId);
-        var story = storiesData.find(function(s) { return s.id === storyId; });
+        var story = loadedStories.find(function(s) { return s.id === storyId; });
         if (!story) return;
         var count = getLikeCount(story);
         modalLikeCount.textContent = String(count);
@@ -245,16 +289,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function openModal(storyId) {
-        var story = storiesData.find(function(s) { return s.id === storyId; });
+        var story = loadedStories.find(function(s) { return s.id === storyId; });
         if (!story) return;
         currentStoryId = storyId;
         previousFocus = document.activeElement;
 
-        modalImage.src = safeImageUrl(story.image);
+        modalImage.src = safeImageUrl(story.image) || FALLBACK_IMAGE;
         modalImage.alt = story.title;
         modalImage.onerror = function() {
             modalImage.onerror = null;
-            modalImage.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="680" height="340" fill="%231a1a1a"%3E%3Crect width="680" height="340"/%3E%3Ctext x="50%25" y="50%25" fill="%23444" font-size="16" text-anchor="middle" dy=".3em"%3ESin imagen%3C/text%3E%3C/svg%3E';
+            modalImage.src = FALLBACK_IMAGE;
         };
 
         modalMeta.textContent = '';
@@ -278,7 +322,7 @@ document.addEventListener('DOMContentLoaded', function() {
         modalAuthor.appendChild(authorStrong);
 
         modalStory.textContent = '';
-        var paragraphs = story.content.split('\n\n');
+        var paragraphs = (story.content || '').split('\n\n');
         paragraphs.forEach(function(para, i) {
             var p = document.createElement('p');
             p.textContent = para;

@@ -1,47 +1,187 @@
 /* ============================================
    BACKSTAGE STUDIO — App Bootstrap
-   Inicializa todas las capas y arranca el sistema.
-   
+   v0.3A — Firebase + Local fallback
+
    Flujo:
-   1. Configura datasource (localStorage)
-   2. Crea repositories
-   3. Crea services
-   4. Crea views
-   5. Crea controllers
-   6. Registra rutas
-   7. Inicia router
+   0. Auth guard (verifica sesion Firebase)
+   1. Crea registros separados (stories / soundscapes)
+   2. preloadFirestoreData() solo descarga (NO importa de localStorage)
+   3. Si falla Firestore: pantalla error con Reintentar + Modo local
+   4. Crea repositories, services, views, controllers
+   5. Router y start
    ============================================ */
 
 (function() {
     window.Backstage = window.Backstage || {};
 
-    function init() {
-        /* ------------------------------------------
-           1. DATASOURCE
-           ------------------------------------------ */
-        var registry = new window.Backstage.DatasourceRegistry();
+    var AUTHORIZED_UID = 'qtguil5JI0ejOeJ0fpiXrxTJvIq2';
+    var firestoreDsGlobal = null;
+    var storyRegGlobal = null;
+    var soundscapeRegGlobal = null;
+    var localGlobal = null;
+    var retryCount = 0;
+    var MAX_RETRIES = 3;
+
+    /* ------------------------------------------
+       UI: Loading screen
+       ------------------------------------------ */
+    function showApp() {
+        var loading = document.getElementById('adminLoading');
+        var layout = document.getElementById('adminLayout');
+        if (loading) loading.style.display = 'none';
+        if (layout) layout.style.display = '';
+    }
+
+    function hidePreloadError() {
+        var el = document.getElementById('adminPreloadError');
+        if (el) el.style.display = 'none';
+    }
+
+    function showPreloadError(retrying) {
+        var loading = document.getElementById('adminLoading');
+        if (loading) loading.style.display = 'none';
+
+        var el = document.getElementById('adminPreloadError');
+        if (!el) return;
+        el.style.display = 'flex';
+
+        var spinner = el.querySelector('.preload-error-spinner');
+        var msg = el.querySelector('.preload-error-msg');
+        var actions = el.querySelector('.preload-error-actions');
+
+        if (retrying) {
+            if (spinner) spinner.style.display = '';
+            if (msg) msg.textContent = 'Reconectando a Firestore...';
+            if (actions) actions.style.display = 'none';
+        } else {
+            if (spinner) spinner.style.display = 'none';
+            if (msg) msg.textContent = 'No se pudo conectar a Firestore. Verifica tu conexion e intenta de nuevo.';
+            if (actions) actions.style.display = '';
+        }
+    }
+
+    function displayUserEmail() {
+        var emailEl = document.getElementById('adminUserEmail');
+        var user = window.Backstage.Auth.getUser();
+        if (emailEl && user) {
+            emailEl.textContent = user.email || '';
+        }
+    }
+
+    function bindLogout() {
+        var logoutBtn = document.getElementById('adminLogoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function() {
+                window.Backstage.Auth.logout();
+            });
+        }
+    }
+
+    /* ------------------------------------------
+       1. DATASOURCE REGISTRIES (Blocker #3)
+       StoryDatasourceRegistry: Firestore when available, else local
+       SoundscapeDatasourceRegistry: always local
+       ------------------------------------------ */
+    function initDatasources() {
+        var storyRegistry = new window.Backstage.DatasourceRegistry();
+        var soundscapeRegistry = new window.Backstage.DatasourceRegistry();
         var local = new window.Backstage.LocalDatasource();
 
-        registry.register('local', local);
-        registry.setActive('local');
+        soundscapeRegistry.register('local', local);
+        soundscapeRegistry.setActive('local');
 
-        window.Backstage.datasource = registry;
+        var firestoreReady = false;
+        try {
+            var wbf = window.WhiteBoxFirebase;
+            if (wbf && wbf.db && wbf.auth && wbf.auth.currentUser) {
+                var firestore = new window.Backstage.FirestoreDatasource();
+                storyRegistry.register('firestore', firestore);
+                storyRegistry.register('local', local);
+                storyRegistry.setActive('firestore');
+                firestoreReady = true;
+                firestoreDsGlobal = firestore;
+            }
+        } catch (e) {
+            console.warn('[Backstage] Firestore no disponible:', e.message);
+        }
 
-        /* ------------------------------------------
-           2. MIGRATION
-           Migra datos legacy (wbox_*) a backstage_*.
-           La migración es idempotente y crea backup.
-           ------------------------------------------ */
-        local.migrateFromLegacy('stories_data', 'stories_data');
-        local.migrateFromLegacy('soundscapes_data', 'soundscapes_data');
+        if (!firestoreReady) {
+            storyRegistry.register('local', local);
+            storyRegistry.setActive('local');
+        }
 
-        /* ------------------------------------------
-           3. REPOSITORIES
-           ------------------------------------------ */
-        var storyRepo = new window.Backstage.StoryRepository(registry);
-        var soundscapeRepo = new window.Backstage.SoundscapeRepository(registry);
+        window.Backstage.storyDatasourceRegistry = storyRegistry;
+        window.Backstage.soundscapeDatasourceRegistry = soundscapeRegistry;
+        window.Backstage.datasource = storyRegistry;
 
-        /* Migrate from default data if first run */
+        return {
+            storyRegistry: storyRegistry,
+            soundscapeRegistry: soundscapeRegistry,
+            local: local,
+            firestoreReady: firestoreReady
+        };
+    }
+
+    /* ------------------------------------------
+       2. PRELOAD (Blocker #4)
+       Solo descarga datos remotos. NO importa de
+       localStorage automaticamente.
+       ------------------------------------------ */
+    function preloadFirestoreData(firestoreDs) {
+        var COLLECTION = 'stories';
+
+        return firestoreDs._collectionRef(COLLECTION).get().then(function(snapshot) {
+            var firestoreItems = [];
+            snapshot.forEach(function(doc) {
+                var data = doc.data();
+                data.id = doc.id;
+                firestoreItems.push(data);
+            });
+
+            firestoreDs._cache = firestoreDs._cache || {};
+            firestoreDs._cache[COLLECTION] = firestoreItems;
+
+            return { count: firestoreItems.length };
+        }).catch(function(err) {
+            throw err;
+        });
+    }
+
+    /* ------------------------------------------
+       3. RETRY + LOCAL MODE (Blocker #8)
+       ------------------------------------------ */
+    function attemptPreload(storyRegistry) {
+        var firestoreDs = storyRegistry.sources['firestore'];
+        if (!firestoreDs) {
+            return Promise.resolve(false);
+        }
+
+        return preloadFirestoreData(firestoreDs).then(function() {
+            return true;
+        }).catch(function(err) {
+            console.error('[Backstage] Preload Firestore falló:', err);
+            retryCount++;
+
+            if (retryCount < MAX_RETRIES) {
+                showPreloadError(true);
+                return new Promise(function(resolve) {
+                    setTimeout(function() {
+                        attemptPreload(storyRegistry).then(resolve);
+                    }, 2000 * retryCount);
+                });
+            }
+
+            showPreloadError(false);
+            return false;
+        });
+    }
+
+    function bootWithLocalMode(storyReg, soundscapeReg, local) {
+        window.Backstage._localMode = true;
+
+        var storyRepo = new window.Backstage.StoryRepository(storyReg);
+        var soundscapeRepo = new window.Backstage.SoundscapeRepository(soundscapeReg);
+
         if (typeof storiesDataDefault !== 'undefined') {
             storyRepo.migrateFromDefaults(storiesDataDefault);
         }
@@ -49,35 +189,34 @@
             soundscapeRepo.migrateFromDefaults(soundscapesDataDefault);
         }
 
-        /* ------------------------------------------
-           4. SERVICES
-           ------------------------------------------ */
+        bootApp(storyReg, soundscapeReg, storyRepo, soundscapeRepo, false);
+    }
+
+    /* ------------------------------------------
+       4. BOOT APP
+       ------------------------------------------ */
+    function bootApp(storyReg, soundscapeReg, storyRepo, soundscapeRepo, isFirestore) {
         var storyService = new window.Backstage.StoryService(storyRepo);
         var soundscapeService = new window.Backstage.SoundscapeService(soundscapeRepo);
         var dashboardService = new window.Backstage.DashboardService(storyService, soundscapeService);
 
-        /* ------------------------------------------
-           5. VIEWS
-           ------------------------------------------ */
-        var dashboardView = new window.Backstage.Views.Dashboard();
+        var dashboardView = window.Backstage.Views.Dashboard;
         dashboardView.init('section-dashboard');
 
-        var storyView = new window.Backstage.Views.Story();
+        var storyView = window.Backstage.Views.Story;
         storyView.init('section-stories');
 
-        var soundscapeView = new window.Backstage.Views.Soundscape();
+        var soundscapeView = window.Backstage.Views.Soundscape;
         soundscapeView.init('section-soundscapes');
 
-        /* ------------------------------------------
-           6. CONTROLLERS
-           ------------------------------------------ */
         var dashboardCtrl = new window.Backstage.Controllers.Dashboard(dashboardService, dashboardView);
         var storyCtrl = new window.Backstage.Controllers.Story(storyService, storyView);
         var soundscapeCtrl = new window.Backstage.Controllers.Soundscape(soundscapeService, soundscapeView);
 
-        /* ------------------------------------------
-           7. ROUTER
-           ------------------------------------------ */
+        if (window.Backstage._localMode) {
+            showLocalModeBanner();
+        }
+
         var router = new window.Backstage.Router();
 
         function showSection(route) {
@@ -98,9 +237,7 @@
                 window.Backstage.Components.Header.updateForRoute('dashboard');
                 dashboardCtrl.mount();
             },
-            unmount: function() {
-                dashboardCtrl.unmount();
-            }
+            unmount: function() { dashboardCtrl.unmount(); }
         });
 
         router.register('stories', {
@@ -113,9 +250,7 @@
                 storyCtrl.mount();
                 window.Backstage.Components.Header.showOnly('btnAddStory');
             },
-            unmount: function() {
-                storyCtrl.unmount();
-            }
+            unmount: function() { storyCtrl.unmount(); }
         });
 
         router.register('soundscapes', {
@@ -128,27 +263,20 @@
                 soundscapeCtrl.mount();
                 window.Backstage.Components.Header.showOnly('btnAddSoundscape');
             },
-            unmount: function() {
-                soundscapeCtrl.unmount();
-            }
+            unmount: function() { soundscapeCtrl.unmount(); }
         });
 
         window.Backstage.router = router;
 
-        /* ------------------------------------------
-           8. COMPONENTS
-           ------------------------------------------ */
         window.Backstage.Components.Sidebar.init();
         window.Backstage.Components.Header.init();
+        displayUserEmail();
+        bindLogout();
 
-        /* ------------------------------------------
-           9. GLOBAL EVENTS
-           ------------------------------------------ */
         window.Backstage.EventBus.on('dashboard:refresh', function() {
             dashboardCtrl.refresh();
         });
 
-        /* Multi-tab sync via storage event */
         window.addEventListener('storage', function(e) {
             if (!e.key) return;
             if (e.key === 'backstage_stories_data' || e.key === 'backstage_stories_data_backup') {
@@ -157,19 +285,102 @@
                 if (current === 'dashboard') dashboardCtrl.refresh();
             }
             if (e.key === 'backstage_soundscapes_data' || e.key === 'backstage_soundscapes_data_backup') {
-                var current = router.getCurrent();
-                if (current === 'soundscapes') soundscapeCtrl.refresh();
-                if (current === 'dashboard') dashboardCtrl.refresh();
+                var current2 = router.getCurrent();
+                if (current2 === 'soundscapes') soundscapeCtrl.refresh();
+                if (current2 === 'dashboard') dashboardCtrl.refresh();
             }
         });
 
-        /* Escape key handled by Modal component */
-
-        /* ------------------------------------------
-           10. START
-           ------------------------------------------ */
+        showApp();
+        hidePreloadError();
         router.start();
     }
 
-    document.addEventListener('DOMContentLoaded', init);
+    function showLocalModeBanner() {
+        var banner = document.getElementById('localModeBanner');
+        if (banner) banner.style.display = '';
+    }
+
+    function bindErrorScreenButtons(storyReg, soundscapeReg, local) {
+        var retryBtn = document.getElementById('preloadRetryBtn');
+        var localBtn = document.getElementById('preloadLocalBtn');
+
+        if (retryBtn) {
+            retryBtn.addEventListener('click', function() {
+                retryCount = 0;
+                showPreloadError(true);
+                attemptPreload(storyReg).then(function(ok) {
+                    if (ok) {
+                        bootWithFirestore(storyReg, soundscapeReg, local);
+                    } else {
+                        showPreloadError(false);
+                    }
+                });
+            });
+        }
+
+        if (localBtn) {
+            localBtn.addEventListener('click', function() {
+                hidePreloadError();
+                bootWithLocalMode(storyReg, soundscapeReg, local);
+            });
+        }
+    }
+
+    function bootWithFirestore(storyReg, soundscapeReg, local) {
+        var firestoreDs = storyReg.sources['firestore'];
+        var storyRepo = new window.Backstage.FirestoreStoryRepository(storyReg);
+        var soundscapeRepo = new window.Backstage.SoundscapeRepository(soundscapeReg);
+
+        if (typeof soundscapesDataDefault !== 'undefined') {
+            soundscapeRepo.migrateFromDefaults(soundscapesDataDefault);
+        }
+
+        window.Backstage._localMode = false;
+        bootApp(storyReg, soundscapeReg, storyRepo, soundscapeRepo, true);
+    }
+
+    /* ------------------------------------------
+       INIT
+       ------------------------------------------ */
+    function init() {
+        var ds = initDatasources();
+
+        if (!ds.firestoreReady) {
+            bootWithLocalMode(ds.storyRegistry, ds.soundscapeRegistry, ds.local);
+            return;
+        }
+
+        bindErrorScreenButtons(ds.storyRegistry, ds.soundscapeRegistry, ds.local);
+
+        var booted = false;
+        function safeBoot(mode) {
+            if (booted) return;
+            booted = true;
+            if (mode === 'firestore') {
+                bootWithFirestore(ds.storyRegistry, ds.soundscapeRegistry, ds.local);
+            } else {
+                bootWithLocalMode(ds.storyRegistry, ds.soundscapeRegistry, ds.local);
+            }
+        }
+
+        setTimeout(function() {
+            if (!booted) {
+                console.warn('[Backstage] Preload timeout, falling back to local mode');
+                safeBoot('local');
+            }
+        }, 10000);
+
+        attemptPreload(ds.storyRegistry).then(function(ok) {
+            safeBoot(ok ? 'firestore' : 'local');
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        window.Backstage.Auth.guard().then(function() {
+            init();
+        }).catch(function(err) {
+            console.error('[Backstage] Auth guard failed', err);
+        });
+    });
 })();
