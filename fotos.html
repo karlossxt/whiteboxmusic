@@ -178,101 +178,7 @@
             <h1 class="main-title">EL ARCHIVO</h1>
         </section>
 
-        <section class="year-section">
-            <div class="year-header">
-                <span class="year-number">2026</span>
-                <div class="year-line"></div>
-                <p style="font-size: 0.7rem; letter-spacing: 3px;">FUTURE SESSIONS</p>
-            </div>
-
-            <div class="instagram-grid">
-                <div class="photo-item">
-                    <img src="https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg" alt="Estadio Nacional Tour" loading="lazy">
-                    <div class="photo-overlay">
-                        <i class="fa-solid fa-bolt"></i>
-                        <span class="photo-info">ESTADIO NACIONAL / TOUR</span>
-                    </div>
-                </div>
-                <div class="photo-item">
-                    <img src="https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg" alt="Grabación Album" loading="lazy">
-                    <div class="photo-overlay">
-                        <i class="fa-solid fa-microphone"></i>
-                        <span class="photo-info">GRABACIÓN ALBUM III</span>
-                    </div>
-                </div>
-                <div class="photo-item">
-                    <img src="https://images.pexels.com/photos/144428/pexels-photo-144428.jpeg" alt="Backstage" loading="lazy">
-                    <div class="photo-overlay">
-                        <i class="fa-solid fa-heart"></i>
-                        <span class="photo-info">BACKSTAGE MOMENTS</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="year-section">
-            <div class="year-header">
-                <span class="year-number">2025</span>
-                <div class="year-line"></div>
-                <p style="font-size: 0.7rem; letter-spacing: 3px;">EXPANSIÓN</p>
-            </div>
-
-            <div class="instagram-grid">
-                <div class="photo-item">
-                    <img src="https://images.pexels.com/photos/164745/pexels-photo-164745.jpeg" alt="Sala Neón Madrid" loading="lazy">
-                    <div class="photo-overlay">
-                        <i class="fa-solid fa-location-dot"></i>
-                        <span class="photo-info">SALA NEÓN / MADRID</span>
-                    </div>
-                </div>
-                <div class="photo-item">
-                    <img src="https://images.pexels.com/photos/257904/pexels-photo-257904.jpeg" alt="Festival Indie" loading="lazy">
-                    <div class="photo-overlay">
-                        <i class="fa-solid fa-music"></i>
-                        <span class="photo-info">FESTIVAL INDIE ROCK</span>
-                    </div>
-                </div>
-                <div class="photo-item">
-                    <img src="https://images.pexels.com/photos/167491/pexels-photo-167491.jpeg" alt="Sesión Editorial" loading="lazy">
-                    <div class="photo-overlay">
-                        <i class="fa-solid fa-camera"></i>
-                        <span class="photo-info">SESIÓN EDITORIAL</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="year-section">
-            <div class="year-header">
-                <span class="year-number">2024</span>
-                <div class="year-line"></div>
-                <p style="font-size: 0.7rem; letter-spacing: 3px;">EL ORIGEN</p>
-            </div>
-
-            <div class="instagram-grid">
-                <div class="photo-item">
-                    <img src="https://images.pexels.com/photos/1047442/pexels-photo-1047442.jpeg" alt="Primer show en vivo" loading="lazy">
-                    <div class="photo-overlay">
-                        <i class="fa-solid fa-star"></i>
-                        <span class="photo-info">PRIMER SHOW EN VIVO</span>
-                    </div>
-                </div>
-                <div class="photo-item">
-                    <img src="https://images.pexels.com/photos/164853/pexels-photo-164853.jpeg" alt="Lanzamiento WhiteBox" loading="lazy">
-                    <div class="photo-overlay">
-                        <i class="fa-solid fa-compact-disc"></i>
-                        <span class="photo-info">LANZAMIENTO WHITEBOX I</span>
-                    </div>
-                </div>
-                <div class="photo-item">
-                    <img src="https://images.pexels.com/photos/210922/pexels-photo-210922.jpeg" alt="Equipo fundador" loading="lazy">
-                    <div class="photo-overlay">
-                        <i class="fa-solid fa-users"></i>
-                        <span class="photo-info">EL EQUIPO FUNDADOR</span>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <div id="galleryContainer"></div>
 
     </main>
 
@@ -285,6 +191,129 @@
             <a href="#" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
         </div>
     </footer>
+
+    <script>
+        var ICONS = ['fa-bolt','fa-microphone','fa-heart','fa-location-dot','fa-music','fa-camera','fa-star','fa-compact-disc','fa-users','fa-guitar','fa-headphones','fa-wand-magic-sparkles'];
+
+        var DEFAULTS = [
+            {
+                year: '2026', subtitle: 'FUTURE SESSIONS',
+                photos: [
+                    { img: 'https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg', label: 'ESTADIO NACIONAL / TOUR' },
+                    { img: 'https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg', label: 'GRABACIÓN ALBUM III' },
+                    { img: 'https://images.pexels.com/photos/144428/pexels-photo-144428.jpeg', label: 'BACKSTAGE MOMENTS' }
+                ]
+            },
+            {
+                year: '2025', subtitle: 'EXPANSIÓN',
+                photos: [
+                    { img: 'https://images.pexels.com/photos/164745/pexels-photo-164745.jpeg', label: 'SALA NEÓN / MADRID' },
+                    { img: 'https://images.pexels.com/photos/257904/pexels-photo-257904.jpeg', label: 'FESTIVAL INDIE ROCK' },
+                    { img: 'https://images.pexels.com/photos/167491/pexels-photo-167491.jpeg', label: 'SESIÓN EDITORIAL' }
+                ]
+            },
+            {
+                year: '2024', subtitle: 'EL ORIGEN',
+                photos: [
+                    { img: 'https://images.pexels.com/photos/1047442/pexels-photo-1047442.jpeg', label: 'PRIMER SHOW EN VIVO' },
+                    { img: 'https://images.pexels.com/photos/164853/pexels-photo-164853.jpeg', label: 'LANZAMIENTO WHITEBOX I' },
+                    { img: 'https://images.pexels.com/photos/210922/pexels-photo-210922.jpeg', label: 'EL EQUIPO FUNDADOR' }
+                ]
+            }
+        ];
+
+        function loadGallery() {
+            var container = document.getElementById('galleryContainer');
+            if (!container) return;
+
+            var raw;
+            try {
+                raw = localStorage.getItem('backstage_gallery_events_data');
+            } catch(e) {}
+
+            var events;
+            if (raw) {
+                try {
+                    events = JSON.parse(raw);
+                } catch(e) {}
+            }
+
+            if (!events || !events.length) {
+                events = DEFAULTS.map(function(d) {
+                    return {
+                        title: d.year,
+                        subtitle: d.subtitle,
+                        galleryItems: d.photos.map(function(p) {
+                            return { image: p.img, title: p.label, text: '' };
+                        })
+                    };
+                });
+            }
+
+            container.textContent = '';
+
+            events.forEach(function(ev, idx) {
+                var items = ev.galleryItems || [];
+                if (!items.length) return;
+
+                var section = document.createElement('section');
+                section.className = 'year-section';
+
+                var header = document.createElement('div');
+                header.className = 'year-header';
+
+                var yearSpan = document.createElement('span');
+                yearSpan.className = 'year-number';
+                yearSpan.textContent = ev.title || 'AÑO';
+
+                var line = document.createElement('div');
+                line.className = 'year-line';
+
+                var label = document.createElement('p');
+                label.style.cssText = 'font-size:0.7rem;letter-spacing:3px;';
+                label.textContent = (ev.subtitle || '').toUpperCase();
+
+                header.appendChild(yearSpan);
+                header.appendChild(line);
+                header.appendChild(label);
+                section.appendChild(header);
+
+                var grid = document.createElement('div');
+                grid.className = 'instagram-grid';
+
+                items.forEach(function(item, i) {
+                    var div = document.createElement('div');
+                    div.className = 'photo-item';
+
+                    var img = document.createElement('img');
+                    img.src = item.image || '';
+                    img.alt = item.title || 'Foto';
+                    img.loading = 'lazy';
+
+                    var overlay = document.createElement('div');
+                    overlay.className = 'photo-overlay';
+
+                    var icon = document.createElement('i');
+                    icon.className = 'fa-solid ' + (ICONS[(idx * items.length + i) % ICONS.length]);
+
+                    var info = document.createElement('span');
+                    info.className = 'photo-info';
+                    info.textContent = item.title || '';
+
+                    overlay.appendChild(icon);
+                    overlay.appendChild(info);
+                    div.appendChild(img);
+                    div.appendChild(overlay);
+                    grid.appendChild(div);
+                });
+
+                section.appendChild(grid);
+                container.appendChild(section);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', loadGallery);
+    </script>
 
 </body>
 </html>
