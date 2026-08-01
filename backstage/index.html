@@ -57,6 +57,10 @@
                     <i class="fa-solid fa-headphones"></i>
                     <span>Latest Soundscapes</span>
                 </a>
+                <a href="#gallery" class="admin-nav-item" data-section="gallery">
+                    <i class="fa-solid fa-camera"></i>
+                    <span>Galería</span>
+                </a>
                 <div class="admin-nav-divider"></div>
                 <a href="../index.html" class="admin-nav-item" target="_blank">
                     <i class="fa-solid fa-external-link"></i>
@@ -100,6 +104,7 @@
                 </div>
             </section>
             <section class="admin-section" id="section-soundscapes" style="display:none;"></section>
+            <section class="admin-section" id="section-gallery" style="display:none;"></section>
         </main>
     </div>
 
@@ -279,6 +284,94 @@
         </div>
     </div>
 
+    <!-- Gallery Form Modal -->
+    <div class="modal-overlay" id="galleryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="galleryModalTitle">Nuevo Evento Fotográfico</h2>
+                <button class="modal-close" id="galleryModalClose" aria-label="Cerrar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="galleryForm" novalidate>
+                <input type="hidden" id="galleryFormId">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="galleryFormTitle">Nombre del evento <span class="required">*</span></label>
+                        <input type="text" id="galleryFormTitle" required placeholder="Ej: OCTOBER">
+                    </div>
+                    <div class="form-group">
+                        <label for="galleryFormSubtitle">Subtítulo</label>
+                        <input type="text" id="galleryFormSubtitle" placeholder="Ej: Autumn Collection">
+                    </div>
+                    <div class="form-group">
+                        <label for="galleryFormOrder">Orden</label>
+                        <input type="number" id="galleryFormOrder" min="1" value="1">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="galleryFormCardImageFile">Imagen de portada <span class="required">*</span></label>
+                        <input type="file" id="galleryFormCardImageFile" accept="image/*">
+                        <span class="form-hint">Sube una imagen desde tu PC o móvil</span>
+                        <div class="form-image-preview" id="galleryCardPreview" style="display:none;">
+                            <img id="galleryCardPreviewImg" src="" alt="Vista previa de portada">
+                            <button type="button" class="ss-cover-remove" id="galleryCardRemove" title="Quitar imagen">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                        <label for="galleryFormCardImage" style="margin-top:8px;font-size:0.8rem;color:#888;">O pega una URL</label>
+                        <input type="url" id="galleryFormCardImage" placeholder="https://images.pexels.com/...">
+                    </div>
+                    <div class="form-group full-width" id="gallerySliderGroup">
+                        <label>Imágenes del slider</label>
+                        <input type="file" id="galleryFormSliderFiles" accept="image/*" multiple>
+                        <span class="form-hint">Selecciona varias imágenes para el slider</span>
+                        <div class="gallery-thumb-strip" id="gallerySliderPreview"></div>
+                        <label for="galleryFormSlider" style="margin-top:8px;font-size:0.8rem;color:#888;">O ingresa URLs (una por línea)</label>
+                        <textarea id="galleryFormSlider" rows="3" placeholder="https://images.pexels.com/photo1.jpg"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="galleryFormIntro">Texto introductorio</label>
+                        <textarea id="galleryFormIntro" rows="3" placeholder="Descripción del evento..."></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Fotos de galería</label>
+                        <input type="file" id="galleryFormItemsFiles" accept="image/*" multiple>
+                        <span class="form-hint">Selecciona las fotos para la galería (se ordenan por nombre)</span>
+                        <div class="gallery-thumb-strip" id="galleryItemsPreview"></div>
+                        <label style="margin-top:8px;font-size:0.8rem;color:#888;">Títulos (una línea por foto, en el mismo orden)</label>
+                        <textarea id="galleryFormItems" rows="4" placeholder="PRONE TO WANDER | Descripción del momento..."></textarea>
+                        <span class="form-hint">Cada línea: TÍTULO | Texto descriptivo (la imagen se asigna en orden)</span>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="galleryBtnCancel">Cancelar</button>
+                    <button type="submit" class="btn-primary" id="galleryBtnSave">
+                        <i class="fa-solid fa-check"></i> Guardar
+                    </button>
+                </div>
+                <div class="upload-progress" id="galleryUploadProgress" style="display:none;">
+                    <div class="upload-progress-bar">
+                        <div class="upload-progress-fill" id="galleryUploadFill"></div>
+                    </div>
+                    <span id="galleryUploadStatus">Subiendo imágenes...</span>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Gallery Preview Modal -->
+    <div class="modal-overlay" id="previewGalleryModal">
+        <div class="modal-content modal-preview">
+            <div class="modal-header">
+                <h2 id="previewModalTitle">Vista previa</h2>
+                <button class="modal-close" onclick="window.Backstage.Components.Modal.closeAll()" aria-label="Cerrar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="previewGalleryContent" style="padding:24px 28px 28px;"></div>
+        </div>
+    </div>
+
     <!-- Confirm Modal -->
     <div class="modal-overlay" id="confirmModal">
         <div class="modal-content modal-confirm">
@@ -301,6 +394,7 @@
     <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-storage-compat.js"></script>
     <script src="../js/firebase-config.js"></script>
 
     <!-- Auth Guard (checks session before loading) -->
@@ -317,6 +411,7 @@
     <!-- Models -->
     <script src="models/story.js"></script>
     <script src="models/soundscape.js"></script>
+    <script src="models/gallery.js"></script>
 
     <!-- Datasources -->
     <script src="datasources/local/local-datasource.js"></script>
@@ -328,10 +423,13 @@
     <script src="repositories/story-repository.js"></script>
     <script src="repositories/firestore-story-repository.js"></script>
     <script src="repositories/soundscape-repository.js"></script>
+    <script src="repositories/gallery-repository.js"></script>
 
     <!-- Services -->
+    <script src="services/storage-service.js"></script>
     <script src="services/story-service.js"></script>
     <script src="services/soundscape-service.js"></script>
+    <script src="services/gallery-service.js"></script>
     <script src="services/dashboard-service.js"></script>
 
     <!-- Templates -->
@@ -353,11 +451,13 @@
     <script src="views/dashboard-view.js"></script>
     <script src="views/story-view.js"></script>
     <script src="views/soundscape-view.js"></script>
+    <script src="views/gallery-view.js"></script>
 
     <!-- Controllers -->
     <script src="controllers/dashboard-controller.js"></script>
     <script src="controllers/story-controller.js"></script>
     <script src="controllers/soundscape-controller.js"></script>
+    <script src="controllers/gallery-controller.js"></script>
 
     <!-- App Bootstrap -->
     <script src="app.js"></script>

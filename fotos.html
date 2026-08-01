@@ -11,308 +11,985 @@
     <meta property="og:image" content="logo.png">
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&family=Oswald:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Oswald:wght@500;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
     <style>
-        .gallery-hero {
-            padding: 180px 50px 100px;
-            text-align: center;
-        }
-
-        .main-title {
-            font-family: 'Oswald', sans-serif;
-            font-size: 10vw;
-            color: white;
-            text-transform: uppercase;
-            line-height: 0.8;
-            -webkit-text-stroke: 1px var(--pink);
-            color: transparent;
-        }
-
-        .year-section {
-            max-width: 1200px;
-            margin: 0 auto 150px;
-            padding: 0 20px;
-        }
-
-        .year-header {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-            margin-bottom: 40px;
-            position: sticky;
-            top: 100px;
-            z-index: 10;
-            background: var(--black);
-            padding: 20px 0;
-        }
-
-        .year-number {
-            font-family: 'Oswald', sans-serif;
-            font-size: 6rem;
-            color: var(--pink);
-            line-height: 1;
-        }
-
-        .year-line {
-            flex: 1;
-            height: 2px;
-            background: linear-gradient(to right, var(--pink), transparent);
-        }
-
-        .instagram-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-
-        .photo-item {
-            position: relative;
-            aspect-ratio: 1 / 1;
-            overflow: hidden;
-            background-color: var(--gray);
-            cursor: pointer;
-        }
-
-        .photo-item img {
-            width: 100%; height: 100%;
-            object-fit: cover;
-            filter: grayscale(100%) contrast(1.2);
-            transition: var(--transition);
-        }
-
-        .photo-item:hover img {
-            filter: grayscale(0%) contrast(1);
-            transform: scale(1.1);
-        }
-
-        .photo-overlay {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: var(--transition);
-            border: 2px solid var(--pink);
-        }
-
-        .photo-item:hover .photo-overlay {
-            opacity: 1;
-        }
-
-        .photo-overlay i {
-            color: var(--pink);
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
-
-        .photo-info {
-            font-family: 'Oswald', sans-serif;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-align: center;
-            padding: 0 10px;
-        }
-
-        @media (max-width: 768px) {
-            .instagram-grid { grid-template-columns: repeat(2, 1fr); }
-            .year-number { font-size: 4rem; }
-            .main-title { font-size: 15vw; }
-        }
-
-        .site-footer {
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
             background: #000;
             color: #fff;
-            padding: 20px 30px;
+            display: flex;
+            min-height: 100vh;
+        }
+        a { color: inherit; text-decoration: none; }
+        img { max-width: 100%; display: block; }
+
+        /* ===================== SIDEBAR ===================== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width, 220px);
+            height: 100vh;
+            background: #111;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 20px;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+        .sidebar-logo {
+            text-align: center;
+            margin-bottom: 24px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        .sidebar-logo a { display: flex; justify-content: center; }
+        .sidebar-logo img { width: 70px; height: auto; }
+
+        .sidebar-search {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin-bottom: 30px;
+            color: #666;
+            font-size: 0.8rem;
+            transition: border-color 0.3s;
+        }
+        .sidebar-search:focus-within {
+            border-color: var(--rose);
+            box-shadow: 0 0 15px rgba(240, 160, 184, 0.15);
+        }
+        .sidebar-search i { font-size: 0.75rem; color: #555; }
+        .sidebar-search input {
+            background: none;
+            border: none;
+            outline: none;
+            color: #ccc;
+            font-size: 0.75rem;
+            font-family: 'Inter', sans-serif;
+            width: 100%;
+        }
+        .sidebar-search input::placeholder { color: #555; }
+
+        .menu-list {
+            list-style: none;
+            width: 100%;
+            padding: 0;
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+        .menu-list li { margin-bottom: 6px; }
+        .menu-list li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.75rem;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: 0.2s;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #888;
+        }
+        .menu-list li a i { width: 16px; text-align: center; font-size: 0.7rem; }
+        .menu-list li a:hover {
+            background: #1a1a1a;
+            color: var(--rose);
+        }
+        .menu-list li a.active {
+            color: var(--rose);
+            text-shadow: var(--rose-shadow);
+            background: rgba(240, 160, 184, 0.06);
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding-top: 20px;
+            border-top: 1px solid #1a1a1a;
+        }
+        .sidebar-social {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+        }
+        .sidebar-social a {
+            color: #555;
+            font-size: 0.85rem;
+            transition: 0.3s;
+        }
+        .sidebar-social a:hover { color: var(--rose); }
+        .subscribe-btn {
+            background: transparent;
+            border: 1px solid var(--rose);
+            color: var(--rose);
+            padding: 10px 16px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Inter', sans-serif;
+            width: 100%;
+            text-align: center;
+        }
+        .subscribe-btn:hover {
+            background: var(--rose);
+            color: #000;
+        }
+
+        /* Sidebar responsive */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1001;
+            cursor: pointer;
+            font-size: 1.3rem;
+            color: var(--rose);
+            text-shadow: var(--rose-shadow);
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(240,160,184,0.15);
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 999;
+        }
+        .overlay.active { display: block; }
+
+        /* ===================== MAIN CONTENT ===================== */
+        .main-content {
+            margin-left: var(--sidebar-width, 220px);
+            width: calc(100% - var(--sidebar-width, 220px));
+            min-height: 100vh;
+        }
+
+        /* ===================== VIEW 1: GALLERY ===================== */
+        .gallery-view { display: block; }
+
+        /* Hero Slider */
+        .hero-slider-section {
+            position: relative;
+            width: 100%;
+            height: 70vh;
+            min-height: 450px;
+            max-height: 750px;
+            overflow: hidden;
+            background: #050505;
+        }
+        .hero-slider-section .slider-bg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.8s ease;
+        }
+        .hero-slider-section .slider-bg.fade-out { opacity: 0; }
+        .hero-slider-section .slider-bg.fade-in { opacity: 1; }
+        .hero-slider-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.7) 100%);
+            pointer-events: none;
+        }
+        .hero-slider-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 5;
+            width: 90%;
+            max-width: 800px;
+            pointer-events: none;
+        }
+        .hero-slider-content .slider-blogger {
+            font-family: 'Oswald', sans-serif;
+            font-size: clamp(4rem, 12vw, 9rem);
+            color: var(--rose);
+            text-shadow: 0 0 60px rgba(240, 160, 184, 0.4), 0 4px 30px rgba(0,0,0,0.8);
+            text-transform: uppercase;
+            letter-spacing: 12px;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+        .hero-slider-content .slider-design {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(0.8rem, 1.8vw, 1.1rem);
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+            letter-spacing: 14px;
+            font-weight: 300;
+            display: block;
+            margin-bottom: 30px;
+        }
+        .hero-slider-content .slider-intro {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(0.8rem, 1.2vw, 0.95rem);
+            color: #aaa;
+            font-weight: 300;
+            line-height: 1.7;
+            max-width: 600px;
+            margin: 0 auto;
+            pointer-events: auto;
+        }
+        .hero-slider-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.5);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+        .hero-slider-arrow:hover {
+            background: rgba(240, 160, 184, 0.2);
+            border-color: var(--rose);
+            color: var(--rose);
+        }
+        .hero-slider-arrow.left { left: 20px; }
+        .hero-slider-arrow.right { right: 20px; }
+
+        /* Event Grid */
+        .event-section {
+            padding: 60px 40px 80px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .event-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        .event-card {
+            position: relative;
+            aspect-ratio: 4 / 5;
+            overflow: hidden;
+            cursor: pointer;
+            border-radius: 4px;
+            background: #111;
+        }
+        .event-card-img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: saturate(0.7) brightness(0.55);
+            transition: transform 0.5s ease, filter 0.5s ease;
+        }
+        .event-card:hover .event-card-img {
+            transform: scale(1.04);
+            filter: saturate(1) brightness(0.5);
+        }
+        .event-card-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        .event-card-title {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Oswald', sans-serif;
+            font-size: clamp(1.3rem, 2.5vw, 2.4rem);
+            color: var(--rose);
+            text-shadow: 0 0 40px rgba(240, 160, 184, 0.5), 0 4px 20px rgba(0,0,0,0.8);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-align: center;
+            line-height: 1.2;
+            pointer-events: none;
+        }
+        .event-card-sub {
+            position: absolute;
+            bottom: 24px; left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.6rem;
+            font-weight: 500;
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            pointer-events: none;
+        }
+
+        /* ===================== VIEW 2: EVENT DETAIL ===================== */
+        .detail-view { display: none; }
+
+        .back-btn {
+            position: fixed;
+            top: 24px; left: 250px;
+            z-index: 200;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--rose);
+            padding: 10px 22px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+        .back-btn:hover {
+            background: rgba(240, 160, 184, 0.15);
+            border-color: var(--rose);
+        }
+        .back-btn i { font-size: 0.85rem; }
+
+        .hero-slider-detail {
+            position: relative;
+            width: 100%;
+            height: 65vh;
+            min-height: 400px;
+            max-height: 700px;
+            overflow: hidden;
+            background: #0a0a0a;
+        }
+        .slider-track {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .slider-slide {
+            min-width: 100%;
+            height: 100%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #fff;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+        .slider-btn:hover { background: rgba(240, 160, 184, 0.25); border-color: var(--rose); color: var(--rose); }
+        .slider-prev { left: 20px; }
+        .slider-next { right: 20px; }
+        .slider-dots {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+        .slider-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: 0.3s;
+            border: none;
+        }
+        .slider-dot.active { background: var(--rose); box-shadow: 0 0 12px rgba(240, 160, 184, 0.5); }
+
+        .event-header {
+            text-align: center;
+            padding: 50px 40px 20px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .event-header h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            color: var(--rose);
+            text-shadow: var(--rose-shadow);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+        }
+        .event-header .event-subtitle {
+            font-size: 0.65rem;
+            letter-spacing: 4px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .detail-intro {
+            max-width: 720px;
+            margin: 0 auto 60px;
+            padding: 0 40px;
+            text-align: center;
+        }
+        .detail-intro p {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #aaa;
+            font-weight: 300;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto 80px;
+            padding: 0 40px;
+        }
+        .detail-left { display: flex; flex-direction: column; gap: 60px; }
+        .photo-block { width: 100%; }
+        .photo-block img {
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            object-fit: cover;
+            border-radius: 4px;
+            filter: saturate(0.85) brightness(0.9);
+            transition: filter 0.5s ease, transform 0.5s ease;
+        }
+        .photo-block:hover img {
+            filter: saturate(1) brightness(1);
+            transform: scale(1.01);
+        }
+        .photo-block-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 11px;
+            padding: 14px 4px 0;
         }
-
-        .site-footer a {
-            color: #fff;
-            text-decoration: none;
+        .photo-block-footer span {
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            color: var(--rose);
+            text-shadow: var(--rose-shadow);
+            text-transform: uppercase;
         }
-
-        .site-footer a:hover {
-            color: var(--pink);
-        }
-
-        .social-icons {
+        .photo-block-icons {
             display: flex;
-            gap: 15px;
+            gap: 14px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .photo-block-icons i { cursor: pointer; transition: 0.3s; }
+        .photo-block-icons i:hover { color: var(--rose); }
+
+        .detail-right { display: flex; flex-direction: column; gap: 60px; padding-top: 60px; }
+        .narrative-block p {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            line-height: 1.9;
+            color: #999;
+            font-weight: 300;
+        }
+        .narrative-block .narrative-label {
+            font-size: 0.6rem;
+            letter-spacing: 3px;
+            color: #555;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            display: block;
         }
 
-        .social-icons a {
-            font-size: 14px;
-            transition: 0.3s;
+        /* Footer (Vista 2) */
+        .gallery-footer {
+            background: #000;
+            border-top: 1px solid #111;
+            padding: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: #555;
         }
+        .gallery-footer a { color: #555; transition: 0.3s; }
+        .gallery-footer a:hover { color: var(--rose); }
+        .gallery-footer .social-icons { display: flex; gap: 16px; }
+        .gallery-footer .social-icons a { font-size: 1rem; }
 
-        .social-icons a:hover {
-            color: var(--pink);
+        /* ===================== RESPONSIVE ===================== */
+        @media (max-width: 1000px) {
+            .event-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+            .back-btn { left: 20px; }
+        }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .menu-toggle { display: flex; }
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+            .hero-slider-section { height: 55vh; min-height: 350px; }
+            .hero-slider-content .slider-blogger { letter-spacing: 6px; }
+            .hero-slider-content .slider-design { letter-spacing: 8px; }
+            .event-section { padding: 40px 16px 60px; }
+            .event-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .back-btn { top: 70px; left: 16px; }
+            .detail-grid { grid-template-columns: 1fr; gap: 30px; }
+            .detail-right { padding-top: 0; }
+            .hero-slider-detail { height: 45vh; min-height: 280px; }
+            .detail-intro { padding: 0 20px; }
+            .detail-grid { padding: 0 20px; }
+            .gallery-footer { flex-direction: column; gap: 16px; text-align: center; }
+        }
+        @media (max-width: 500px) {
+            .event-grid { grid-template-columns: 1fr; gap: 12px; max-width: 400px; margin: 0 auto; }
+            .hero-slider-section { height: 45vh; min-height: 300px; }
+            .hero-slider-arrow { width: 32px; height: 32px; font-size: 0.8rem; }
+            .hero-slider-arrow.left { left: 10px; }
+            .hero-slider-arrow.right { right: 10px; }
+            .slider-btn { width: 36px; height: 36px; font-size: 0.9rem; }
+            .slider-prev { left: 10px; }
+            .slider-next { right: 10px; }
         }
     </style>
 </head>
-<body class="no-sidebar">
+<body>
 
-    <header>
-        <nav class="nav-links">
-            <a href="index.html">HOME</a>
-            <a href="descubre.html">DESCUBRE</a>
-            <a href="entreE.html">ENTREVISTAS</a>
-            <a href="comunidad.html">COMUNIDAD</a>
-            <a href="contacto.html">CONTACTO</a>
-        </nav>
-    </header>
+    <!-- Menu Toggle (mobile) -->
+    <div class="menu-toggle" id="menuToggle" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></div>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
-    <main>
-        
-        <section class="gallery-hero">
-            <h1 class="main-title">EL ARCHIVO</h1>
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo"><a href="index.html"><img src="logo.png" alt="WhiteBox Music"></a></div>
+        <span class="greeting">HOLA!</span>
+        <ul class="menu-list">
+            <li><a href="descubre.html"><i class="fa-solid fa-headphones"></i> DESCUBRE</a></li>
+            <li><a href="entreE.html"><i class="fa-solid fa-microphone-lines"></i> ENTREVISTAS</a></li>
+            <li><a href="comunidad.html"><i class="fa-solid fa-users"></i> COMUNIDAD</a></li>
+            <li><a href="historias.html"><i class="fa-solid fa-book-open"></i> HISTORIAS</a></li>
+            <li><a href="fotos.html" class="active"><i class="fa-solid fa-camera"></i> FOTOS</a></li>
+            <li><a href="descubre.html"><i class="fa-solid fa-headphones"></i> LATEST SOUNDSCAPES</a></li>
+            <li><a href="quienes.html"><i class="fa-solid fa-users"></i> QUIENES SOMOS</a></li>
+        </ul>
+        <div class="section-title">EQUIPO</div>
+        <ul class="menu-list"><li><a href="#"><i class="fa-solid fa-user"></i> MIRI</a></li></ul>
+        <div class="whitebox-logo-bottom">WHITEBOX<br>MUSIC</div>
+    </aside>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <main class="main-content">
+
+        <!-- ==================== VIEW 1: GALLERY ==================== -->
+        <section id="view1" class="gallery-view">
+
+            <!-- Hero Slider -->
+            <div class="hero-slider-section" id="heroSliderMain">
+                <img id="heroBg" class="slider-bg" src="https://images.pexels.com/photos/2387873/pexels-photo-2387873.jpeg" alt="Landscape">
+                <div class="hero-slider-overlay"></div>
+                <div class="hero-slider-content">
+                    <h1 class="slider-blogger">ARMONÍA</h1>
+                    <span class="slider-design">ARCHIVO VISUAL</span>
+                    <p class="slider-intro">Cada fotograma guarda una historia sonora. Conciertos, backstage, sesiones íntimas y el pulso de la escena independiente capturado en un solo lugar. Este es el archivo visual de WhiteBox Music.</p>
+                </div>
+                <button class="hero-slider-arrow left" onclick="heroSlide(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+                <button class="hero-slider-arrow right" onclick="heroSlide(1)"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+
+            <!-- Event Grid -->
+            <section class="event-section">
+                <div class="event-grid" id="eventGrid"></div>
+            </section>
         </section>
 
-        <div id="galleryContainer"></div>
+        <!-- ==================== VIEW 2: EVENT DETAIL ==================== -->
+        <section id="view2" class="detail-view">
+            <button class="back-btn" onclick="closeEvent()"><i class="fa-solid fa-arrow-left"></i> Volver</button>
+
+            <div class="hero-slider-detail" id="heroSlider">
+                <div class="slider-track" id="sliderTrack"></div>
+                <button class="slider-btn slider-prev" onclick="slidePrev()"><i class="fa-solid fa-chevron-left"></i></button>
+                <button class="slider-btn slider-next" onclick="slideNext()"><i class="fa-solid fa-chevron-right"></i></button>
+                <div class="slider-dots" id="sliderDots"></div>
+            </div>
+
+            <div class="event-header">
+                <h2 id="eventHeaderTitle">OCTOBER</h2>
+                <span class="event-subtitle" id="eventHeaderSub">AUTUMN COLLECTION</span>
+            </div>
+
+            <div class="detail-intro">
+                <p id="eventIntro">There are moments that define a season — golden light stretching across the horizon, the quiet hum of a city waking up, and the feeling that everything is exactly where it should be.</p>
+            </div>
+
+            <div class="detail-grid">
+                <div class="detail-left" id="detailLeft"></div>
+                <div class="detail-right" id="detailRight"></div>
+            </div>
+
+            <footer class="gallery-footer">
+                <a href="terminos.html">Términos y condiciones</a>
+                <span>&copy; 2026 WhiteBox Music — Todos los derechos reservados</span>
+                <div class="social-icons">
+                    <a href="#" title="Spotify"><i class="fa-brands fa-spotify"></i></a>
+                    <a href="#" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+                    <a href="#" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                </div>
+            </footer>
+        </section>
 
     </main>
 
-    <footer class="site-footer">
-        <a href="terminos.html">T&eacute;rminos y condiciones</a>
-        <div class="social-icons">
-            <a href="#" title="Spotify"><i class="fa-brands fa-spotify"></i></a>
-            <a href="#" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
-            <a href="#" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
-            <a href="#" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
-        </div>
-    </footer>
-
     <script>
-        var ICONS = ['fa-bolt','fa-microphone','fa-heart','fa-location-dot','fa-music','fa-camera','fa-star','fa-compact-disc','fa-users','fa-guitar','fa-headphones','fa-wand-magic-sparkles'];
+        // ===================== SIDEBAR TOGGLE =====================
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        // ===================== HERO SLIDER (MAIN) =====================
+        var heroImages = [];
+        var heroIndex = 0;
+        var heroInterval;
+
+        function heroSlide(dir) {
+            heroIndex += dir;
+            if (heroIndex < 0) heroIndex = heroImages.length - 1;
+            if (heroIndex >= heroImages.length) heroIndex = 0;
+            var img = document.getElementById('heroBg');
+            img.classList.add('fade-out');
+            setTimeout(function() {
+                img.src = heroImages[heroIndex];
+                img.classList.remove('fade-out');
+            }, 300);
+            resetHeroInterval();
+        }
+
+        function startHeroSlider() {
+            heroInterval = setInterval(function() { heroSlide(1); }, 6000);
+        }
+        function resetHeroInterval() { clearInterval(heroInterval); startHeroSlider(); }
+        startHeroSlider();
+
+        // ===================== EVENT DATA =====================
+        var STORAGE_KEY = 'backstage_gallery_events_data';
 
         var DEFAULTS = [
             {
-                year: '2026', subtitle: 'FUTURE SESSIONS',
-                photos: [
-                    { img: 'https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg', label: 'ESTADIO NACIONAL / TOUR' },
-                    { img: 'https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg', label: 'GRABACIÓN ALBUM III' },
-                    { img: 'https://images.pexels.com/photos/144428/pexels-photo-144428.jpeg', label: 'BACKSTAGE MOMENTS' }
+                id: 'october', title: 'OCTOBER', subtitle: 'AUTUMN COLLECTION',
+                cardImage: 'https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg',
+                intro: 'There are moments that define a season — golden light stretching across the horizon, the quiet hum of a city waking up, and the feeling that everything is exactly where it should be.',
+                sliderImages: [
+                    'https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg',
+                    'https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg',
+                    'https://images.pexels.com/photos/144428/pexels-photo-144428.jpeg'
+                ],
+                galleryItems: [
+                    { image: 'https://images.pexels.com/photos/164745/pexels-photo-164745.jpeg', title: 'PRONE TO WANDER', text: 'Every path tells a story. This one led through amber forests and forgotten roads, where the only compass was curiosity.' },
+                    { image: 'https://images.pexels.com/photos/257904/pexels-photo-257904.jpeg', title: 'ENJOY YOUR JOURNEY', text: 'The stage was set beneath a canopy of stars. Music spilled into the night like a secret shared between strangers.' },
+                    { image: 'https://images.pexels.com/photos/167491/pexels-photo-167491.jpeg', title: 'GOLDEN HOUR', text: 'When the light hits just right, even the most ordinary moment becomes extraordinary. This is what we chase.' }
                 ]
             },
             {
-                year: '2025', subtitle: 'EXPANSIÓN',
-                photos: [
-                    { img: 'https://images.pexels.com/photos/164745/pexels-photo-164745.jpeg', label: 'SALA NEÓN / MADRID' },
-                    { img: 'https://images.pexels.com/photos/257904/pexels-photo-257904.jpeg', label: 'FESTIVAL INDIE ROCK' },
-                    { img: 'https://images.pexels.com/photos/167491/pexels-photo-167491.jpeg', label: 'SESIÓN EDITORIAL' }
+                id: 'travel', title: 'TRAVEL TO LIVE', subtitle: 'ROAD DIARIES',
+                cardImage: 'https://images.pexels.com/photos/2387873/pexels-photo-2387873.jpeg',
+                intro: 'Some journeys have no destination — they are the destination. Miles of asphalt, endless skies, and the promise of something new waiting just beyond the curve.',
+                sliderImages: [
+                    'https://images.pexels.com/photos/164745/pexels-photo-164745.jpeg',
+                    'https://images.pexels.com/photos/144428/pexels-photo-144428.jpeg',
+                    'https://images.pexels.com/photos/257904/pexels-photo-257904.jpeg'
+                ],
+                galleryItems: [
+                    { image: 'https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg', title: 'ENDLESS HIGHWAY', text: 'The road stretched ahead like a ribbon of possibility. Each mile marker a reminder that movement is freedom.' },
+                    { image: 'https://images.pexels.com/photos/2387873/pexels-photo-2387873.jpeg', title: 'DESERT BLOOM', text: 'In the middle of nowhere, we found everything. The desert teaches you that beauty thrives in the harshest conditions.' },
+                    { image: 'https://images.pexels.com/photos/33109/fall-autumn-red-season.jpg', title: 'FIRE SKIES', text: 'Sunsets that look like they were painted by a fever dream. The sky on fire, the earth at peace.' }
                 ]
             },
             {
-                year: '2024', subtitle: 'EL ORIGEN',
-                photos: [
-                    { img: 'https://images.pexels.com/photos/1047442/pexels-photo-1047442.jpeg', label: 'PRIMER SHOW EN VIVO' },
-                    { img: 'https://images.pexels.com/photos/164853/pexels-photo-164853.jpeg', label: 'LANZAMIENTO WHITEBOX I' },
-                    { img: 'https://images.pexels.com/photos/210922/pexels-photo-210922.jpeg', label: 'EL EQUIPO FUNDADOR' }
+                id: 'september', title: 'SEPTEMBER', subtitle: 'GOLDEN HOUR',
+                cardImage: 'https://images.pexels.com/photos/33109/fall-autumn-red-season.jpg',
+                intro: 'September arrives like a quiet revolution — the air crisper, the light softer, the world slowing down just enough to let you catch your breath.',
+                sliderImages: [
+                    'https://images.pexels.com/photos/257904/pexels-photo-257904.jpeg',
+                    'https://images.pexels.com/photos/167491/pexels-photo-167491.jpeg',
+                    'https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg'
+                ],
+                galleryItems: [
+                    { image: 'https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg', title: 'EARLY LIGHT', text: 'Morning breaks gently over the city. The first rays of light spill through the windows like melted gold.' },
+                    { image: 'https://images.pexels.com/photos/144428/pexels-photo-144428.jpeg', title: 'FADING SUMMER', text: 'The last days of summer linger like a long goodbye. Warmth still clings to the pavement, but autumn is already whispering.' }
+                ]
+            },
+            {
+                id: 'wanderlust', title: 'WANDERLUST', subtitle: 'FOREST TALES',
+                cardImage: 'https://images.pexels.com/photos/325185/pexels-photo-325185.jpeg',
+                intro: 'Deep in the woods, where the canopy filters the light into dappled patterns, the world feels ancient and alive. Every step is a conversation with the earth.',
+                sliderImages: [
+                    'https://images.pexels.com/photos/325185/pexels-photo-325185.jpeg',
+                    'https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg',
+                    'https://images.pexels.com/photos/1252869/pexels-photo-1252869.jpeg'
+                ],
+                galleryItems: [
+                    { image: 'https://images.pexels.com/photos/33109/fall-autumn-red-season.jpg', title: 'MOSS & MEMORY', text: 'The forest floor is a carpet of stories. Each step crunches with the weight of seasons past.' },
+                    { image: 'https://images.pexels.com/photos/2387873/pexels-photo-2387873.jpeg', title: 'CANOPY DREAMS', text: 'Looking up through the trees, the sky is a mosaic of blue and green. A reminder that there is always more above.' }
+                ]
+            },
+            {
+                id: 'nomad', title: 'NOMAD', subtitle: 'COAST LINES',
+                cardImage: 'https://images.pexels.com/photos/164341/pexels-photo-164341.jpeg',
+                intro: 'The coast calls to those who listen. Salt air, endless horizons, and the rhythm of waves that have been keeping time long before we arrived.',
+                sliderImages: [
+                    'https://images.pexels.com/photos/164341/pexels-photo-164341.jpeg',
+                    'https://images.pexels.com/photos/440731/pexels-photo-440731.jpeg',
+                    'https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg'
+                ],
+                galleryItems: [
+                    { image: 'https://images.pexels.com/photos/257904/pexels-photo-257904.jpeg', title: 'TIDAL PULL', text: 'The ocean breathes in and out with a patience we can only aspire to. We are but visitors in its kingdom.' },
+                    { image: 'https://images.pexels.com/photos/167491/pexels-photo-167491.jpeg', title: 'SALT & SKY', text: 'Where the water meets the horizon, the boundaries blur. It is impossible to tell where one ends and the other begins.' }
+                ]
+            },
+            {
+                id: 'escape', title: 'ESCAPE', subtitle: 'NIGHT VISIONS',
+                cardImage: 'https://images.pexels.com/photos/1252869/pexels-photo-1252869.jpeg',
+                intro: 'When the sun goes down, the world transforms. Neon lights, shadow play, and the electric hum of the city after dark — this is the night we live for.',
+                sliderImages: [
+                    'https://images.pexels.com/photos/1252869/pexels-photo-1252869.jpeg',
+                    'https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg',
+                    'https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg'
+                ],
+                galleryItems: [
+                    { image: 'https://images.pexels.com/photos/144428/pexels-photo-144428.jpeg', title: 'NEON GLOW', text: 'The city wears its neon like jewelry. Each sign a beacon, each reflection a story waiting to be told.' },
+                    { image: 'https://images.pexels.com/photos/164745/pexels-photo-164745.jpeg', title: 'MIDNIGHT HOUR', text: 'There is a sacred silence that descends at midnight. The world feels suspended, holding its breath for what comes next.' }
                 ]
             }
         ];
 
-        function loadGallery() {
-            var container = document.getElementById('galleryContainer');
-            if (!container) return;
-
+        function loadEvents() {
             var raw;
             try {
-                raw = localStorage.getItem('backstage_gallery_events_data');
-            } catch(e) {}
+                raw = localStorage.getItem(STORAGE_KEY);
+            } catch (e) {}
 
-            var events;
+            var parsed;
             if (raw) {
                 try {
-                    events = JSON.parse(raw);
-                } catch(e) {}
+                    parsed = JSON.parse(raw);
+                } catch (e) {}
             }
 
-            if (!events || !events.length) {
-                events = DEFAULTS.map(function(d) {
-                    return {
-                        title: d.year,
-                        subtitle: d.subtitle,
-                        galleryItems: d.photos.map(function(p) {
-                            return { image: p.img, title: p.label, text: '' };
-                        })
-                    };
-                });
-            }
+            if (!parsed || !parsed.length) return DEFAULTS;
 
-            container.textContent = '';
-
-            events.forEach(function(ev, idx) {
-                var items = ev.galleryItems || [];
-                if (!items.length) return;
-
-                var section = document.createElement('section');
-                section.className = 'year-section';
-
-                var header = document.createElement('div');
-                header.className = 'year-header';
-
-                var yearSpan = document.createElement('span');
-                yearSpan.className = 'year-number';
-                yearSpan.textContent = ev.title || 'AÑO';
-
-                var line = document.createElement('div');
-                line.className = 'year-line';
-
-                var label = document.createElement('p');
-                label.style.cssText = 'font-size:0.7rem;letter-spacing:3px;';
-                label.textContent = (ev.subtitle || '').toUpperCase();
-
-                header.appendChild(yearSpan);
-                header.appendChild(line);
-                header.appendChild(label);
-                section.appendChild(header);
-
-                var grid = document.createElement('div');
-                grid.className = 'instagram-grid';
-
-                items.forEach(function(item, i) {
-                    var div = document.createElement('div');
-                    div.className = 'photo-item';
-
-                    var img = document.createElement('img');
-                    img.src = item.image || '';
-                    img.alt = item.title || 'Foto';
-                    img.loading = 'lazy';
-
-                    var overlay = document.createElement('div');
-                    overlay.className = 'photo-overlay';
-
-                    var icon = document.createElement('i');
-                    icon.className = 'fa-solid ' + (ICONS[(idx * items.length + i) % ICONS.length]);
-
-                    var info = document.createElement('span');
-                    info.className = 'photo-info';
-                    info.textContent = item.title || '';
-
-                    overlay.appendChild(icon);
-                    overlay.appendChild(info);
-                    div.appendChild(img);
-                    div.appendChild(overlay);
-                    grid.appendChild(div);
-                });
-
-                section.appendChild(grid);
-                container.appendChild(section);
+            return parsed.map(function(ev) {
+                return {
+                    id: ev.id || ev.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+                    title: ev.title || '',
+                    subtitle: ev.subtitle || '',
+                    cardImage: ev.cardImage || '',
+                    intro: ev.intro || '',
+                    sliderImages: Array.isArray(ev.sliderImages) && ev.sliderImages.length ? ev.sliderImages : (ev.galleryItems || []).map(function(g) { return g.image; }).filter(Boolean),
+                    galleryItems: Array.isArray(ev.galleryItems) ? ev.galleryItems : []
+                };
+            }).filter(function(ev) {
+                return ev.galleryItems.length > 0;
             });
         }
 
-        document.addEventListener('DOMContentLoaded', loadGallery);
+        var events = loadEvents();
+
+        events.forEach(function(ev) {
+            if (ev.cardImage) heroImages.push(ev.cardImage);
+        });
+        if (!heroImages.length) {
+            heroImages = [
+                'https://images.pexels.com/photos/2387873/pexels-photo-2387873.jpeg',
+                'https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg',
+                'https://images.pexels.com/photos/1252869/pexels-photo-1252869.jpeg',
+                'https://images.pexels.com/photos/325185/pexels-photo-325185.jpeg'
+            ];
+        }
+
+        // ===================== EVENT GRID RENDER =====================
+        function renderEventGrid() {
+            var grid = document.getElementById('eventGrid');
+            if (!grid) return;
+
+            grid.textContent = '';
+
+            events.forEach(function(ev, idx) {
+                var card = document.createElement('div');
+                card.className = 'event-card';
+                card.onclick = function() { openEvent(ev.id); };
+
+                var img = document.createElement('img');
+                img.className = 'event-card-img';
+                img.src = ev.cardImage || ev.sliderImages[0] || '';
+                img.alt = ev.title || 'Evento';
+                img.loading = 'lazy';
+
+                var overlay = document.createElement('div');
+                overlay.className = 'event-card-overlay';
+
+                var title = document.createElement('h2');
+                title.className = 'event-card-title';
+                title.textContent = ev.title || 'EVENTO';
+
+                var sub = document.createElement('span');
+                sub.className = 'event-card-sub';
+                sub.textContent = (ev.subtitle || '').toUpperCase();
+
+                card.appendChild(img);
+                card.appendChild(overlay);
+                card.appendChild(title);
+                card.appendChild(sub);
+                grid.appendChild(card);
+            });
+        }
+
+        renderEventGrid();
+
+        // ===================== VIEW STATE =====================
+        var currentEvent = null;
+        var currentSlide = 0;
+        var slideInterval = null;
+
+        // ===================== VIEW SWITCHING =====================
+        function openEvent(eventId) {
+            currentEvent = null;
+            for (var i = 0; i < events.length; i++) {
+                if (events[i].id === eventId) { currentEvent = events[i]; break; }
+            }
+            if (!currentEvent) return;
+
+            document.getElementById('view1').style.display = 'none';
+            document.getElementById('view2').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('sidebar').classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
+
+            document.getElementById('eventHeaderTitle').textContent = currentEvent.title;
+            document.getElementById('eventHeaderSub').textContent = currentEvent.subtitle;
+            document.getElementById('eventIntro').textContent = currentEvent.intro;
+
+            var track = document.getElementById('sliderTrack');
+            var dots = document.getElementById('sliderDots');
+            track.innerHTML = '';
+            dots.innerHTML = '';
+            currentSlide = 0;
+
+            currentEvent.sliderImages.forEach(function(src, i) {
+                var img = document.createElement('img');
+                img.className = 'slider-slide';
+                img.src = src;
+                img.alt = currentEvent.title + ' ' + (i + 1);
+                img.loading = 'lazy';
+                track.appendChild(img);
+                var dot = document.createElement('button');
+                dot.className = 'slider-dot' + (i === 0 ? ' active' : '');
+                dot.setAttribute('aria-label', 'Ir a imagen ' + (i + 1));
+                dot.onclick = function() { goToSlide(i); };
+                dots.appendChild(dot);
+            });
+
+            var leftCol = document.getElementById('detailLeft');
+            var rightCol = document.getElementById('detailRight');
+            leftCol.innerHTML = '';
+            rightCol.innerHTML = '';
+
+            currentEvent.galleryItems.forEach(function(item, i) {
+                var photoDiv = document.createElement('div');
+                photoDiv.className = 'photo-block';
+                photoDiv.innerHTML = '<img src="' + item.image + '" alt="' + item.title + '" loading="lazy">' +
+                    '<div class="photo-block-footer">' +
+                    '<span>' + item.title + '</span>' +
+                    '<div class="photo-block-icons">' +
+                    '<i class="fa-regular fa-heart" title="Me gusta"></i>' +
+                    '<i class="fa-regular fa-share-from-square" title="Compartir"></i>' +
+                    '</div></div>';
+                leftCol.appendChild(photoDiv);
+
+                var narrativeDiv = document.createElement('div');
+                narrativeDiv.className = 'narrative-block';
+                narrativeDiv.innerHTML = '<span class="narrative-label">Cap\u00edtulo ' + (i + 1) + '</span>' +
+                    '<p>' + item.text + '</p>';
+                rightCol.appendChild(narrativeDiv);
+            });
+
+            if (rightCol.firstChild) rightCol.firstChild.style.paddingTop = '0';
+            startSlideShow();
+        }
+
+        function closeEvent() {
+            document.getElementById('view2').style.display = 'none';
+            document.getElementById('view1').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            stopSlideShow();
+        }
+
+        // ===================== SLIDER (DETAIL) =====================
+        function goToSlide(index) {
+            var slides = document.querySelectorAll('.slider-slide');
+            var dots = document.querySelectorAll('.slider-dot');
+            if (index < 0) index = slides.length - 1;
+            if (index >= slides.length) index = 0;
+            currentSlide = index;
+            document.getElementById('sliderTrack').style.transform = 'translateX(-' + (currentSlide * 100) + '%)';
+            dots.forEach(function(d, i) { d.classList.toggle('active', i === currentSlide); });
+        }
+
+        function slideNext() { goToSlide(currentSlide + 1); resetSlideInterval(); }
+        function slidePrev() { goToSlide(currentSlide - 1); resetSlideInterval(); }
+        function startSlideShow() { stopSlideShow(); slideInterval = setInterval(function() { goToSlide(currentSlide + 1); }, 5000); }
+        function stopSlideShow() { clearInterval(slideInterval); slideInterval = null; }
+        function resetSlideInterval() { if (slideInterval) { stopSlideShow(); startSlideShow(); } }
+
+        // Keyboard
+        document.addEventListener('keydown', function(e) {
+            if (document.getElementById('view2').style.display !== 'block') return;
+            if (e.key === 'Escape') { closeEvent(); }
+            if (e.key === 'ArrowRight') { slideNext(); }
+            if (e.key === 'ArrowLeft') { slidePrev(); }
+        });
     </script>
 
 </body>

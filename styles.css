@@ -4,10 +4,17 @@
     --accent: #888;
     --sidebar-width: 220px;
     --pink: #e772a7;
+    --rose: #f0a0b8;
+    --rose-shadow: 0 0 30px rgba(240, 160, 184, 0.35);
     --gray: #1a1a1a;
     --black: #000;
     --transition: 0.3s ease;
     --text-gray: #888;
+}
+
+.pink-text {
+    color: var(--rose);
+    text-shadow: var(--rose-shadow);
 }
 
 * {

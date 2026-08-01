@@ -85,10 +85,14 @@
     function initDatasources() {
         var storyRegistry = new window.Backstage.DatasourceRegistry();
         var soundscapeRegistry = new window.Backstage.DatasourceRegistry();
+        var galleryRegistry = new window.Backstage.DatasourceRegistry();
         var local = new window.Backstage.LocalDatasource();
 
         soundscapeRegistry.register('local', local);
         soundscapeRegistry.setActive('local');
+
+        galleryRegistry.register('local', local);
+        galleryRegistry.setActive('local');
 
         var firestoreReady = false;
         try {
@@ -112,11 +116,13 @@
 
         window.Backstage.storyDatasourceRegistry = storyRegistry;
         window.Backstage.soundscapeDatasourceRegistry = soundscapeRegistry;
+        window.Backstage.galleryDatasourceRegistry = galleryRegistry;
         window.Backstage.datasource = storyRegistry;
 
         return {
             storyRegistry: storyRegistry,
             soundscapeRegistry: soundscapeRegistry,
+            galleryRegistry: galleryRegistry,
             local: local,
             firestoreReady: firestoreReady
         };
@@ -176,11 +182,12 @@
         });
     }
 
-    function bootWithLocalMode(storyReg, soundscapeReg, local) {
+    function bootWithLocalMode(storyReg, soundscapeReg, galleryReg, local) {
         window.Backstage._localMode = true;
 
         var storyRepo = new window.Backstage.StoryRepository(storyReg);
         var soundscapeRepo = new window.Backstage.SoundscapeRepository(soundscapeReg);
+        var galleryRepo = new window.Backstage.GalleryRepository(galleryReg);
 
         if (typeof storiesDataDefault !== 'undefined') {
             storyRepo.migrateFromDefaults(storiesDataDefault);
@@ -189,15 +196,16 @@
             soundscapeRepo.migrateFromDefaults(soundscapesDataDefault);
         }
 
-        bootApp(storyReg, soundscapeReg, storyRepo, soundscapeRepo, false);
+        bootApp(storyReg, soundscapeReg, galleryReg, storyRepo, soundscapeRepo, galleryRepo, false);
     }
 
     /* ------------------------------------------
        4. BOOT APP
        ------------------------------------------ */
-    function bootApp(storyReg, soundscapeReg, storyRepo, soundscapeRepo, isFirestore) {
+    function bootApp(storyReg, soundscapeReg, galleryReg, storyRepo, soundscapeRepo, galleryRepo, isFirestore) {
         var storyService = new window.Backstage.StoryService(storyRepo);
         var soundscapeService = new window.Backstage.SoundscapeService(soundscapeRepo);
+        var galleryService = new window.Backstage.GalleryService(galleryRepo);
         var dashboardService = new window.Backstage.DashboardService(storyService, soundscapeService);
 
         var dashboardView = window.Backstage.Views.Dashboard;
@@ -209,9 +217,13 @@
         var soundscapeView = window.Backstage.Views.Soundscape;
         soundscapeView.init('section-soundscapes');
 
+        var galleryView = window.Backstage.Views.Gallery;
+        galleryView.init('section-gallery');
+
         var dashboardCtrl = new window.Backstage.Controllers.Dashboard(dashboardService, dashboardView);
         var storyCtrl = new window.Backstage.Controllers.Story(storyService, storyView);
         var soundscapeCtrl = new window.Backstage.Controllers.Soundscape(soundscapeService, soundscapeView);
+        var galleryCtrl = new window.Backstage.Controllers.Gallery(galleryService, galleryView);
 
         if (window.Backstage._localMode) {
             showLocalModeBanner();
@@ -266,6 +278,19 @@
             unmount: function() { soundscapeCtrl.unmount(); }
         });
 
+        router.register('gallery', {
+            title: 'Galería Fotográfica',
+            subtitle: 'Administra los eventos y fotos del archivo visual',
+            mount: function() {
+                showSection('gallery');
+                window.Backstage.Components.Sidebar.setActive('gallery');
+                window.Backstage.Components.Header.updateForRoute('gallery');
+                galleryCtrl.mount();
+                window.Backstage.Components.Header.showOnly('btnAddGallery');
+            },
+            unmount: function() { galleryCtrl.unmount(); }
+        });
+
         window.Backstage.router = router;
 
         window.Backstage.Components.Sidebar.init();
@@ -289,6 +314,11 @@
                 if (current2 === 'soundscapes') soundscapeCtrl.refresh();
                 if (current2 === 'dashboard') dashboardCtrl.refresh();
             }
+            if (e.key === 'gallery_events_data' || e.key === 'gallery_events_data_backup') {
+                var current3 = router.getCurrent();
+                if (current3 === 'gallery') galleryCtrl.refresh();
+                if (current3 === 'dashboard') dashboardCtrl.refresh();
+            }
         });
 
         showApp();
@@ -301,7 +331,7 @@
         if (banner) banner.style.display = '';
     }
 
-    function bindErrorScreenButtons(storyReg, soundscapeReg, local) {
+    function bindErrorScreenButtons(storyReg, soundscapeReg, galleryReg, local) {
         var retryBtn = document.getElementById('preloadRetryBtn');
         var localBtn = document.getElementById('preloadLocalBtn');
 
@@ -311,7 +341,7 @@
                 showPreloadError(true);
                 attemptPreload(storyReg).then(function(ok) {
                     if (ok) {
-                        bootWithFirestore(storyReg, soundscapeReg, local);
+                        bootWithFirestore(storyReg, soundscapeReg, galleryReg, local);
                     } else {
                         showPreloadError(false);
                     }
@@ -322,22 +352,23 @@
         if (localBtn) {
             localBtn.addEventListener('click', function() {
                 hidePreloadError();
-                bootWithLocalMode(storyReg, soundscapeReg, local);
+                bootWithLocalMode(storyReg, soundscapeReg, galleryReg, local);
             });
         }
     }
 
-    function bootWithFirestore(storyReg, soundscapeReg, local) {
+    function bootWithFirestore(storyReg, soundscapeReg, galleryReg, local) {
         var firestoreDs = storyReg.sources['firestore'];
         var storyRepo = new window.Backstage.FirestoreStoryRepository(storyReg);
         var soundscapeRepo = new window.Backstage.SoundscapeRepository(soundscapeReg);
+        var galleryRepo = new window.Backstage.GalleryRepository(galleryReg);
 
         if (typeof soundscapesDataDefault !== 'undefined') {
             soundscapeRepo.migrateFromDefaults(soundscapesDataDefault);
         }
 
         window.Backstage._localMode = false;
-        bootApp(storyReg, soundscapeReg, storyRepo, soundscapeRepo, true);
+        bootApp(storyReg, soundscapeReg, galleryReg, storyRepo, soundscapeRepo, galleryRepo, true);
     }
 
     /* ------------------------------------------
@@ -347,20 +378,20 @@
         var ds = initDatasources();
 
         if (!ds.firestoreReady) {
-            bootWithLocalMode(ds.storyRegistry, ds.soundscapeRegistry, ds.local);
+            bootWithLocalMode(ds.storyRegistry, ds.soundscapeRegistry, ds.galleryRegistry, ds.local);
             return;
         }
 
-        bindErrorScreenButtons(ds.storyRegistry, ds.soundscapeRegistry, ds.local);
+        bindErrorScreenButtons(ds.storyRegistry, ds.soundscapeRegistry, ds.galleryRegistry, ds.local);
 
         var booted = false;
         function safeBoot(mode) {
             if (booted) return;
             booted = true;
             if (mode === 'firestore') {
-                bootWithFirestore(ds.storyRegistry, ds.soundscapeRegistry, ds.local);
+                bootWithFirestore(ds.storyRegistry, ds.soundscapeRegistry, ds.galleryRegistry, ds.local);
             } else {
-                bootWithLocalMode(ds.storyRegistry, ds.soundscapeRegistry, ds.local);
+                bootWithLocalMode(ds.storyRegistry, ds.soundscapeRegistry, ds.galleryRegistry, ds.local);
             }
         }
 
