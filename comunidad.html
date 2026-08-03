@@ -48,6 +48,19 @@
             font-size: 14px; color: #bbb; line-height: 1.8; margin-bottom: 12px;
         }
 
+        .com-read-more {
+            margin-top: 60px; text-align: center;
+        }
+        .com-read-more a {
+            display: inline-flex; align-items: center; gap: 10px;
+            color: var(--rose); text-decoration: none; font-weight: 700;
+            font-size: 1rem; text-transform: uppercase; letter-spacing: 2px;
+            transition: 0.3s;
+        }
+        .com-read-more a i { transition: transform 0.3s; }
+        .com-read-more a:hover { color: #F6ADC6; text-shadow: var(--rose-shadow); }
+        .com-read-more a:hover i { transform: translateX(6px); }
+
         .com-instructions {
             background: #111; border-radius: 8px; padding: 30px 35px;
             margin-bottom: 50px;
@@ -243,6 +256,10 @@
             <div class="form-success" id="formSuccess">
                 <i class="fa-solid fa-circle-check"></i>
                 &iexcl;Gracias por compartir tu historia! La hemos recibido y la revisaremos pronto.
+            </div>
+
+            <div class="com-read-more">
+                <a href="historias.html">Leer m&aacute;s historias <i class="fa-solid fa-arrow-right"></i></a>
             </div>
         </div>
 
