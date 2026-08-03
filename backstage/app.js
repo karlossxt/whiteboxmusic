@@ -86,6 +86,7 @@
         var storyRegistry = new window.Backstage.DatasourceRegistry();
         var soundscapeRegistry = new window.Backstage.DatasourceRegistry();
         var galleryRegistry = new window.Backstage.DatasourceRegistry();
+        var sectionRegistry = new window.Backstage.DatasourceRegistry();
         var local = new window.Backstage.LocalDatasource();
 
         soundscapeRegistry.register('local', local);
@@ -93,6 +94,9 @@
 
         galleryRegistry.register('local', local);
         galleryRegistry.setActive('local');
+
+        sectionRegistry.register('local', local);
+        sectionRegistry.setActive('local');
 
         var firestoreReady = false;
         try {
@@ -102,6 +106,8 @@
                 storyRegistry.register('firestore', firestore);
                 storyRegistry.register('local', local);
                 storyRegistry.setActive('firestore');
+                sectionRegistry.register('firestore', firestore);
+                sectionRegistry.setActive('firestore');
                 firestoreReady = true;
                 firestoreDsGlobal = firestore;
             }
@@ -117,12 +123,14 @@
         window.Backstage.storyDatasourceRegistry = storyRegistry;
         window.Backstage.soundscapeDatasourceRegistry = soundscapeRegistry;
         window.Backstage.galleryDatasourceRegistry = galleryRegistry;
+        window.Backstage.sectionDatasourceRegistry = sectionRegistry;
         window.Backstage.datasource = storyRegistry;
 
         return {
             storyRegistry: storyRegistry,
             soundscapeRegistry: soundscapeRegistry,
             galleryRegistry: galleryRegistry,
+            sectionRegistry: sectionRegistry,
             local: local,
             firestoreReady: firestoreReady
         };
@@ -134,23 +142,32 @@
        localStorage automaticamente.
        ------------------------------------------ */
     function preloadFirestoreData(firestoreDs) {
-        var COLLECTION = 'stories';
+        var COLLECTIONS = ['stories', 'site_content'];
 
-        return firestoreDs._collectionRef(COLLECTION).get().then(function(snapshot) {
-            var firestoreItems = [];
-            snapshot.forEach(function(doc) {
-                var data = doc.data();
-                data.id = doc.id;
-                firestoreItems.push(data);
+        firestoreDs._cache = firestoreDs._cache || {};
+
+        function loadCollection(index) {
+            if (index >= COLLECTIONS.length) {
+                return Promise.resolve({
+                    stories: firestoreDs._cache['stories'] ? firestoreDs._cache['stories'].length : 0,
+                    sections: firestoreDs._cache['site_content'] ? firestoreDs._cache['site_content'].length : 0
+                });
+            }
+
+            var name = COLLECTIONS[index];
+            return firestoreDs._collectionRef(name).get().then(function(snapshot) {
+                var items = [];
+                snapshot.forEach(function(doc) {
+                    var data = doc.data();
+                    data.id = doc.id;
+                    items.push(data);
+                });
+                firestoreDs._cache[name] = items;
+                return loadCollection(index + 1);
             });
+        }
 
-            firestoreDs._cache = firestoreDs._cache || {};
-            firestoreDs._cache[COLLECTION] = firestoreItems;
-
-            return { count: firestoreItems.length };
-        }).catch(function(err) {
-            throw err;
-        });
+        return loadCollection(0);
     }
 
     /* ------------------------------------------
@@ -182,12 +199,13 @@
         });
     }
 
-    function bootWithLocalMode(storyReg, soundscapeReg, galleryReg, local) {
+    function bootWithLocalMode(storyReg, soundscapeReg, galleryReg, sectionReg, local) {
         window.Backstage._localMode = true;
 
         var storyRepo = new window.Backstage.StoryRepository(storyReg);
         var soundscapeRepo = new window.Backstage.SoundscapeRepository(soundscapeReg);
         var galleryRepo = new window.Backstage.GalleryRepository(galleryReg);
+        var sectionRepo = new window.Backstage.SectionRepository(local);
 
         if (typeof storiesDataDefault !== 'undefined') {
             storyRepo.migrateFromDefaults(storiesDataDefault);
@@ -195,14 +213,17 @@
         if (typeof soundscapesDataDefault !== 'undefined') {
             soundscapeRepo.migrateFromDefaults(soundscapesDataDefault);
         }
+        if (window.WhiteBoxSiteSchema) {
+            sectionRepo.migrateFromDefaults(window.WhiteBoxSiteSchema);
+        }
 
-        bootApp(storyReg, soundscapeReg, galleryReg, storyRepo, soundscapeRepo, galleryRepo, false);
+        bootApp(storyReg, soundscapeReg, galleryReg, storyRepo, soundscapeRepo, galleryRepo, sectionRepo, false);
     }
 
     /* ------------------------------------------
        4. BOOT APP
        ------------------------------------------ */
-    function bootApp(storyReg, soundscapeReg, galleryReg, storyRepo, soundscapeRepo, galleryRepo, isFirestore) {
+    function bootApp(storyReg, soundscapeReg, galleryReg, storyRepo, soundscapeRepo, galleryRepo, sectionRepo, isFirestore) {
         var storyService = new window.Backstage.StoryService(storyRepo);
         var soundscapeService = new window.Backstage.SoundscapeService(soundscapeRepo);
         var galleryService = new window.Backstage.GalleryService(galleryRepo);
@@ -219,6 +240,16 @@
 
         var galleryView = window.Backstage.Views.Gallery;
         galleryView.init('section-gallery');
+
+        var sectionService = null;
+        var sectionView = null;
+        var sectionCtrl = null;
+        if (window.WhiteBoxSiteSchema) {
+            sectionService = new window.Backstage.SectionService(sectionRepo, window.WhiteBoxSiteSchema);
+            sectionView = window.Backstage.Views.Sections;
+            sectionView.init('section-sections');
+            sectionCtrl = new window.Backstage.Controllers.Sections(sectionService, window.WhiteBoxSiteSchema, sectionView);
+        }
 
         var dashboardCtrl = new window.Backstage.Controllers.Dashboard(dashboardService, dashboardView);
         var storyCtrl = new window.Backstage.Controllers.Story(storyService, storyView);
@@ -291,6 +322,21 @@
             unmount: function() { galleryCtrl.unmount(); }
         });
 
+        if (sectionCtrl) {
+            router.register('sections', {
+                title: 'Contenido del Sitio',
+                subtitle: 'Edita los textos y secciones de cada pagina',
+                mount: function() {
+                    showSection('sections');
+                    window.Backstage.Components.Sidebar.setActive('sections');
+                    window.Backstage.Components.Header.updateForRoute('sections');
+                    sectionCtrl.mount();
+                    window.Backstage.Components.Header.hideAll();
+                },
+                unmount: function() { sectionCtrl.unmount(); }
+            });
+        }
+
         window.Backstage.router = router;
 
         window.Backstage.Components.Sidebar.init();
@@ -319,6 +365,10 @@
                 if (current3 === 'gallery') galleryCtrl.refresh();
                 if (current3 === 'dashboard') dashboardCtrl.refresh();
             }
+            if (e.key === 'backstage_site_content' || e.key === 'backstage_site_content_backup') {
+                var current4 = router.getCurrent();
+                if (current4 === 'sections' && sectionCtrl) sectionCtrl.refresh();
+            }
         });
 
         showApp();
@@ -331,7 +381,7 @@
         if (banner) banner.style.display = '';
     }
 
-    function bindErrorScreenButtons(storyReg, soundscapeReg, galleryReg, local) {
+    function bindErrorScreenButtons(storyReg, soundscapeReg, galleryReg, sectionReg, local) {
         var retryBtn = document.getElementById('preloadRetryBtn');
         var localBtn = document.getElementById('preloadLocalBtn');
 
@@ -341,7 +391,7 @@
                 showPreloadError(true);
                 attemptPreload(storyReg).then(function(ok) {
                     if (ok) {
-                        bootWithFirestore(storyReg, soundscapeReg, galleryReg, local);
+                        bootWithFirestore(storyReg, soundscapeReg, galleryReg, sectionReg, local);
                     } else {
                         showPreloadError(false);
                     }
@@ -352,23 +402,24 @@
         if (localBtn) {
             localBtn.addEventListener('click', function() {
                 hidePreloadError();
-                bootWithLocalMode(storyReg, soundscapeReg, galleryReg, local);
+                bootWithLocalMode(storyReg, soundscapeReg, galleryReg, sectionReg, local);
             });
         }
     }
 
-    function bootWithFirestore(storyReg, soundscapeReg, galleryReg, local) {
+    function bootWithFirestore(storyReg, soundscapeReg, galleryReg, sectionReg, local) {
         var firestoreDs = storyReg.sources['firestore'];
         var storyRepo = new window.Backstage.FirestoreStoryRepository(storyReg);
         var soundscapeRepo = new window.Backstage.SoundscapeRepository(soundscapeReg);
         var galleryRepo = new window.Backstage.GalleryRepository(galleryReg);
+        var sectionRepo = new window.Backstage.FirestoreSectionRepository(sectionReg);
 
         if (typeof soundscapesDataDefault !== 'undefined') {
             soundscapeRepo.migrateFromDefaults(soundscapesDataDefault);
         }
 
         window.Backstage._localMode = false;
-        bootApp(storyReg, soundscapeReg, galleryReg, storyRepo, soundscapeRepo, galleryRepo, true);
+        bootApp(storyReg, soundscapeReg, galleryReg, storyRepo, soundscapeRepo, galleryRepo, sectionRepo, true);
     }
 
     /* ------------------------------------------
@@ -378,20 +429,20 @@
         var ds = initDatasources();
 
         if (!ds.firestoreReady) {
-            bootWithLocalMode(ds.storyRegistry, ds.soundscapeRegistry, ds.galleryRegistry, ds.local);
+            bootWithLocalMode(ds.storyRegistry, ds.soundscapeRegistry, ds.galleryRegistry, ds.sectionRegistry, ds.local);
             return;
         }
 
-        bindErrorScreenButtons(ds.storyRegistry, ds.soundscapeRegistry, ds.galleryRegistry, ds.local);
+        bindErrorScreenButtons(ds.storyRegistry, ds.soundscapeRegistry, ds.galleryRegistry, ds.sectionRegistry, ds.local);
 
         var booted = false;
         function safeBoot(mode) {
             if (booted) return;
             booted = true;
             if (mode === 'firestore') {
-                bootWithFirestore(ds.storyRegistry, ds.soundscapeRegistry, ds.galleryRegistry, ds.local);
+                bootWithFirestore(ds.storyRegistry, ds.soundscapeRegistry, ds.galleryRegistry, ds.sectionRegistry, ds.local);
             } else {
-                bootWithLocalMode(ds.storyRegistry, ds.soundscapeRegistry, ds.galleryRegistry, ds.local);
+                bootWithLocalMode(ds.storyRegistry, ds.soundscapeRegistry, ds.galleryRegistry, ds.sectionRegistry, ds.local);
             }
         }
 
