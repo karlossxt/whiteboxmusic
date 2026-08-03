@@ -31,12 +31,14 @@
         var cards = this.service.getStatCards();
         var recentStories = this.service.getRecentStories(5);
         var recentSoundscapes = this.service.getRecentSoundscapes(5);
+        var previewStory = this.service.getPreviewStory();
         var self = this;
 
         this.view.render(
             cards,
             recentStories,
             recentSoundscapes,
+            previewStory,
             {
                 onNewStory: function() { window.Backstage.router.navigate('stories'); },
                 onNewSong: function() { window.Backstage.router.navigate('soundscapes'); },

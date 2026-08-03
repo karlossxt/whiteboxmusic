@@ -51,9 +51,32 @@
                 id: s.id,
                 title: s.title,
                 category: s.category,
-                status: s.status
+                status: s.status,
+                featured: s.isFeatured(),
+                image: s.image || '',
+                excerpt: s.excerpt || '',
+                updatedAt: s.updatedAt || 0
             };
         });
+    };
+
+    DashboardService.prototype.getPreviewStory = function() {
+        var items = this.storyService.getAll();
+        if (!items.length) return null;
+        var featured = items.filter(function(s) { return s.isPublished() && s.isFeatured(); });
+        var pool = featured.length ? featured : items.filter(function(s) { return s.isPublished(); });
+        var source = pool.length ? pool : items;
+        var sorted = source.slice().sort(function(a, b) {
+            return (b.updatedAt || 0) - (a.updatedAt || 0);
+        });
+        var top = sorted[0];
+        return {
+            id: top.id,
+            title: top.title,
+            category: top.category,
+            image: top.image || '',
+            excerpt: top.excerpt || ''
+        };
     };
 
     DashboardService.prototype.getRecentSoundscapes = function(limit) {
@@ -68,7 +91,8 @@
                 title: ss.title,
                 artist: ss.artist,
                 playlist: ss.playlist,
-                published: ss.isPublished()
+                published: ss.isPublished(),
+                cover: ss.cover || ''
             };
         });
     };
