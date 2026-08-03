@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
     <style>
-        .main-content { background: #fff; padding: 0; color: #000; }
+        .main-content { background: #000; padding: 0; color: #fff; }
 
         .com-hero {
             background: #000; color: #fff; padding: 15px 30px;
@@ -30,10 +30,12 @@
         .com-container h1 {
             font-size: 2.8rem; font-weight: 900; margin-bottom: 20px;
             line-height: 1.15; letter-spacing: -1px;
+            color: var(--rose);
+            text-shadow: var(--rose-shadow);
         }
 
         .com-subtitle {
-            font-size: 1.05rem; color: #555; line-height: 1.7;
+            font-size: 1.05rem; color: #aaa; line-height: 1.7;
             margin-bottom: 50px; max-width: 650px;
         }
 
@@ -43,11 +45,11 @@
             letter-spacing: 4px; color: #F6ADC6; margin-bottom: 20px;
         }
         .com-section p {
-            font-size: 14px; color: #333; line-height: 1.8; margin-bottom: 12px;
+            font-size: 14px; color: #bbb; line-height: 1.8; margin-bottom: 12px;
         }
 
         .com-instructions {
-            background: #f9f9f9; border-radius: 8px; padding: 30px 35px;
+            background: #111; border-radius: 8px; padding: 30px 35px;
             margin-bottom: 50px;
         }
         .com-instructions h2 {
@@ -58,7 +60,7 @@
             list-style: none; padding: 0;
         }
         .com-instructions ul li {
-            font-size: 14px; color: #333; line-height: 1.8;
+            font-size: 14px; color: #bbb; line-height: 1.8;
             margin-bottom: 10px; padding-left: 18px; position: relative;
         }
         .com-instructions ul li::before {
@@ -71,7 +73,7 @@
         .form-row { margin-bottom: 20px; }
         .form-row label {
             display: block; font-size: 0.8rem; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 1px; color: #333;
+            text-transform: uppercase; letter-spacing: 1px; color: #bbb;
             margin-bottom: 8px;
         }
         .form-row label .required { color: #F6ADC6; }
@@ -79,10 +81,14 @@
         .form-row input[type="text"],
         .form-row input[type="email"],
         .form-row textarea {
-            width: 100%; padding: 12px 16px; border: 1px solid #ddd;
+            width: 100%; padding: 12px 16px; border: 1px solid #333;
             border-radius: 6px; font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 0.9rem; color: #333; background: #fff;
+            font-size: 0.9rem; color: #fff; background: #111;
             transition: border-color 0.3s;
+        }
+        .form-row input::placeholder,
+        .form-row textarea::placeholder {
+            color: #666;
         }
         .form-row input:focus,
         .form-row textarea:focus {
@@ -97,7 +103,7 @@
 
         .form-row .checkbox-label {
             display: flex; align-items: flex-start; gap: 10px;
-            font-size: 0.85rem; color: #555; line-height: 1.5; cursor: pointer;
+            font-size: 0.85rem; color: #bbb; line-height: 1.5; cursor: pointer;
         }
         .form-row .checkbox-label input[type="checkbox"] {
             margin-top: 3px; accent-color: #F6ADC6; min-width: 16px;
@@ -113,11 +119,11 @@
             border: none; cursor: pointer; transition: 0.3s;
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
-        .btn-submit:hover { background: #000; color: #fff; }
+        .btn-submit:hover { background: #fff; color: #000; }
 
         .form-success {
-            display: none; background: #eafaf1; border: 1px solid #b6e8cb;
-            color: #1d7a45; padding: 25px 30px; border-radius: 8px;
+            display: none; background: #0d1f14; border: 1px solid #1d7a45;
+            color: #6fdc9f; padding: 25px 30px; border-radius: 8px;
             font-size: 0.95rem; line-height: 1.6; margin-top: 20px;
         }
         .form-success.show { display: block; }
@@ -287,5 +293,6 @@
         });
     </script>
 
+    <script src="js/sidebar.js"></script>
 </body>
 </html>

@@ -444,7 +444,7 @@
 
         .event-header {
             text-align: center;
-            padding: 50px 40px 20px;
+            padding: 90px 40px 20px;
             max-width: 700px;
             margin: 0 auto;
         }
@@ -624,7 +624,7 @@
         <section id="view1" class="gallery-view">
 
             <!-- Hero Slider -->
-            <div class="hero-slider-section" id="heroSliderMain">
+            <div class="hero-slider-section" id="heroSliderMain" style="display:none;">
                 <img id="heroBg" class="slider-bg" src="https://images.pexels.com/photos/2387873/pexels-photo-2387873.jpeg" alt="Landscape">
                 <div class="hero-slider-overlay"></div>
                 <div class="hero-slider-content">
@@ -646,7 +646,7 @@
         <section id="view2" class="detail-view">
             <button class="back-btn" onclick="closeEvent()"><i class="fa-solid fa-arrow-left"></i> Volver</button>
 
-            <div class="hero-slider-detail" id="heroSlider">
+            <div class="hero-slider-detail" id="heroSlider" style="display:none;">
                 <div class="slider-track" id="sliderTrack"></div>
                 <button class="slider-btn slider-prev" onclick="slidePrev()"><i class="fa-solid fa-chevron-left"></i></button>
                 <button class="slider-btn slider-next" onclick="slideNext()"><i class="fa-solid fa-chevron-right"></i></button>
@@ -991,5 +991,6 @@
         });
     </script>
 
+    <script src="js/sidebar.js"></script>
 </body>
 </html>
