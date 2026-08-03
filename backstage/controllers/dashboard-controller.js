@@ -29,13 +29,21 @@
 
     DashboardController.prototype._render = function() {
         var cards = this.service.getStatCards();
+        var recentStories = this.service.getRecentStories(5);
+        var recentSoundscapes = this.service.getRecentSoundscapes(5);
         var self = this;
 
         this.view.render(
             cards,
-            function() { window.Backstage.router.navigate('stories'); },
-            function() { window.Backstage.router.navigate('soundscapes'); },
-            function() { window.open('../index.html', '_blank'); }
+            recentStories,
+            recentSoundscapes,
+            {
+                onNewStory: function() { window.Backstage.router.navigate('stories'); },
+                onNewSong: function() { window.Backstage.router.navigate('soundscapes'); },
+                onViewSite: function() { window.open('../index.html', '_blank'); },
+                onViewStories: function() { window.Backstage.router.navigate('stories'); },
+                onViewSoundscapes: function() { window.Backstage.router.navigate('soundscapes'); }
+            }
         );
     };
 
