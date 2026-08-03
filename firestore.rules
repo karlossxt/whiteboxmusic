@@ -1,0 +1,23 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthorized() {
+      return request.auth != null
+        && request.auth.uid == 'qtguil5JI0ejOeJ0fpiXrxTJvIq2';
+    }
+
+    /* Historias: lectura pública (sitio), escritura solo admin */
+    match /stories/{storyId} {
+      allow read: if true;
+      allow create, update, delete: if isAuthorized();
+    }
+
+    /* Contenido del sitio (CMS): lectura pública, escritura solo admin */
+    match /site_content/{pageId} {
+      allow read: if true;
+      allow create, update, delete: if isAuthorized();
+    }
+  }
+}
