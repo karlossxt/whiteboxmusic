@@ -9,7 +9,7 @@
     window.Backstage = window.Backstage || {};
     window.Backstage.Auth = window.Backstage.Auth || {};
 
-    var AUTHORIZED_UID = 'qtguil5JI0ejOeJ0fpiXrxTJvIq2';
+    var AUTHORIZED_UID = (window.Backstage && window.Backstage.ADMIN_UID) || 'qtguil5JI0ejOeJ0fpiXrxTJvIq2';
 
     window.Backstage.Auth.guard = function() {
         return new Promise(function(resolve, reject) {

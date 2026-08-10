@@ -341,7 +341,16 @@
         function renderCards() {
             DataManager.getPublishedStories().then(function(published) {
                 var isIndex = !!DOM.storiesGrid && document.getElementById('storiesSection');
-                var storiesToShow = isIndex ? published.slice(0, CONFIG.MAX_INDEX_STORIES) : published;
+                var storiesToShow = published;
+                if (isIndex) {
+                    /* En la HOME: primero las destacadas (featured) y luego por orden. */
+                    storiesToShow = published.slice().sort(function(a, b) {
+                        var af = a.featured === true || a.featured === 'true' ? 1 : 0;
+                        var bf = b.featured === true || b.featured === 'true' ? 1 : 0;
+                        if (bf !== af) return bf - af;
+                        return (a.order || 999) - (b.order || 999);
+                    }).slice(0, CONFIG.MAX_INDEX_STORIES);
+                }
 
                 DOM.storiesGrid.textContent = '';
 
@@ -721,6 +730,6 @@
 })(window, document);
 
 // ===== EVENT HANDLING =====
-document.addEventListener('stories:content-applied', function(e) {
+document.addEventListener('site:content-applied', function(e) {
     console.log('[StoriesModule] Content applied:', e.detail);
 });

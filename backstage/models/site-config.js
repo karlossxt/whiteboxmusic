@@ -26,6 +26,9 @@
         this.social = Object.assign({}, DEFAULT_SOCIAL, (raw.social && typeof raw.social === 'object') ? raw.social : {});
         this.contactEmail = raw.contactEmail || '';
         this.footerText = raw.footerText || '';
+        this.defaultSeoTitle = raw.defaultSeoTitle || '';
+        this.defaultSeoDescription = raw.defaultSeoDescription || '';
+        this.defaultOgImage = raw.defaultOgImage || '';
         this.updatedAt = raw.updatedAt || 0;
     }
 
@@ -39,6 +42,9 @@
             social: Object.assign({}, this.social),
             contactEmail: this.contactEmail,
             footerText: this.footerText,
+            defaultSeoTitle: this.defaultSeoTitle,
+            defaultSeoDescription: this.defaultSeoDescription,
+            defaultOgImage: this.defaultOgImage,
             updatedAt: this.updatedAt
         };
     };

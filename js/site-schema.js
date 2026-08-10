@@ -48,30 +48,15 @@
             id: 'entrevistas',
             label: 'Entrevistas',
             file: 'entreE.html',
+            /* Las entrevistas individuales ya NO viven en site_content:
+               se administran con el CRUD de Entrevistas del Backstage
+               (coleccion interviews) y se renderizan desde Firestore.
+               Los campos iv1_*/iv2_*/iv3_* quedaron como LEGACY_INTERVIEWS
+               en js/interviews-data.js. Aqui solo queda el contenido
+               estructural de la pagina. */
             fields: [
                 field('hero_title', 'Titulo hero ENTREVISTAS', 'textarea', 'html', '.main-title', 'ENTRE<br><span>VISTAS</span>'),
-                field('search_placeholder', 'Placeholder del buscador', 'text', 'placeholder', '.search-input', 'BUSCAR EN EL ARCHIVO...'),
-                field('iv1_num', 'Numero entrevista 1', 'text', 'text', '.interview-item:nth-child(1) .interview-num', 'VOL. 01'),
-                field('iv1_category', 'Categoria entrevista 1', 'text', 'text', '.interview-item:nth-child(1) .interview-category', 'PORTADA / INDIE'),
-                field('iv1_title', 'Titulo entrevista 1', 'textarea', 'html', '.interview-item:nth-child(1) .interview-title', 'La distorsion <br>como lenguaje'),
-                field('iv1_excerpt', 'Extracto entrevista 1', 'textarea', 'text', '.interview-item:nth-child(1) .interview-excerpt', 'Hablamos con las mentes creativas detras del sonido que esta sacudiendo los garajes de la ciudad...'),
-                field('iv1_cta', 'Boton leer entrevista 1', 'text', 'text', '.interview-item:nth-child(1) .read-btn', 'LEER ENTREVISTA'),
-                field('iv1_cta_url', 'Link entrevista 1', 'url', 'href', '.interview-item:nth-child(1) .read-btn', 'articulo-entrevista.html'),
-                field('iv1_image', 'Imagen entrevista 1', 'url', 'src', '.interview-item:nth-child(1) .interview-img', 'https://images.pexels.com/photos/1649691/pexels-photo-1649691.jpeg'),
-                field('iv2_num', 'Numero entrevista 2', 'text', 'text', '.interview-item:nth-child(2) .interview-num', 'VOL. 02'),
-                field('iv2_category', 'Categoria entrevista 2', 'text', 'text', '.interview-item:nth-child(2) .interview-category', 'SYNTH WAVE'),
-                field('iv2_title', 'Titulo entrevista 2', 'textarea', 'html', '.interview-item:nth-child(2) .interview-title', 'Madame Bleu: <br>Hija del Neon'),
-                field('iv2_excerpt', 'Extracto entrevista 2', 'textarea', 'text', '.interview-item:nth-child(2) .interview-excerpt', 'Un viaje intimo a traves de los sintetizadores y las letras melancolicas que definen su nuevo album...'),
-                field('iv2_cta', 'Boton leer entrevista 2', 'text', 'text', '.interview-item:nth-child(2) .read-btn', 'LEER ENTREVISTA'),
-                field('iv2_cta_url', 'Link entrevista 2', 'url', 'href', '.interview-item:nth-child(2) .read-btn', '#'),
-                field('iv2_image', 'Imagen entrevista 2', 'url', 'src', '.interview-item:nth-child(2) .interview-img', 'https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg'),
-                field('iv3_num', 'Numero entrevista 3', 'text', 'text', '.interview-item:nth-child(3) .interview-num', 'VOL. 03'),
-                field('iv3_category', 'Categoria entrevista 3', 'text', 'text', '.interview-item:nth-child(3) .interview-category', 'CULTURA URBANA'),
-                field('iv3_title', 'Titulo entrevista 3', 'textarea', 'html', '.interview-item:nth-child(3) .interview-title', 'Ritmo, rima <br>y realidad'),
-                field('iv3_excerpt', 'Extracto entrevista 3', 'textarea', 'text', '.interview-item:nth-child(3) .interview-excerpt', 'Dani Hache nos abre las puertas de su estudio...'),
-                field('iv3_cta', 'Boton leer entrevista 3', 'text', 'text', '.interview-item:nth-child(3) .read-btn', 'LEER ENTREVISTA'),
-                field('iv3_cta_url', 'Link entrevista 3', 'url', 'href', '.interview-item:nth-child(3) .read-btn', '#'),
-                field('iv3_image', 'Imagen entrevista 3', 'url', 'src', '.interview-item:nth-child(3) .interview-img', 'https://images.pexels.com/photos/257904/pexels-photo-257904.jpeg')
+                field('search_placeholder', 'Placeholder del buscador', 'text', 'placeholder', '.search-input', 'BUSCAR EN EL ARCHIVO...')
             ]
         },
 

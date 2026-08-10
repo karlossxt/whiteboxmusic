@@ -180,6 +180,7 @@
         window.Backstage.EventBus.on('soundscapes:created', function() { self._renderAll(); });
         window.Backstage.EventBus.on('soundscapes:updated', function() { self._renderAll(); });
         window.Backstage.EventBus.on('soundscapes:removed', function() { self._renderAll(); });
+        window.Backstage.EventBus.on('soundscapes:toggled', function() { self._renderAll(); });
     };
 
     SoundscapeController.prototype._openAddModal = function() {

@@ -98,8 +98,73 @@
         return page ? page.id : null;
     }
 
+    /* Sanitizacion por whitelist para contenido HTML editorial (CMS/Firestore).
+       Solo se permiten las etiquetas realmente necesarias:
+       br, strong, em, span, p.
+       Se bloquean script, iframe, object, embed, img, a, etc. y cualquier
+       atributo de evento (onclick, onerror, onload...). */
+    var ALLOWED_TAGS = { br: 1, strong: 1, em: 1, span: 1, p: 1 };
+    var UNSAFE_STYLE = /(expression|javascript:|vbscript:|url\s*\()/i;
+
+    function cleanHtmlNode(node) {
+        if (node.nodeType === 3) return node.cloneNode(true);
+        if (node.nodeType !== 1) return null;
+        var tag = node.tagName.toLowerCase();
+        if (ALLOWED_TAGS[tag]) {
+            var el = document.createElement(tag);
+            var attrs = Array.prototype.slice.call(node.attributes);
+            for (var i = 0; i < attrs.length; i++) {
+                var name = attrs[i].name;
+                var value = attrs[i].value || '';
+                if (/^on/i.test(name)) continue;
+                if (name === 'style') {
+                    if (!UNSAFE_STYLE.test(value)) el.setAttribute('style', value);
+                    continue;
+                }
+            }
+            var kids = Array.prototype.slice.call(node.childNodes);
+            for (var k = 0; k < kids.length; k++) {
+                var child = cleanHtmlNode(kids[k]);
+                if (child) el.appendChild(child);
+            }
+            return el;
+        }
+        var frag = document.createDocumentFragment();
+        var inner = Array.prototype.slice.call(node.childNodes);
+        for (var j = 0; j < inner.length; j++) {
+            var kept = cleanHtmlNode(inner[j]);
+            if (kept) frag.appendChild(kept);
+        }
+        return frag;
+    }
+
+    function sanitizeHtml(value) {
+        if (typeof value !== 'string') return '';
+        var esc = document.createElement('div');
+        if (!/<\/?[a-z][^>]*>/i.test(value)) {
+            esc.textContent = value;
+            return esc.innerHTML;
+        }
+        try {
+            var parsed = new DOMParser().parseFromString(value, 'text/html');
+            var root = parsed.body;
+            var out = document.createDocumentFragment();
+            var nodes = Array.prototype.slice.call(root.childNodes);
+            for (var i = 0; i < nodes.length; i++) {
+                var cleaned = cleanHtmlNode(nodes[i]);
+                if (cleaned) out.appendChild(cleaned);
+            }
+            esc.appendChild(out);
+            return esc.innerHTML;
+        } catch (e) {
+            console.warn('[SiteContent] No se pudo sanitizar el contenido HTML', e);
+            esc.textContent = value;
+            return esc.innerHTML;
+        }
+    }
+
     function setHtml(el, value) {
-        el.innerHTML = value;
+        el.innerHTML = sanitizeHtml(value);
     }
 
     function setText(el, value) {

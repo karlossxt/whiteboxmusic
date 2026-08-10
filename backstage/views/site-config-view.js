@@ -22,7 +22,10 @@
         { key: 'social.youtube', label: 'URL YouTube', type: 'url' },
         { key: 'social.facebook', label: 'URL Facebook', type: 'url' },
         { key: 'contactEmail', label: 'Email de contacto', type: 'email', fullWidth: true },
-        { key: 'footerText', label: 'Texto del footer', type: 'textarea', fullWidth: true }
+        { key: 'footerText', label: 'Texto del footer', type: 'textarea', fullWidth: true },
+        { key: 'defaultSeoTitle', label: 'SEO: titulo por defecto', type: 'text', fullWidth: true },
+        { key: 'defaultSeoDescription', label: 'SEO: descripcion por defecto', type: 'textarea', fullWidth: true },
+        { key: 'defaultOgImage', label: 'SEO: imagen social (Open Graph)', type: 'url', fullWidth: true }
     ];
 
     function getNested(obj, key) {

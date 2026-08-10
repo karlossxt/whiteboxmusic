@@ -66,6 +66,13 @@
                 }
             }
             if (!found) ds._cache[COLLECTION].push(cached);
+            /* Espejo en localStorage para que las paginas publicas
+               (aunque no carguen Firebase) reflejen la config guardada. */
+            try {
+                localStorage.setItem('backstage_site_config', JSON.stringify(cached));
+            } catch (e) {
+                console.warn('[Backstage] No se pudo cachear site_config en localStorage', e);
+            }
             return new self.ModelClass(cached);
         });
     };

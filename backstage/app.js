@@ -14,7 +14,6 @@
 (function() {
     window.Backstage = window.Backstage || {};
 
-    var AUTHORIZED_UID = 'qtguil5JI0ejOeJ0fpiXrxTJvIq2';
     var firestoreDsGlobal = null;
     var storyRegGlobal = null;
     var soundscapeRegGlobal = null;

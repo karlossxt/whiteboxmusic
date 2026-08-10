@@ -434,7 +434,7 @@
             if (fieldId) {
                 var input = document.getElementById(fieldId);
                 if (input) input.classList.add('input-error');
-                var errorEl = document.getElementById('error' + fieldId.replace('ivForm', ''));
+                var errorEl = document.getElementById('error' + fieldId);
                 if (errorEl) {
                     errorEl.textContent = message;
                     errorEl.style.display = 'block';

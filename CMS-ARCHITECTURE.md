@@ -71,15 +71,35 @@ HTML (DOM) <-> Controller <-> Service <-> Repository <-> Datasource
 
 ## Reglas de Firestore
 
-`firestore.rules` define para cada colección:
+`firestore.rules` define el acceso por colección. Toda escritura (create,
+update, delete) exige `isAuthorized()` (admin autenticado). La lectura
+pública está limitada por tipo de contenido:
 
 ```
-allow read: if true;                       // lectura pública (sitio)
-allow create, update, delete: if isAuthorized();  // solo admin
+stories     → solo status == 'published'
+soundscapes → solo published == true
+interviews  → solo published == true
+site_content, gallery, site_config → lectura pública
 ```
 
 La autenticación usa Firebase Auth; `isAuthorized()` verifica el UID del
 administrador (`qtguil5JI0ejOeJ0fpiXrxTJvIq2`).
+
+### Decisiones de publicación y sincronización
+
+- **El borrador nunca se expone**: en `stories` el estado se maneja con
+  `status` (`'draft' | 'published'`); en `soundscapes`/`interviews` con el
+  booleano `published`. Las reglas de Firestore **y** los loaders del sitio
+  público (`loadPublished`) filtran lo no publicado en ambas capas.
+- **El UID del admin no es un secreto**: Firebase lo expone en los tokens
+  públicos de sesión. La seguridad real la da Firebase Auth + Security Rules,
+  no el ocultamiento del UID. Por eso puede vivir en el frontend
+  (`backstage/auth/admin-config.js`, única fuente) y en `firestore.rules`.
+  No debe colocarse en esas variables ninguna contraseña ni credencial.
+- **Config no editorial es pública**: `site_content`, `gallery` y
+  `site_config` se leen sin filtro porque el sitio los necesita siempre
+  (estructura de UI, galería, opciones). El contenido editorial con flujo
+  de borrador/publicación vive en `stories`, `soundscapes` e `interviews`.
 
 ## Verificación manual
 
@@ -88,3 +108,7 @@ administrador (`qtguil5JI0ejOeJ0fpiXrxTJvIq2`).
 3. Con Firestore configurado, las colecciones `stories`, `soundscapes`,
    `interviews`, `site_content`, `gallery`, `site_config` reciben escrituras.
 4. Abrir el sitio público → los loaders async prefieren Firestore y caen a local.
+5. Crear una historia/entrevista/soundscape como **borrador** y comprobar que
+   no aparece en el sitio público (reglas + loaders la filtran).
+6. Desde otra sesión (sin login) intentar escribir en Firestore → la regla
+   `isAuthorized()` lo rechaza.

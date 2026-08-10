@@ -711,6 +711,15 @@
         function resetHeroInterval() { clearInterval(heroInterval); startHeroSlider(); }
         startHeroSlider();
 
+        // ===================== SAFE IMAGE HELPER =====================
+        function safeImageUrl(src) {
+            if (!src) return '';
+            var value = String(src).trim();
+            if (/^https?:/i.test(value) || /^\/\//i.test(value) || /^data:image\//i.test(value)) return value;
+            if (!/^[a-z]+:/i.test(value)) return value;
+            return '';
+        }
+
         // ===================== EVENT DATA =====================
         var STORAGE_KEY = 'backstage_gallery_events_data';
 
@@ -861,7 +870,7 @@
 
                 var img = document.createElement('img');
                 img.className = 'event-card-img';
-                img.src = ev.cardImage || ev.sliderImages[0] || '';
+                img.src = safeImageUrl(ev.cardImage || ev.sliderImages[0] || '');
                 img.alt = ev.title || 'Evento';
                 img.loading = 'lazy';
 
@@ -954,7 +963,7 @@
             currentEvent.sliderImages.forEach(function(src, i) {
                 var img = document.createElement('img');
                 img.className = 'slider-slide';
-                img.src = src;
+                img.src = safeImageUrl(src);
                 img.alt = currentEvent.title + ' ' + (i + 1);
                 img.loading = 'lazy';
                 track.appendChild(img);
@@ -973,19 +982,41 @@
             currentEvent.galleryItems.forEach(function(item, i) {
                 var photoDiv = document.createElement('div');
                 photoDiv.className = 'photo-block';
-                photoDiv.innerHTML = '<img src="' + item.image + '" alt="' + item.title + '" loading="lazy">' +
-                    '<div class="photo-block-footer">' +
-                    '<span>' + item.title + '</span>' +
-                    '<div class="photo-block-icons">' +
-                    '<i class="fa-regular fa-heart" title="Me gusta"></i>' +
-                    '<i class="fa-regular fa-share-from-square" title="Compartir"></i>' +
-                    '</div></div>';
+
+                var photoImg = document.createElement('img');
+                photoImg.src = safeImageUrl(item.image);
+                photoImg.alt = item.title || '';
+                photoImg.loading = 'lazy';
+
+                var photoFooter = document.createElement('div');
+                photoFooter.className = 'photo-block-footer';
+                var photoTitle = document.createElement('span');
+                photoTitle.textContent = item.title || '';
+                var photoIcons = document.createElement('div');
+                photoIcons.className = 'photo-block-icons';
+                var heartIcon = document.createElement('i');
+                heartIcon.className = 'fa-regular fa-heart';
+                heartIcon.setAttribute('title', 'Me gusta');
+                var shareIcon = document.createElement('i');
+                shareIcon.className = 'fa-regular fa-share-from-square';
+                shareIcon.setAttribute('title', 'Compartir');
+                photoIcons.appendChild(heartIcon);
+                photoIcons.appendChild(shareIcon);
+                photoFooter.appendChild(photoTitle);
+                photoFooter.appendChild(photoIcons);
+                photoDiv.appendChild(photoImg);
+                photoDiv.appendChild(photoFooter);
                 leftCol.appendChild(photoDiv);
 
                 var narrativeDiv = document.createElement('div');
                 narrativeDiv.className = 'narrative-block';
-                narrativeDiv.innerHTML = '<span class="narrative-label">Cap\u00edtulo ' + (i + 1) + '</span>' +
-                    '<p>' + item.text + '</p>';
+                var narrativeLabel = document.createElement('span');
+                narrativeLabel.className = 'narrative-label';
+                narrativeLabel.textContent = 'Cap\u00edtulo ' + (i + 1);
+                var narrativeText = document.createElement('p');
+                narrativeText.textContent = item.text || '';
+                narrativeDiv.appendChild(narrativeLabel);
+                narrativeDiv.appendChild(narrativeText);
                 rightCol.appendChild(narrativeDiv);
             });
 
@@ -1027,5 +1058,6 @@
     </script>
 
     <script src="js/sidebar.js"></script>
+<script src="js/site-config.js"></script>
 </body>
 </html>

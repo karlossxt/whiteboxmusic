@@ -261,46 +261,25 @@
             </div>
         </section>
 
-        <section class="interviews-container">
-            
-            <article class="interview-item">
-                <div class="interview-img-wrapper">
-                    <img src="https://images.pexels.com/photos/1649691/pexels-photo-1649691.jpeg" class="interview-img" alt="Concierto Indie" loading="lazy">
-                </div>
-                <div class="interview-content">
-                    <span class="interview-num">VOL. 01</span>
-                    <span class="interview-category">PORTADA / INDIE</span>
-                    <h2 class="interview-title">La distorsión <br>como lenguaje</h2>
-                    <p class="interview-excerpt">Hablamos con las mentes creativas detrás del sonido que está sacudiendo los garajes de la ciudad...</p>
-                    <a href="articulo-entrevista.html" class="read-btn">LEER ENTREVISTA</a>
-                </div>
-            </article>
+        <section class="interviews-container" id="interviewsContainer">
 
-            <article class="interview-item">
-                <div class="interview-img-wrapper">
-                    <img src="https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg" class="interview-img" alt="Concierto nocturno" loading="lazy">
-                </div>
-                <div class="interview-content">
-                    <span class="interview-num">VOL. 02</span>
-                    <span class="interview-category">SYNTH WAVE</span>
-                    <h2 class="interview-title">Madame Bleu: <br>Hija del Neón</h2>
-                    <p class="interview-excerpt">Un viaje íntimo a través de los sintetizadores y las letras melancólicas que definen su nuevo álbum...</p>
-                    <a href="#" class="read-btn">LEER ENTREVISTA</a>
-                </div>
-            </article>
+            <div class="interviews-state" id="interviewsLoading" style="display:none;text-align:center;padding:40px 20px;color:#888;font-size:0.9rem;letter-spacing:2px;">
+                CARGANDO ENTREVISTAS...
+            </div>
 
-            <article class="interview-item">
-                <div class="interview-img-wrapper">
-                    <img src="https://images.pexels.com/photos/257904/pexels-photo-257904.jpeg" class="interview-img" alt="Micrófono estudio" loading="lazy">
-                </div>
-                <div class="interview-content">
-                    <span class="interview-num">VOL. 03</span>
-                    <span class="interview-category">CULTURA URBANA</span>
-                    <h2 class="interview-title">Ritmo, rima <br>y realidad</h2>
-                    <p class="interview-excerpt">Dani Hache nos abre las puertas de su estudio para explicarnos cómo se cocina el trap más crudo del momento...</p>
-                    <a href="#" class="read-btn">LEER ENTREVISTA</a>
-                </div>
-            </article>
+            <div class="interviews-state" id="interviewsEmpty" style="display:none;text-align:center;padding:40px 20px;color:#888;font-size:0.9rem;letter-spacing:2px;">
+                PRONTO HABR&Aacute; NUEVAS ENTREVISTAS EN EL ARCHIVO.
+            </div>
+
+            <div class="interviews-state" id="interviewsError" style="display:none;text-align:center;padding:40px 20px;color:#888;font-size:0.9rem;letter-spacing:2px;">
+                No se pudieron cargar las entrevistas en este momento. Intenta de nuevo m&aacute;s tarde.
+            </div>
+
+            <div id="interviewsFallbackBanner" style="display:none;text-align:center;padding:12px 20px;margin-bottom:30px;border:1px solid rgba(255,255,255,0.15);color:#888;font-size:0.75rem;letter-spacing:1px;">
+                Mostrando archivo de respaldo. Inicia sesi&oacute;n en Backstage para publicar entrevistas.
+            </div>
+
+            <div id="interviewsList"></div>
 
         </section>
 
@@ -317,8 +296,136 @@
     </footer>
 
     <script src="js/sidebar.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/interviews-data.js"></script>
     <script src="js/site-schema.js"></script>
     <script src="js/site-content.js"></script>
 
+    <script>
+        /* ============================================
+           ENTRE E — Render de entrevistas
+           Fuente principal: WhiteBoxInterviews.loadPublished()
+           (Firestore interviews -> localStorage -> LEGACY_INTERVIEWS).
+           Mantiene las mismas clases del diseno actual
+           (.interview-item, .interview-img, .interview-num,
+            .interview-category, .interview-title,
+            .interview-excerpt, .read-btn).
+           ============================================ */
+        (function() {
+            var listEl = document.getElementById('interviewsList');
+            if (!listEl) return;
+
+            var loadingEl = document.getElementById('interviewsLoading');
+            var emptyEl = document.getElementById('interviewsEmpty');
+            var errorEl = document.getElementById('interviewsError');
+            var bannerEl = document.getElementById('interviewsFallbackBanner');
+
+            function pad(n) { return n < 10 ? '0' + n : String(n); }
+
+            function showState(el) {
+                var states = [loadingEl, emptyEl, errorEl];
+                for (var i = 0; i < states.length; i++) {
+                    if (states[i]) states[i].style.display = (states[i] === el) ? 'block' : 'none';
+                }
+            }
+
+            function normalize(iv, index) {
+                var order = parseInt(iv.order, 10) || (index + 1);
+                return {
+                    num: iv.num || ('VOL. ' + pad(order)),
+                    category: iv.category || '',
+                    title: iv.title || '',
+                    excerpt: iv.excerpt || '',
+                    cta: iv.cta || 'LEER ENTREVISTA',
+                    image: iv.cover || iv.image || '',
+                    ctaUrl: iv.ctaUrl || iv.link || iv.youtubeUrl || iv.spotifyUrl || '#'
+                };
+            }
+
+            function buildItem(iv) {
+                var article = document.createElement('article');
+                article.className = 'interview-item';
+
+                var wrapper = document.createElement('div');
+                wrapper.className = 'interview-img-wrapper';
+                var img = document.createElement('img');
+                img.className = 'interview-img';
+                img.src = iv.image;
+                img.alt = iv.title || 'Entrevista WhiteBox Music';
+                img.loading = 'lazy';
+                wrapper.appendChild(img);
+
+                var content = document.createElement('div');
+                content.className = 'interview-content';
+
+                var num = document.createElement('span');
+                num.className = 'interview-num';
+                num.textContent = iv.num;
+
+                var cat = document.createElement('span');
+                cat.className = 'interview-category';
+                cat.textContent = iv.category;
+
+                var title = document.createElement('h2');
+                title.className = 'interview-title';
+                title.textContent = iv.title;
+
+                var excerpt = document.createElement('p');
+                excerpt.className = 'interview-excerpt';
+                excerpt.textContent = iv.excerpt;
+
+                var btn = document.createElement('a');
+                btn.className = 'read-btn';
+                btn.href = iv.ctaUrl;
+                btn.textContent = iv.cta;
+
+                content.appendChild(num);
+                content.appendChild(cat);
+                content.appendChild(title);
+                content.appendChild(excerpt);
+                content.appendChild(btn);
+
+                article.appendChild(wrapper);
+                article.appendChild(content);
+                return article;
+            }
+
+            function render(items) {
+                listEl.textContent = '';
+                if (!items.length) {
+                    showState(emptyEl);
+                    return;
+                }
+                showState(null);
+                for (var i = 0; i < items.length; i++) {
+                    listEl.appendChild(buildItem(normalize(items[i], i)));
+                }
+            }
+
+            function onError() {
+                console.error('[EntreE] No se pudieron cargar las entrevistas');
+                showState(errorEl);
+            }
+
+            var loader = window.WhiteBoxInterviews && window.WhiteBoxInterviews.loadPublished;
+            if (!loader) {
+                onError();
+                return;
+            }
+
+            showState(loadingEl);
+            loader().then(function(items) {
+                var source = window.WhiteBoxInterviews.lastSource;
+                if (source === 'fallback' && bannerEl) {
+                    bannerEl.style.display = 'block';
+                }
+                render(items || []);
+            }).catch(onError);
+        })();
+    </script>
+
+<script src="js/site-config.js"></script>
 </body>
 </html>

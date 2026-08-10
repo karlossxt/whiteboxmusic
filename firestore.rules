@@ -8,9 +8,9 @@ service cloud.firestore {
         && request.auth.uid == 'qtguil5JI0ejOeJ0fpiXrxTJvIq2';
     }
 
-    /* Historias: lectura pública (sitio), escritura solo admin */
+    /* Historias: publico solo status == 'published' (sin borradores), admin todo */
     match /stories/{storyId} {
-      allow read: if true;
+      allow read: if isAuthorized() || resource.data.status == 'published';
       allow create, update, delete: if isAuthorized();
     }
 
@@ -32,9 +32,9 @@ service cloud.firestore {
       allow create, update, delete: if isAuthorized();
     }
 
-    /* Entrevistas: lectura pública, escritura solo admin */
+    /* Entrevistas: publico solo published == true (sin borradores), admin todo */
     match /interviews/{interviewId} {
-      allow read: if true;
+      allow read: if isAuthorized() || resource.data.published == true;
       allow create, update, delete: if isAuthorized();
     }
 

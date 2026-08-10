@@ -159,22 +159,32 @@ Con Hosting configurado en la raíz, el sitio queda en
 
 ## Colecciones usadas por la app
 
-| Colección        | Escritura          | Lectura pública            |
-|------------------|--------------------|----------------------------|
-| `stories`        | Solo admin         | Todo                       |
-| `soundscapes`    | Solo admin         | Solo `published == true`   |
-| `interviews`     | Solo admin         | Todo                       |
-| `site_content`   | Solo admin         | Todo                       |
-| `gallery`        | Solo admin         | Todo                       |
-| `site_config`    | Solo admin         | Todo                       |
+| Colección        | Escritura          | Lectura pública                           |
+|------------------|--------------------|-------------------------------------------|
+| `stories`        | Solo admin         | Solo `status == 'published'`              |
+| `soundscapes`    | Solo admin         | Solo `published == true`                  |
+| `interviews`     | Solo admin         | Solo `published == true`                  |
+| `site_content`   | Solo admin         | Todo (público)                            |
+| `gallery`        | Solo admin         | Todo (público)                            |
+| `site_config`    | Solo admin         | Todo (público)                            |
+
+> Los borradores (`status != 'published'` en `stories`, `published != true`
+> en `soundscapes`/`interviews`) **nunca** se exponen al sitio público:
+> las reglas y los loaders (`loadPublished`) los filtran en ambas capas.
+> `site_content`, `gallery` y `site_config` son de solo lectura pública
+> porque el sitio los necesita siempre (contienen configuración de UI,
+> no contenido editorial).
 
 ## Archivos clave
 
 | Archivo                            | Rol                                        |
 |------------------------------------|--------------------------------------------|
 | `js/firebase-config.js`            | Config web del proyecto Firebase           |
+| `js/stories-data.js`               | Carga publicadas desde Firestore (fallback local) |
 | `js/soundscapes-data.js`           | Carga publicadas desde Firestore (fallback local) |
-| `js/soundscapes.js`                | Renderiza el grid y el reproductor         |
+| `js/interviews-data.js`            | Carga publicadas desde Firestore (fallback local) |
+| `js/site-config.js`                | Config del sitio (Firestore → fallback)   |
+| `backstage/auth/admin-config.js`   | UID del administrador (única fuente)      |
 | `backstage/index.html`             | Entrada del CMS                            |
 | `firestore.rules`                  | Reglas de Firestore                        |
 | `data/soundscapes-seed.json`       | Datos iniciales de soundscapes             |
