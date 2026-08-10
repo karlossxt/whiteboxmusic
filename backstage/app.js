@@ -205,6 +205,12 @@
     function bootWithLocalMode(storyReg, soundscapeReg, galleryReg, sectionReg, local) {
         window.Backstage._localMode = true;
 
+        /* Asegurar que el datasource activo sea local */
+        storyReg.setActive('local');
+        soundscapeReg.setActive('local');
+        galleryReg.setActive('local');
+        sectionReg.setActive('local');
+
         var storyRepo = new window.Backstage.StoryRepository(storyReg);
         var soundscapeRepo = new window.Backstage.SoundscapeRepository(soundscapeReg);
         var galleryRepo = new window.Backstage.GalleryRepository(galleryReg);

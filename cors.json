@@ -1,0 +1,13 @@
+[
+  {
+    "origin": [
+      "https://whiteboxmusic.com.mx",
+      "https://www.whiteboxmusic.com.mx",
+      "http://localhost",
+      "http://localhost:*",
+      "https://karlossxt.github.io"
+    ],
+    "method": ["GET", "HEAD", "PUT", "POST", "DELETE", "OPTIONS"],
+    "maxAgeSeconds": 3600
+  }
+]
