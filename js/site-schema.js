@@ -85,7 +85,7 @@
                 field('instructions_title', 'Titulo Instrucciones', 'text', 'text', '.com-instructions h2', 'Instrucciones'),
                 field('instructions_items', 'Lista de instrucciones (una por linea)', 'list', 'list', '.com-instructions ul li', 'Comparte una historia real y personal.\nPuedes hablar de un artista, un concierto o una cancion.\nSi tu historia es seleccionada la publicamos con tu nombre.\nAl enviarla, autorizas a WhiteBox Music a compartirla.'),
                 field('section_title', 'Titulo seccion formulario', 'text', 'text', '.com-section h2', 'Comparte tu historia'),
-                field('form_action_url', 'Endpoint del formulario (Formspree)', 'url', 'href', '#comunidadForm', 'https://formspree.io/f/xnjevjle'),
+                field('form_action_url', 'Endpoint del formulario (Formspree)', 'url', 'action', '#comunidadForm', 'https://formspree.io/f/xnjevjle'),
                 field('form_btn', 'Texto boton enviar', 'text', 'text', 'button.btn-submit', 'Enviar mi historia'),
                 field('form_success', 'Mensaje de exito', 'textarea', 'text', '#formSuccess', 'Gracias por compartir tu historia! La hemos recibido y la revisaremos pronto.'),
                 field('f_name_label', 'Label nombre', 'text', 'text', 'label[for="nombre"]', 'Nombre o seudonimo *'),

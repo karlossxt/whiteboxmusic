@@ -118,6 +118,10 @@
         el.setAttribute('placeholder', value);
     }
 
+    function setAction(el, value) {
+        el.setAttribute('action', value);
+    }
+
     function setBackground(el, value) {
         el.style.backgroundImage = "url('" + value.replace(/'/g, "\\'") + "')";
     }
@@ -158,6 +162,7 @@
             case 'src': for (var j = 0; j < els.length; j++) setSrc(els[j], value); break;
             case 'href': for (var k = 0; k < els.length; k++) setHref(els[k], value); break;
             case 'placeholder': for (var m = 0; m < els.length; m++) setPlaceholder(els[m], value); break;
+            case 'action': for (var a = 0; a < els.length; a++) setAction(els[a], value); break;
             case 'background': for (var n = 0; n < els.length; n++) setBackground(els[n], value); break;
             case 'mailto': for (var p = 0; p < els.length; p++) setMailto(els[p], value); break;
             case 'list': setList(Array.prototype.slice.call(els), value); break;

@@ -110,6 +110,7 @@
         ];
 
         var storiesData = null;
+        var currentStories = null;
 
         function initializeData() {
             try {
@@ -137,15 +138,32 @@
             storiesData = defaultStories.slice();
         }
 
+        function sortPublished(list) {
+            return (list || []).filter(function(s) { return s.status === 'published'; })
+                .sort(function(a, b) {
+                    return (a.order || 999) - (b.order || 999);
+                });
+        }
+
+        /* Devuelve SIEMPRE una Promise (Firestore -> localStorage -> defaults).
+           Los items publicados se cachean en currentStories para el modal. */
         function getPublishedStories() {
-            var published = storiesData.filter(function(s) { return s.status === 'published'; });
-            return published.sort(function(a, b) {
-                return (a.order || 999) - (b.order || 999);
+            var loader = (window.WhiteBoxStories && window.WhiteBoxStories.loadPublished)
+                ? window.WhiteBoxStories.loadPublished()
+                : Promise.resolve(sortPublished(storiesData));
+
+            return loader.then(function(items) {
+                currentStories = items || [];
+                return currentStories;
             });
         }
 
         function getStoryById(id) {
-            return storiesData.find(function(s) { return s.id === id; });
+            if (currentStories && currentStories.length) {
+                var found = currentStories.find(function(s) { return s.id === id; });
+                if (found) return found;
+            }
+            return (storiesData || []).find(function(s) { return s.id === id; });
         }
 
         initializeData();
@@ -338,7 +356,7 @@
                     DOM.emptyMessage.style.display = 'none';
                 }
 
-                published.forEach(function(story) {
+                storiesToShow.forEach(function(story) {
                     var liked = LikeManager.isLiked(story.id);
                     var count = LikeManager.getLikeCount(story);
                     var card = createStoryCard(story, liked, count);
@@ -364,7 +382,7 @@
             readBtns.forEach(function(btn) {
                 btn.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    openModal(btn.getAttribute('data-story-id'));
+                    ModalManager.openModal(btn.getAttribute('data-story-id'));
                 });
             });
 
@@ -373,7 +391,7 @@
                 area.addEventListener('click', function() {
                     var card = area.closest('.story-card');
                     if (card) {
-                        openModal(card.getAttribute('data-story-id'));
+                        ModalManager.openModal(card.getAttribute('data-story-id'));
                     }
                 });
             });
@@ -383,7 +401,7 @@
                 card.addEventListener('keydown', function(e) {
                     if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
-                        openModal(card.getAttribute('data-story-id'));
+                        ModalManager.openModal(card.getAttribute('data-story-id'));
                     }
                 });
             });
@@ -393,7 +411,7 @@
                 btn.addEventListener('click', function(e) {
                     e.stopPropagation();
                     var storyId = btn.getAttribute('data-story-id');
-                    toggleStoryLike(storyId, btn);
+                    ModalManager.toggleStoryLike(storyId, btn);
                 });
             });
         }
@@ -629,23 +647,6 @@
         };
     })();
 
-    // ===== INITIALIZATION =====
-    function init() {
-        DOM.init();
-
-        if (!DOM.storiesGrid) {
-            console.warn('[StoriesModule] storiesGrid no encontrado, skipping initialization');
-            return;
-        }
-
-        ModalManager.attachModalListeners();
-        ModalManager.renderCards();
-
-        document.dispatchEvent(new CustomEvent('stories:initialized', {
-            detail: { module: 'GeminiStyleStories' }
-        }));
-    }
-
     // ===== BACKSTAGE INTEGRATION =====
     var BackstageIntegration = (function() {
         var BACKSTAGE_KEY = 'backstage_stories_data';
@@ -718,54 +719,6 @@
     }
 
 })(window, document);
-
-// ===== BACKSTAGE GLOBAL API =====
-window.WhiteBoxStories = window.WhiteBoxStories || {};
-window.WhiteBoxStories.lastSource = null;
-window.WhiteBoxStories.lastError = null;
-window.WhiteBoxStories.loadPublished = function() {
-    var wbf = window.WhiteBoxFirebase;
-    if (wbf && wbf.db) {
-        return wbf.db.collection('stories')
-            .where('status', '==', 'published')
-            .get()
-            .then(function(snapshot) {
-                var items = [];
-                snapshot.forEach(function(doc) {
-                    var d = doc.data();
-                    d.id = doc.id;
-                    items.push(d);
-                });
-
-                window.WhiteBoxStories.lastSource = 'firestore';
-
-                if (items.length > 0) {
-                    return items.sort(function(a, b) {
-                        return (a.order || 999) - (b.order || 999);
-                    });
-                }
-
-                window.WhiteBoxStories.lastSource = 'fallback';
-                return storiesData
-                    .filter(function(s) { return s.status === 'published'; })
-                    .sort(function(a, b) { return (a.order || 999) - (b.order || 999); });
-            })
-            .catch(function(err) {
-                window.WhiteBoxStories.lastSource = 'fallback';
-                window.WhiteBoxStories.lastError = err && err.message ? err.message : 'Error de Firestore';
-                return storiesData
-                    .filter(function(s) { return s.status === 'published'; })
-                    .sort(function(a, b) { return (a.order || 999) - (b.order || 999); });
-            });
-    }
-
-    window.WhiteBoxStories.lastSource = 'local';
-    return Promise.resolve(
-        storiesData
-            .filter(function(s) { return s.status === 'published'; })
-            .sort(function(a, b) { return (a.order || 999) - (b.order || 999); })
-    );
-};
 
 // ===== EVENT HANDLING =====
 document.addEventListener('stories:content-applied', function(e) {
