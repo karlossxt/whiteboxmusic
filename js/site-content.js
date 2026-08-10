@@ -5,10 +5,12 @@
 
    Flujo:
    1. Detecta que pagina es (por nombre de archivo o [data-page])
-   2. Lee localStorage 'backstage_site_content' (la misma clave
-      que usa el panel en modo local; Firestore se sincroniza
-      al localStorage desde el panel).
-   3. Por cada campo del schema, si hay un valor guardado,
+   2. Aplica inmediatamente el contenido de localStorage
+      'backstage_site_content' (pintado rapido + modo offline).
+   3. Intenta cargar 'site_content' desde Firestore (fuente
+      de verdad). Si hay contenido remoto, lo aplica encima
+      y refresca la cache local.
+   4. Por cada campo del schema, si hay un valor guardado,
       lo aplica al selector segun su tipo (apply).
    ============================================ */
 
@@ -38,6 +40,48 @@
         } catch (e) {
             console.warn('[SiteContent] No se pudo leer contenido guardado', e);
             return null;
+        }
+    }
+
+    /* Fuente de verdad: Cloud Firestore. La coleccion 'site_content'
+       usa como id el pageId y como data { fields, updatedAt }.
+       Devuelve un mapa { pageId: { key: value } } o null si falla. */
+    function getFirestoreContent() {
+        var wbf = window.WhiteBoxFirebase;
+        if (!wbf || !wbf.db) {
+            return Promise.resolve(null);
+        }
+
+        return wbf.db.collection('site_content').get().then(function(snapshot) {
+            var map = {};
+            snapshot.forEach(function(doc) {
+                var data = doc.data();
+                if (data && data.fields) {
+                    map[doc.id] = data.fields;
+                }
+            });
+            if (Object.keys(map).length > 0) {
+                cacheRemoteContent(map);
+            }
+            return map;
+        }).catch(function(err) {
+            console.warn('[SiteContent] Firestore no disponible, se usa el contenido local', err);
+            return null;
+        });
+    }
+
+    /* Cache local del contenido remoto para pintado rapido y
+       navegacion sin conexion. No reemplaza el flujo del panel. */
+    function cacheRemoteContent(map) {
+        try {
+            var array = [];
+            var keys = Object.keys(map);
+            for (var i = 0; i < keys.length; i++) {
+                array.push({ id: keys[i], fields: map[keys[i]], updatedAt: Date.now() });
+            }
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(array));
+        } catch (e) {
+            console.warn('[SiteContent] No se pudo cachear el contenido remoto', e);
         }
     }
 
@@ -149,14 +193,26 @@
             return;
         }
         var page = schema.getById(pageId);
+
+        function finish(remoteMap, appliedLocal) {
+            var applied = appliedLocal;
+            if (remoteMap && Object.keys(remoteMap).length > 0) {
+                applied = applyPage(page, remoteMap);
+            }
+
+            document.dispatchEvent(new CustomEvent(CONTENT_EVENT, {
+                detail: { pageId: pageId, applied: applied }
+            }));
+        }
+
+        /* Pintado rapido con la cache local */
         var stored = getStorage();
-        if (!stored) return;
+        var appliedLocal = stored ? applyPage(page, stored) : false;
 
-        var applied = applyPage(page, stored);
-
-        document.dispatchEvent(new CustomEvent(CONTENT_EVENT, {
-            detail: { pageId: pageId, applied: applied }
-        }));
+        /* Fuente de verdad: Firestore aplica encima si hay contenido */
+        getFirestoreContent().then(function(remoteMap) {
+            finish(remoteMap, appliedLocal);
+        });
     }
 
     if (document.readyState === 'loading') {

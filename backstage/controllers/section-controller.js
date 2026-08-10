@@ -19,6 +19,15 @@
         this._activePageId = null;
         this._saving = false;
         this._eventsBound = false;
+        this._storage = null;
+        try {
+            var StorageClass = window.Backstage.Services.Storage;
+            if (StorageClass) {
+                this._storage = new StorageClass();
+            }
+        } catch (e) {
+            console.warn('[Sections] StorageService no disponible');
+        }
     }
 
     SectionController.prototype.mount = function() {
@@ -67,8 +76,17 @@
         this.view.renderForm(schemaPage, content, {
             back: function() { self._backToList(); },
             reset: function(id) { self._resetPage(id); },
-            save: function(id) { self._save(id); }
+            save: function(id) { self._save(id); },
+            upload: function(file, pageId) { return self._uploadImage(file, pageId); }
         });
+    };
+
+    SectionController.prototype._uploadImage = function(file, pageId) {
+        if (!this._storage) {
+            return Promise.reject(new Error('La subida de imagenes no esta disponible'));
+        }
+        var folder = 'site/' + (pageId || 'content');
+        return this._storage.uploadImage(file, folder);
     };
 
     SectionController.prototype._backToList = function() {

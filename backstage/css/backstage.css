@@ -896,10 +896,44 @@ a { color: inherit; text-decoration: none; }
     justify-content: center;
     transition: background 0.2s;
 }
-
 .ss-cover-remove:hover {
     background: var(--red);
 }
+
+/* ===================== FILE UPLOAD ===================== */
+.form-image-upload {
+    margin-top: 8px;
+}
+
+.form-file-input {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.form-file-input::file-selector-button {
+    background: var(--pink);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 6px 14px;
+    margin-right: 10px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    transition: background 0.2s;
+}
+
+.form-file-input::file-selector-button:hover {
+    background: var(--pink-dark, var(--pink));
+    filter: brightness(1.1);
+}
+
+.form-file-label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-left: 6px;
+}
+
 
 /* ===================== FILTER BAR ===================== */
 .filter-bar-container {

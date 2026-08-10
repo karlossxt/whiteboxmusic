@@ -108,6 +108,8 @@
                 storyRegistry.setActive('firestore');
                 sectionRegistry.register('firestore', firestore);
                 sectionRegistry.setActive('firestore');
+                galleryRegistry.register('firestore', firestore);
+                galleryRegistry.setActive('firestore');
                 firestoreReady = true;
                 firestoreDsGlobal = firestore;
             }
@@ -142,7 +144,7 @@
        localStorage automaticamente.
        ------------------------------------------ */
     function preloadFirestoreData(firestoreDs) {
-        var COLLECTIONS = ['stories', 'site_content'];
+        var COLLECTIONS = ['stories', 'site_content', 'gallery'];
 
         firestoreDs._cache = firestoreDs._cache || {};
 
@@ -150,7 +152,8 @@
             if (index >= COLLECTIONS.length) {
                 return Promise.resolve({
                     stories: firestoreDs._cache['stories'] ? firestoreDs._cache['stories'].length : 0,
-                    sections: firestoreDs._cache['site_content'] ? firestoreDs._cache['site_content'].length : 0
+                    sections: firestoreDs._cache['site_content'] ? firestoreDs._cache['site_content'].length : 0,
+                    gallery: firestoreDs._cache['gallery'] ? firestoreDs._cache['gallery'].length : 0
                 });
             }
 
@@ -411,7 +414,7 @@
         var firestoreDs = storyReg.sources['firestore'];
         var storyRepo = new window.Backstage.FirestoreStoryRepository(storyReg);
         var soundscapeRepo = new window.Backstage.SoundscapeRepository(soundscapeReg);
-        var galleryRepo = new window.Backstage.GalleryRepository(galleryReg);
+        var galleryRepo = new window.Backstage.FirestoreGalleryRepository(galleryReg);
         var sectionRepo = new window.Backstage.FirestoreSectionRepository(sectionReg);
 
         if (typeof soundscapesDataDefault !== 'undefined') {

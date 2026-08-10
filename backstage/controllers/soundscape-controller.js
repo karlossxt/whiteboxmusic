@@ -18,6 +18,16 @@
         this._formBound = false;
         this._eventsBound = false;
         this._saving = false;
+        this._coverFile = null;
+        this._storage = null;
+        try {
+            var StorageClass = window.Backstage.Services.Storage;
+            if (StorageClass) {
+                this._storage = new StorageClass();
+            }
+        } catch (e) {
+            console.warn('[Soundscape] StorageService no disponible');
+        }
     }
 
     SoundscapeController.prototype.mount = function() {
@@ -109,46 +119,46 @@
             Toast.show('Selecciona un archivo de imagen', 'error');
             return;
         }
+        this._coverFile = file;
         var self = this;
         var reader = new FileReader();
         reader.onload = function(e) {
-            self._compressImage(e.target.result, 400, 0.7, function(compressed) {
-                document.getElementById('ssFormCover').value = compressed;
-                var preview = document.getElementById('ssCoverPreview');
-                var previewImg = document.getElementById('ssCoverPreviewImg');
-                if (preview && previewImg) {
-                    previewImg.src = compressed;
-                    preview.style.display = '';
-                }
-            });
+            var preview = document.getElementById('ssCoverPreview');
+            var previewImg = document.getElementById('ssCoverPreviewImg');
+            if (preview && previewImg) {
+                previewImg.src = e.target.result;
+                preview.style.display = '';
+            }
         };
         reader.readAsDataURL(file);
-    };
-
-    SoundscapeController.prototype._compressImage = function(dataUrl, maxSize, quality, callback) {
-        var img = new Image();
-        img.onload = function() {
-            var w = img.width;
-            var h = img.height;
-            if (w > maxSize || h > maxSize) {
-                if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
-                else { w = Math.round(w * maxSize / h); h = maxSize; }
-            }
-            var canvas = document.createElement('canvas');
-            canvas.width = w;
-            canvas.height = h;
-            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-            callback(canvas.toDataURL('image/jpeg', quality));
-        };
-        img.src = dataUrl;
+        document.getElementById('ssFormCover').value = '';
     };
 
     SoundscapeController.prototype._clearCoverFile = function() {
+        this._coverFile = null;
         var fileInput = document.getElementById('ssFormCoverFile');
         var preview = document.getElementById('ssCoverPreview');
         if (fileInput) fileInput.value = '';
         if (preview) preview.style.display = 'none';
         document.getElementById('ssFormCover').value = '';
+    };
+
+    SoundscapeController.prototype._prepareCover = function(data) {
+        var self = this;
+        if (!this._coverFile) return Promise.resolve(data);
+        if (!this._storage) {
+            Toast.show('La subida de imagenes no esta disponible', 'error');
+            return Promise.reject(new Error('Storage no disponible'));
+        }
+        Toast.show('Subiendo caratula...', 'info');
+        return this._storage.uploadImage(this._coverFile, 'soundscapes').then(function(url) {
+            data.cover = url;
+            self._coverFile = null;
+            return data;
+        }).catch(function(err) {
+            Toast.show('Error al subir la caratula: ' + (err.message || 'desconocido'), 'error');
+            throw err;
+        });
     };
 
     SoundscapeController.prototype._bindEvents = function() {
@@ -167,6 +177,7 @@
         document.getElementById('ssFormDuration').value = '180';
         document.getElementById('ssFormPublished').value = 'true';
         document.getElementById('ssFormOrder').value = String(this.service.getMaxOrder() + 1);
+        this._coverFile = null;
         var preview = document.getElementById('ssCoverPreview');
         if (preview) preview.style.display = 'none';
         var fileInput = document.getElementById('ssFormCoverFile');
@@ -192,6 +203,7 @@
         var preview = document.getElementById('ssCoverPreview');
         var previewImg = document.getElementById('ssCoverPreviewImg');
         var fileInput = document.getElementById('ssFormCoverFile');
+        this._coverFile = null;
         if (fileInput) fileInput.value = '';
         if (preview && previewImg && item.cover) {
             previewImg.src = item.cover;
@@ -233,24 +245,30 @@
         };
 
         var existingId = document.getElementById('ssFormId').value;
-        var result;
+        var self = this;
 
-        if (existingId) {
-            result = this.service.update(existingId, data);
-        } else {
-            result = this.service.create(data);
-        }
+        this._prepareCover(data).then(function(finalData) {
+            var result;
+            if (existingId) {
+                result = self.service.update(existingId, finalData);
+            } else {
+                result = self.service.create(finalData);
+            }
 
-        if (result.success) {
-            this._saving = false;
-            Toast.show(existingId ? 'Cancion actualizada' : 'Cancion creada', 'success');
-            this._renderAll();
-            window.Backstage.EventBus.emit('dashboard:refresh');
-            Modal.closeAll();
-        } else {
-            this._saving = false;
-            Toast.show(result.errors.join('. '), 'error');
-        }
+            if (result.success) {
+                self._saving = false;
+                Toast.show(existingId ? 'Cancion actualizada' : 'Cancion creada', 'success');
+                self._renderAll();
+                window.Backstage.EventBus.emit('dashboard:refresh');
+                Modal.closeAll();
+            } else {
+                self._saving = false;
+                Toast.show(result.errors.join('. '), 'error');
+            }
+        }).catch(function(err) {
+            self._saving = false;
+            Toast.show(err.message || 'Error al guardar', 'error');
+        });
     };
 
     window.Backstage.Controllers.Soundscape = SoundscapeController;

@@ -1,0 +1,15 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isAuthorized() {
+      return request.auth != null
+        && request.auth.uid == 'qtguil5JI0ejOeJ0fpiXrxTJvIq2';
+    }
+
+    match /{allPaths=**} {
+      allow read: if true;
+      allow create, update, delete: if isAuthorized();
+    }
+  }
+}

@@ -10,6 +10,7 @@
     window.Backstage.Views = window.Backstage.Views || {};
 
     var T = window.Backstage.Templates;
+    var Toast = window.Backstage.Components.Toast;
 
     var columns = [
         { key: 'page', label: 'Pagina' },
@@ -170,6 +171,48 @@
                 input.id = 'sec_' + schemaPage.id + '_' + field.key;
                 input.dataset.fieldKey = field.key;
                 group.appendChild(input);
+
+                if (field.apply === 'src' || field.apply === 'background') {
+                    var uploadWrap = document.createElement('div');
+                    uploadWrap.className = 'form-image-upload';
+
+                    var fileInput = document.createElement('input');
+                    fileInput.type = 'file';
+                    fileInput.className = 'form-file-input';
+                    fileInput.accept = 'image/*';
+                    fileInput.setAttribute('aria-label', 'Subir imagen para ' + field.label);
+
+                    fileInput.addEventListener('change', function(key, target) {
+                        if (!this.files || !this.files.length) return;
+                        var file = this.files[0];
+                        if (!file.type.startsWith('image/')) return;
+                        if (!actions.upload) return;
+
+                        this.disabled = true;
+                        this.nextSibling.textContent = 'Subiendo...';
+
+                        actions.upload(file, schemaPage.id).then(function(url) {
+                            target.value = url;
+                            target.dataset.uploaded = 'true';
+                            this.disabled = false;
+                            this.nextSibling.textContent = 'Subir imagen';
+                            Toast.show('Imagen subida', 'success');
+                        }.bind(this)).catch(function(err) {
+                            this.disabled = false;
+                            this.nextSibling.textContent = 'Subir imagen';
+                            Toast.show('Error al subir imagen: ' + (err.message || 'desconocido'), 'error');
+                        }.bind(this));
+                    }.bind(fileInput, field.key, input));
+
+                    uploadWrap.appendChild(fileInput);
+
+                    var fileLabel = document.createElement('span');
+                    fileLabel.className = 'form-file-label';
+                    fileLabel.textContent = 'Subir imagen';
+                    uploadWrap.appendChild(fileLabel);
+
+                    group.appendChild(uploadWrap);
+                }
 
                 var hint = document.createElement('span');
                 hint.className = 'form-hint';

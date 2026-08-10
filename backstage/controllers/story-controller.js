@@ -23,6 +23,16 @@
         this._slugManuallyEdited = false;
         this._eventsBound = false;
         this._keyHandler = null;
+        this._imageFile = null;
+        this._storage = null;
+        try {
+            var StorageClass = window.Backstage.Services.Storage;
+            if (StorageClass) {
+                this._storage = new StorageClass();
+            }
+        } catch (e) {
+            console.warn('[Story] StorageService no disponible');
+        }
     }
 
     StoryController.prototype.mount = function() {
@@ -192,6 +202,20 @@
             self._updateImagePreview(imageInput.value);
         });
 
+        var imageFileInput = document.getElementById('formImageFile');
+        if (imageFileInput) {
+            imageFileInput.addEventListener('change', function() {
+                self._handleImageFile(this.files);
+            });
+        }
+
+        var imageRemoveBtn = document.getElementById('storyImageRemove');
+        if (imageRemoveBtn) {
+            imageRemoveBtn.addEventListener('click', function() {
+                self._clearImageFile();
+            });
+        }
+
         var otherInputs = ['formExcerpt','formCategory','formAuthor','formContent','formStatus','formFeatured','formDate'];
         otherInputs.forEach(function(id) {
             var el = document.getElementById(id);
@@ -339,8 +363,9 @@
         this._slugManuallyEdited = false;
         this._formDirty = false;
         this._saving = false;
+        this._imageFile = null;
         this._clearFieldErrors();
-        this._hideImagePreview();
+        this._clearImageFile();
         this._setButtonsDisabled(false);
         Modal.open(document.getElementById('storyModal'));
         setTimeout(function() {
@@ -368,6 +393,9 @@
         this._slugManuallyEdited = !!story.slug;
         this._formDirty = false;
         this._saving = false;
+        this._imageFile = null;
+        var imageFileInput = document.getElementById('formImageFile');
+        if (imageFileInput) imageFileInput.value = '';
         this._clearFieldErrors();
         this._updateImagePreview(story.image || '');
         this._setButtonsDisabled(false);
@@ -489,6 +517,9 @@
         if (isPublish) data.status = 'published';
         else data.status = data.status || 'draft';
 
+        /* Imagen pendiente de subir: la validacion la considera presente */
+        if (this._imageFile) data.image = 'pending-upload';
+
         var validation = this.service.validate(data, isPublish);
         if (!validation.valid) {
             this._showFieldErrors(validation.errors);
@@ -502,15 +533,16 @@
 
         var self = this;
         var existingId = document.getElementById('formId').value;
-        var promise;
 
-        if (existingId) {
-            promise = this.service.update(existingId, data);
-        } else {
-            promise = this.service.create(data);
-        }
-
-        promise.then(function(result) {
+        this._prepareImage(data).then(function(finalData) {
+            var promise;
+            if (existingId) {
+                promise = self.service.update(existingId, finalData);
+            } else {
+                promise = self.service.create(finalData);
+            }
+            return promise;
+        }).then(function(result) {
             self._saving = false;
             self._setButtonsDisabled(false);
 
@@ -589,6 +621,56 @@
     StoryController.prototype._hideImagePreview = function() {
         var preview = document.getElementById('imagePreview');
         if (preview) preview.style.display = 'none';
+    };
+
+    /* -- Imagen local ------------------------------------ */
+
+    StoryController.prototype._handleImageFile = function(files) {
+        if (!files || !files.length) return;
+        var file = files[0];
+        if (!file.type.startsWith('image/')) {
+            Toast.show('Selecciona un archivo de imagen', 'error');
+            return;
+        }
+        this._imageFile = file;
+        this._formDirty = true;
+
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var preview = document.getElementById('imagePreview');
+            var previewImg = document.getElementById('imagePreviewImg');
+            if (preview && previewImg) {
+                previewImg.src = e.target.result;
+                preview.style.display = '';
+            }
+        };
+        reader.readAsDataURL(file);
+    };
+
+    StoryController.prototype._clearImageFile = function() {
+        this._imageFile = null;
+        var fileInput = document.getElementById('formImageFile');
+        if (fileInput) fileInput.value = '';
+        this._hideImagePreview();
+    };
+
+    StoryController.prototype._prepareImage = function(data) {
+        var self = this;
+        if (!this._imageFile) return Promise.resolve(data);
+        if (!this._storage) {
+            Toast.show('La subida de imagenes no esta disponible', 'error');
+            return Promise.reject(new Error('Storage no disponible'));
+        }
+
+        Toast.show('Subiendo imagen...', 'info');
+        return this._storage.uploadImage(this._imageFile, 'stories').then(function(url) {
+            data.image = url;
+            self._imageFile = null;
+            return data;
+        }).catch(function(err) {
+            Toast.show('Error al subir la imagen: ' + (err.message || 'desconocido'), 'error');
+            throw err;
+        });
     };
 
     StoryController.prototype._safeImageUrl = function(url) {

@@ -298,10 +298,13 @@
             : 'Esta acción no se puede deshacer.';
 
         Confirm.show('Eliminar evento', text, function() {
-            self.service.remove(id);
-            self._renderAll();
-            window.Backstage.EventBus.emit('dashboard:refresh');
-            Toast.show('Evento eliminado', 'success');
+            self.service.remove(id).then(function() {
+                self._renderAll();
+                window.Backstage.EventBus.emit('dashboard:refresh');
+                Toast.show('Evento eliminado', 'success');
+            }).catch(function(err) {
+                Toast.show('Error al eliminar: ' + (err.message || 'Error de Firestore'), 'error');
+            });
         });
     };
 
@@ -431,9 +434,9 @@
                 galleryItems: galleryItems
             };
 
-            var result;
+            var promise;
             if (existingId) {
-                result = self.service.update(existingId, data);
+                promise = self.service.update(existingId, data);
             } else {
                 if (!data.cardImage && !hasCardUrl) {
                     self._saving = false;
@@ -441,21 +444,27 @@
                     Toast.show('Error al subir la imagen de portada', 'error');
                     return;
                 }
-                result = self.service.create(data);
+                promise = self.service.create(data);
             }
 
-            self._saving = false;
-            self._showProgress(false);
-            if (result && result.success) {
-                Toast.show(existingId ? 'Evento actualizado' : 'Evento creado', 'success');
-                self._renderAll();
-                window.Backstage.EventBus.emit('dashboard:refresh');
-                self._resetFormState();
-                Modal.closeAll();
-            } else {
-                var errMsg = (result && result.errors) ? result.errors.join('. ') : 'Error al guardar';
-                Toast.show(errMsg, 'error');
-            }
+            promise.then(function(result) {
+                self._saving = false;
+                self._showProgress(false);
+                if (result && result.success) {
+                    Toast.show(existingId ? 'Evento actualizado' : 'Evento creado', 'success');
+                    self._renderAll();
+                    window.Backstage.EventBus.emit('dashboard:refresh');
+                    self._resetFormState();
+                    Modal.closeAll();
+                } else {
+                    var errMsg = (result && result.errors) ? result.errors.join('. ') : 'Error al guardar';
+                    Toast.show(errMsg, 'error');
+                }
+            }).catch(function(err) {
+                self._saving = false;
+                self._showProgress(false);
+                Toast.show('Error al guardar: ' + (err.message || 'desconocido'), 'error');
+            });
         }
 
         function handleError(err) {

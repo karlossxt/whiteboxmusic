@@ -681,6 +681,11 @@
 
     </main>
 
+    <!-- Firebase (fuente de verdad para la galeria) -->
+    <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+
     <script>
         // ===================== HERO SLIDER (MAIN) =====================
         var heroImages = [];
@@ -880,6 +885,42 @@
         }
 
         renderEventGrid();
+
+        // ===================== FIRESTORE SYNC =====================
+        function normalizeEvent(ev, id) {
+            return {
+                id: id || ev.id || (ev.title || 'evento').toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+                title: ev.title || '',
+                subtitle: ev.subtitle || '',
+                cardImage: ev.cardImage || '',
+                intro: ev.intro || '',
+                sliderImages: Array.isArray(ev.sliderImages) && ev.sliderImages.length ? ev.sliderImages : (ev.galleryItems || []).map(function(g) { return g.image; }).filter(Boolean),
+                galleryItems: Array.isArray(ev.galleryItems) ? ev.galleryItems : []
+            };
+        }
+
+        function loadFromFirestore() {
+            var wbf = window.WhiteBoxFirebase;
+            if (!wbf || !wbf.db) return;
+            wbf.db.collection('gallery').get().then(function(snapshot) {
+                var remote = [];
+                snapshot.forEach(function(doc) {
+                    var d = doc.data();
+                    if (d && d.galleryItems && d.galleryItems.length > 0) {
+                        remote.push(normalizeEvent(d, doc.id));
+                    }
+                });
+                if (!remote.length) return;
+                events = remote;
+                renderEventGrid();
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(remote));
+                } catch (e) {}
+            }).catch(function(err) {
+                console.warn('[Fotos] Firestore no disponible, usando datos locales', err);
+            });
+        }
+        loadFromFirestore();
 
         // ===================== VIEW STATE =====================
         var currentEvent = null;
