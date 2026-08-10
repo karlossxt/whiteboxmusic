@@ -61,6 +61,15 @@
                     Toast.show('Error al actualizar estado: ' + (err.message || 'Error desconocido'), 'error');
                 });
             },
+            toggleFeatured: function(id) {
+                self.service.toggleFeatured(id).then(function() {
+                    self._renderAll();
+                    window.Backstage.EventBus.emit('dashboard:refresh');
+                    Toast.show('Destacada actualizada', 'success');
+                }).catch(function(err) {
+                    Toast.show('Error al actualizar destacada: ' + (err.message || 'Error desconocido'), 'error');
+                });
+            },
             edit: function(id) { self._openEditModal(id); },
             remove: function(id, title) { self._openConfirm(id, title); }
         };

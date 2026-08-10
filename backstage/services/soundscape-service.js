@@ -22,7 +22,29 @@
         var errors = [];
         if (!data.title || !data.title.trim()) errors.push('El titulo es obligatorio');
         if (!data.artist || !data.artist.trim()) errors.push('El artista es obligatorio');
+
+        var cover = (data.cover || '').trim();
+        if (cover && !this._isUrl(cover)) errors.push('La URL de la portada no es valida');
+
+        var spotify = (data.spotifyUrl || '').trim();
+        if (spotify && !this._isUrl(spotify)) errors.push('El enlace de Spotify no es valido');
+
+        var youtube = (data.youtubeUrl || '').trim();
+        if (youtube && !this._isUrl(youtube)) errors.push('El enlace de YouTube no es valido');
+
+        if (data.duration && !(isFinite(data.duration) && parseInt(data.duration, 10) > 0)) {
+            errors.push('La duracion debe ser un numero positivo');
+        }
+
+        if (data.order && !(isFinite(data.order) && parseInt(data.order, 10) > 0)) {
+            errors.push('El orden debe ser un numero positivo');
+        }
+
         return { valid: errors.length === 0, errors: errors };
+    };
+
+    SoundscapeService.prototype._isUrl = function(str) {
+        return /^(https?:\/\/|www\.)/i.test(str);
     };
 
     SoundscapeService.prototype._buildSoundscapeData = function(data, id) {
@@ -103,6 +125,18 @@
 
     SoundscapeService.prototype.togglePublished = function(id) {
         var result = this.repository.togglePublished(id);
+        if (result && typeof result.then === 'function') {
+            return result.then(function(item) {
+                if (item) window.Backstage.EventBus.emit('soundscapes:toggled', item);
+                return item;
+            });
+        }
+        if (result) window.Backstage.EventBus.emit('soundscapes:toggled', result);
+        return Promise.resolve(result);
+    };
+
+    SoundscapeService.prototype.toggleFeatured = function(id) {
+        var result = this.repository.toggleFeatured(id);
         if (result && typeof result.then === 'function') {
             return result.then(function(item) {
                 if (item) window.Backstage.EventBus.emit('soundscapes:toggled', item);

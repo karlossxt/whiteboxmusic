@@ -75,10 +75,17 @@ var soundscapesDataDefault = [
     soundscapesData = (data && data.length) ? data : soundscapesDataDefault;
 })();
 
-/* Async loader: tries Firestore first, falls back to localStorage/default */
+/* Async loader: Firestore primero. Si Firestore falla, usa
+   localStorage / datos por defecto como contenido temporal. */
 window.WhiteBoxSoundscapes = window.WhiteBoxSoundscapes || {};
 window.WhiteBoxSoundscapes.lastSource = null;
 window.WhiteBoxSoundscapes.lastError = null;
+
+function whiteBoxSoundscapesGetLocal() {
+    return (window.soundscapesData || soundscapesDataDefault || [])
+        .filter(function(s) { return s.published === true || s.published === 'true'; })
+        .sort(function(a, b) { return (a.order || 999) - (b.order || 999); });
+}
 
 window.WhiteBoxSoundscapes.loadPublished = function() {
     var wbf = window.WhiteBoxFirebase;
@@ -94,34 +101,20 @@ window.WhiteBoxSoundscapes.loadPublished = function() {
                     items.push(d);
                 });
 
+                window.WhiteBoxSoundscapes.lastSource = 'firestore';
                 window.WhiteBoxSoundscapes.lastError = null;
-
-                if (items.length > 0) {
-                    window.WhiteBoxSoundscapes.lastSource = 'firestore';
-                    return items.sort(function(a, b) {
-                        return (a.order || 999) - (b.order || 999);
-                    });
-                }
-
-                window.WhiteBoxSoundscapes.lastSource = 'fallback';
-                window.WhiteBoxSoundscapes.lastError = null;
-                return soundscapesData
-                    .filter(function(s) { return s.published === true || s.published === 'true'; })
-                    .sort(function(a, b) { return (a.order || 999) - (b.order || 999); });
+                return items.sort(function(a, b) {
+                    return (a.order || 999) - (b.order || 999);
+                });
             })
             .catch(function(err) {
+                console.error('[WhiteBoxSoundscapes] Error consultando Firestore:', err);
                 window.WhiteBoxSoundscapes.lastSource = 'fallback';
                 window.WhiteBoxSoundscapes.lastError = err && err.message ? err.message : 'Error de Firestore';
-                return soundscapesData
-                    .filter(function(s) { return s.published === true || s.published === 'true'; })
-                    .sort(function(a, b) { return (a.order || 999) - (b.order || 999); });
+                return whiteBoxSoundscapesGetLocal();
             });
     }
     window.WhiteBoxSoundscapes.lastSource = 'local';
     window.WhiteBoxSoundscapes.lastError = null;
-    return Promise.resolve(
-        soundscapesData
-            .filter(function(s) { return s.published === true || s.published === 'true'; })
-            .sort(function(a, b) { return (a.order || 999) - (b.order || 999); })
-    );
+    return Promise.resolve(whiteBoxSoundscapesGetLocal());
 };

@@ -26,9 +26,9 @@ service cloud.firestore {
       allow create, update, delete: if isAuthorized();
     }
 
-    /* Soundscapes (paisajes sonoros): lectura pública, escritura solo admin */
+    /* Soundscapes (paisajes sonoros): solo publicadas para el sitio, admin todo */
     match /soundscapes/{soundscapeId} {
-      allow read: if true;
+      allow read: if isAuthorized() || resource.data.published == true;
       allow create, update, delete: if isAuthorized();
     }
 

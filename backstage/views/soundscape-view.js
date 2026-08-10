@@ -19,6 +19,7 @@
         { key: 'playlist', label: 'Playlist' },
         { key: 'duration', label: 'Duracion' },
         { key: 'status', label: 'Estado' },
+        { key: 'featured', label: 'Destacada' },
         { key: 'actions', label: 'Acciones' }
     ];
 
@@ -72,7 +73,8 @@
                     { value: item.category || '-', className: 'table-category' },
                     { value: item.playlist || '-', className: 'table-location' },
                     { value: item.duration ? formatDuration(item.duration) : '-', className: 'table-location' },
-                    { value: '', className: 'table-status-td' }
+                    { value: '', className: 'table-status-td' },
+                    { value: '', className: 'table-featured-td' }
                 ];
 
                 var tr = T.dataTableRow(cells);
@@ -106,12 +108,25 @@
                 statusBadge.textContent = item.isPublished() ? 'Publicada' : 'Borrador';
                 statusTd.appendChild(statusBadge);
 
+                var featTd = tr.children[8];
+                featTd.textContent = '';
+                var featBadge = document.createElement('span');
+                featBadge.className = 'badge ' + (item.isFeatured() ? 'badge-featured' : 'badge-draft');
+                featBadge.textContent = item.isFeatured() ? 'Destacada' : '—';
+                featTd.appendChild(featBadge);
+
                 var actionBtns = T.tableActions([
                     {
                         icon: item.isPublished() ? 'fa-eye-slash' : 'fa-eye',
                         title: item.isPublished() ? 'Despublicar' : 'Publicar',
                         ariaLabel: item.isPublished() ? 'Despublicar cancion' : 'Publicar cancion',
                         onClick: function() { actions.togglePublished(item.id); }
+                    },
+                    {
+                        icon: item.isFeatured() ? 'fa-star' : 'fa-regular fa-star',
+                        title: item.isFeatured() ? 'Quitar de destacadas' : 'Marcar como destacada',
+                        ariaLabel: item.isFeatured() ? 'Quitar cancion de destacadas' : 'Marcar cancion como destacada',
+                        onClick: function() { actions.toggleFeatured(item.id); }
                     },
                     {
                         icon: 'fa-pen',

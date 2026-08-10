@@ -205,6 +205,16 @@
         return this.update(id, data);
     };
 
+    FirestoreSoundscapeRepository.prototype.toggleFeatured = function(id) {
+        var self = this;
+        var item = this.getById(id);
+        if (!item) return Promise.reject(new Error('Cancion no encontrada'));
+        var data = item.toJSON();
+        data.featured = !item.isFeatured();
+        data.updatedAt = Date.now();
+        return this.update(id, data);
+    };
+
     FirestoreSoundscapeRepository.prototype.migrateFromDefaults = function() {
         /* No-op for Firestore */
     };

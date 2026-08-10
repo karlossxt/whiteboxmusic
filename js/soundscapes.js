@@ -7,79 +7,115 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var playerInitialized = false;
 
-    function renderSoundscapes() {
-        var published = soundscapesData
-            .filter(function(item) { return item.published; })
-            .sort(function(a, b) { return a.order - b.order; });
+    function buildCard(item) {
+        var card = document.createElement('div');
+        card.className = 'soundscapes-card';
+        card.setAttribute('data-titulo', item.title || '');
+        card.setAttribute('data-artista', item.artist || '');
+        card.setAttribute('data-portada', item.cover || '');
+        card.setAttribute('data-spotify', item.spotifyUrl || item.spotify || '');
+        card.setAttribute('data-playlist', item.playlist || '');
+        card.setAttribute('data-duracion', item.duration || 180);
 
+        var imageWrapper = document.createElement('div');
+        imageWrapper.className = 'card-image-wrapper';
+
+        var nowPlaying = document.createElement('div');
+        nowPlaying.className = 'now-playing-indicator';
+        var waves = document.createElement('div');
+        waves.className = 'now-playing-waves';
+        for (var w = 0; w < 4; w++) { waves.appendChild(document.createElement('span')); }
+        nowPlaying.appendChild(waves);
+        nowPlaying.appendChild(document.createTextNode(' Now Playing'));
+        imageWrapper.appendChild(nowPlaying);
+
+        var img = document.createElement('img');
+        img.src = item.cover || '';
+        img.alt = item.title || '';
+        img.loading = 'lazy';
+        imageWrapper.appendChild(img);
+
+        var playBtn = document.createElement('button');
+        playBtn.className = 'card-play-btn';
+        playBtn.setAttribute('aria-label', 'Reproducir ' + (item.title || ''));
+        playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+        imageWrapper.appendChild(playBtn);
+
+        var info = document.createElement('div');
+        info.className = 'card-info';
+
+        var titleEl = document.createElement('h3');
+        titleEl.className = 'card-title';
+        titleEl.textContent = item.title;
+        info.appendChild(titleEl);
+
+        var artistEl = document.createElement('p');
+        artistEl.className = 'card-artist';
+        artistEl.textContent = item.artist;
+        info.appendChild(artistEl);
+
+        var tag = document.createElement('div');
+        tag.className = 'card-playlist-tag';
+        var tagLabel = document.createElement('span');
+        tagLabel.className = 'tag-label';
+        tagLabel.textContent = 'Spotify Playlist:';
+        tag.appendChild(tagLabel);
+        var tagName = document.createElement('span');
+        tagName.className = 'tag-name';
+        tagName.textContent = item.playlist;
+        tag.appendChild(tagName);
+        info.appendChild(tag);
+
+        card.appendChild(imageWrapper);
+        card.appendChild(info);
+        return card;
+    }
+
+    function showGridState(className, icon, text) {
         grid.textContent = '';
-        published.forEach(function(item) {
-            var card = document.createElement('div');
-            card.className = 'soundscapes-card';
-            card.setAttribute('data-titulo', item.title);
-            card.setAttribute('data-artista', item.artist);
-            card.setAttribute('data-portada', item.cover);
-            card.setAttribute('data-spotify', item.spotifyUrl);
-            card.setAttribute('data-playlist', item.playlist);
-            card.setAttribute('data-duracion', item.duration);
+        var el = document.createElement('div');
+        el.className = className;
+        var iconEl = document.createElement('i');
+        iconEl.className = icon;
+        el.appendChild(iconEl);
+        var p = document.createElement('p');
+        p.textContent = text;
+        el.appendChild(p);
+        grid.appendChild(el);
+    }
 
-            var imageWrapper = document.createElement('div');
-            imageWrapper.className = 'card-image-wrapper';
+    function setFallbackBanner(visible) {
+        var banner = document.getElementById('soundscapesFallbackBanner');
+        if (banner) banner.style.display = visible ? '' : 'none';
+    }
 
-            var nowPlaying = document.createElement('div');
-            nowPlaying.className = 'now-playing-indicator';
-            var waves = document.createElement('div');
-            waves.className = 'now-playing-waves';
-            for (var w = 0; w < 4; w++) { waves.appendChild(document.createElement('span')); }
-            nowPlaying.appendChild(waves);
-            nowPlaying.appendChild(document.createTextNode(' Now Playing'));
-            imageWrapper.appendChild(nowPlaying);
+    function renderSoundscapes() {
+        showGridState('soundscapes-loading', 'fa-solid fa-spinner fa-spin', 'Cargando soundscapes...');
 
-            var img = document.createElement('img');
-            img.src = item.cover;
-            img.alt = item.title;
-            img.loading = 'lazy';
-            imageWrapper.appendChild(img);
+        window.WhiteBoxSoundscapes.loadPublished().then(function(items) {
+            grid.textContent = '';
 
-            var playBtn = document.createElement('button');
-            playBtn.className = 'card-play-btn';
-            playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
-            imageWrapper.appendChild(playBtn);
+            if (!items || items.length === 0) {
+                showGridState('soundscapes-empty', 'fa-solid fa-music', 'No hay soundscapes publicados todavia. Vuelve pronto.');
+                setFallbackBanner(false);
+            } else {
+                items.forEach(function(item) { grid.appendChild(buildCard(item)); });
+                setFallbackBanner(window.WhiteBoxSoundscapes.lastSource !== 'firestore');
+            }
 
-            var info = document.createElement('div');
-            info.className = 'card-info';
-
-            var titleEl = document.createElement('h3');
-            titleEl.className = 'card-title';
-            titleEl.textContent = item.title;
-            info.appendChild(titleEl);
-
-            var artistEl = document.createElement('p');
-            artistEl.className = 'card-artist';
-            artistEl.textContent = item.artist;
-            info.appendChild(artistEl);
-
-            var tag = document.createElement('div');
-            tag.className = 'card-playlist-tag';
-            var tagLabel = document.createElement('span');
-            tagLabel.className = 'tag-label';
-            tagLabel.textContent = 'Spotify Playlist:';
-            tag.appendChild(tagLabel);
-            var tagName = document.createElement('span');
-            tagName.className = 'tag-name';
-            tagName.textContent = item.playlist;
-            tag.appendChild(tagName);
-            info.appendChild(tag);
-
-            card.appendChild(imageWrapper);
-            card.appendChild(info);
-            grid.appendChild(card);
+            if (!playerInitialized) {
+                initPlayer();
+                playerInitialized = true;
+            }
+        }).catch(function(err) {
+            console.error('[Soundscapes] No se pudo renderizar:', err);
+            showGridState('soundscapes-error', 'fa-solid fa-triangle-exclamation', 'No se pudo cargar la musica.');
+            setFallbackBanner(false);
+            if (!playerInitialized) {
+                initPlayer();
+                playerInitialized = true;
+            }
         });
-
-        if (!playerInitialized) {
-            initPlayer();
-            playerInitialized = true;
-        }
     }
 
     function initPlayer() {

@@ -57,6 +57,14 @@
         return item;
     };
 
+    SoundscapeRepository.prototype.toggleFeatured = function(id) {
+        var item = this.getById(id);
+        if (!item) return null;
+        item.featured = !item.isFeatured();
+        this.update(id, item.toJSON());
+        return item;
+    };
+
     SoundscapeRepository.prototype.migrateFromDefaults = function(defaultData) {
         var existing = this.datasource.get(this.storageKey);
         if (!existing && defaultData && defaultData.length > 0) {
