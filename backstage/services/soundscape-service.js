@@ -1,6 +1,7 @@
 /* ============================================
    BACKSTAGE STUDIO — Soundscape Service
    Reglas de negocio para soundscapes.
+   CRUD devuelve Promises cuando el repo es async.
    ============================================ */
 
 (function() {
@@ -10,25 +11,12 @@
         this.repository = soundscapeRepository;
     }
 
-    SoundscapeService.prototype.getAll = function() {
-        return this.repository.getAll();
-    };
-
-    SoundscapeService.prototype.getById = function(id) {
-        return this.repository.getById(id);
-    };
-
-    SoundscapeService.prototype.getStats = function() {
-        return this.repository.getStats();
-    };
-
-    SoundscapeService.prototype.search = function(query) {
-        return this.repository.search(query);
-    };
-
-    SoundscapeService.prototype.filter = function(status) {
-        return this.repository.filterByStatus(status);
-    };
+    SoundscapeService.prototype.getAll = function() { return this.repository.getAll(); };
+    SoundscapeService.prototype.getById = function(id) { return this.repository.getById(id); };
+    SoundscapeService.prototype.getStats = function() { return this.repository.getStats(); };
+    SoundscapeService.prototype.search = function(query) { return this.repository.search(query); };
+    SoundscapeService.prototype.filter = function(status) { return this.repository.filterByStatus(status); };
+    SoundscapeService.prototype.getMaxOrder = function() { return this.repository.getMaxOrder(); };
 
     SoundscapeService.prototype.validate = function(data) {
         var errors = [];
@@ -37,65 +25,92 @@
         return { valid: errors.length === 0, errors: errors };
     };
 
-    SoundscapeService.prototype.create = function(data) {
-        var validation = this.validate(data);
-        if (!validation.valid) return { success: false, errors: validation.errors };
-
-        var itemData = {
-            title: data.title.trim(),
-            artist: data.artist.trim(),
+    SoundscapeService.prototype._buildSoundscapeData = function(data, id) {
+        var now = Date.now();
+        return {
+            title: (data.title || '').trim(),
+            artist: (data.artist || '').trim(),
             playlist: (data.playlist || '').trim(),
             cover: (data.cover || '').trim() || 'https://placehold.co/400x400/1a1a1a/ffffff?text=Album',
             spotifyUrl: (data.spotifyUrl || '').trim(),
+            youtubeUrl: (data.youtubeUrl || '').trim(),
+            description: (data.description || '').trim(),
+            category: (data.category || '').trim(),
             duration: parseInt(data.duration, 10) || 180,
-            order: parseInt(data.order, 10) || this.repository.getMaxOrder() + 1,
-            published: data.published === true || data.published === 'true'
+            published: data.published === true || data.published === 'true',
+            featured: data.featured === true || data.featured === 'true',
+            createdAt: data.createdAt || now,
+            updatedAt: now,
+            order: parseInt(data.order, 10) || (id ? 1 : this.repository.getMaxOrder() + 1)
         };
+    };
 
-        var item = this.repository.create(itemData);
-        window.Backstage.EventBus.emit('soundscapes:created', item);
-        return { success: true, data: item };
+    SoundscapeService.prototype.create = function(data) {
+        var self = this;
+        var validation = this.validate(data);
+        if (!validation.valid) return Promise.resolve({ success: false, errors: validation.errors });
+
+        var itemData = this._buildSoundscapeData(data, null);
+
+        var result = this.repository.create(itemData);
+        if (result && typeof result.then === 'function') {
+            return result.then(function(item) {
+                window.Backstage.EventBus.emit('soundscapes:created', item);
+                return { success: true, data: item };
+            }).catch(function(err) {
+                return { success: false, errors: [err.message || 'Error al guardar en Firestore'] };
+            });
+        }
+        window.Backstage.EventBus.emit('soundscapes:created', result);
+        return Promise.resolve({ success: true, data: result });
     };
 
     SoundscapeService.prototype.update = function(id, data) {
+        var self = this;
         var validation = this.validate(data);
-        if (!validation.valid) return { success: false, errors: validation.errors };
+        if (!validation.valid) return Promise.resolve({ success: false, errors: validation.errors });
 
-        var itemData = {
-            title: data.title.trim(),
-            artist: data.artist.trim(),
-            playlist: (data.playlist || '').trim(),
-            cover: (data.cover || '').trim() || 'https://placehold.co/400x400/1a1a1a/ffffff?text=Album',
-            spotifyUrl: (data.spotifyUrl || '').trim(),
-            duration: parseInt(data.duration, 10) || 180,
-            order: parseInt(data.order, 10) || 1,
-            published: data.published === true || data.published === 'true'
-        };
+        var itemData = this._buildSoundscapeData(data, id);
 
-        var item = this.repository.update(id, itemData);
-        if (item) {
-            window.Backstage.EventBus.emit('soundscapes:updated', item);
+        var result = this.repository.update(id, itemData);
+        if (result && typeof result.then === 'function') {
+            return result.then(function(item) {
+                if (item) window.Backstage.EventBus.emit('soundscapes:updated', item);
+                return { success: !!item, data: item };
+            }).catch(function(err) {
+                return { success: false, errors: [err.message || 'Error al guardar en Firestore'] };
+            });
         }
-        return { success: !!item, data: item };
+        if (result) window.Backstage.EventBus.emit('soundscapes:updated', result);
+        return Promise.resolve({ success: !!result, data: result });
     };
 
     SoundscapeService.prototype.remove = function(id) {
         var item = this.repository.getById(id);
-        this.repository.remove(id);
+
+        var result = this.repository.remove(id);
+        if (result && typeof result.then === 'function') {
+            return result.then(function() {
+                window.Backstage.EventBus.emit('soundscapes:removed', { id: id, title: item ? item.title : '' });
+                return true;
+            }).catch(function(err) {
+                return Promise.reject(err);
+            });
+        }
         window.Backstage.EventBus.emit('soundscapes:removed', { id: id, title: item ? item.title : '' });
-        return true;
+        return Promise.resolve(true);
     };
 
     SoundscapeService.prototype.togglePublished = function(id) {
-        var item = this.repository.togglePublished(id);
-        if (item) {
-            window.Backstage.EventBus.emit('soundscapes:toggled', item);
+        var result = this.repository.togglePublished(id);
+        if (result && typeof result.then === 'function') {
+            return result.then(function(item) {
+                if (item) window.Backstage.EventBus.emit('soundscapes:toggled', item);
+                return item;
+            });
         }
-        return item;
-    };
-
-    SoundscapeService.prototype.getMaxOrder = function() {
-        return this.repository.getMaxOrder();
+        if (result) window.Backstage.EventBus.emit('soundscapes:toggled', result);
+        return Promise.resolve(result);
     };
 
     window.Backstage.SoundscapeService = SoundscapeService;

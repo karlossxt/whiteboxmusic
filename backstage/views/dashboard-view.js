@@ -58,7 +58,7 @@
             this._container = document.getElementById(containerId);
         },
 
-        render: function(cards, recentStories, recentSoundscapes, previewStory, handlers) {
+        render: function(cards, recentStories, recentSoundscapes, recentInterviews, previewStory, handlers) {
             if (!this._container) return;
             this._container.textContent = '';
 
@@ -122,6 +122,18 @@
                     return { text: ss.published ? 'Publicado' : 'Borrador', cls: ss.published ? 'published' : 'draft' };
                 },
                 metaFor: function(ss) { return ss.artist || ''; },
+                imgField: 'cover'
+            }));
+
+            /* Columna 4: Entrevistas recientes */
+            grid.appendChild(this._buildContentCol(recentInterviews, {
+                title: 'Entrevistas recientes',
+                viewAllText: 'Ver todas',
+                onViewAll: handlers.onViewInterviews,
+                badgeFor: function(iv) {
+                    return { text: iv.published ? 'Publicado' : 'Borrador', cls: iv.published ? 'published' : 'draft' };
+                },
+                metaFor: function(iv) { return iv.category || ''; },
                 imgField: 'cover'
             }));
 

@@ -1,59 +1,61 @@
 /* ============================================
-   BACKSTAGE STUDIO — Soundscape Model
-   Modelo de datos para canciones/recomendaciones Spotify.
+   BACKSTAGE STUDIO — Interview Model
+   Modelo de datos para entrevistas.
    ============================================ */
 
 (function() {
     window.Backstage = window.Backstage || {};
 
-    function Soundscape(data) {
+    function Interview(data) {
         var raw = data || {};
         this.id = raw.id || '';
         this.title = raw.title || '';
-        this.artist = raw.artist || '';
-        this.cover = raw.cover || '';
-        this.spotifyUrl = raw.spotifyUrl || '';
-        this.youtubeUrl = raw.youtubeUrl || '';
-        this.description = raw.description || '';
+        this.slug = raw.slug || '';
+        this.excerpt = raw.excerpt || '';
+        this.content = raw.content || '';
         this.category = raw.category || '';
-        this.playlist = raw.playlist || '';
-        this.duration = parseInt(raw.duration, 10) || 180;
-        this.published = raw.published === true;
+        this.author = raw.author || '';
+        this.cover = raw.cover || '';
+        this.youtubeUrl = raw.youtubeUrl || '';
+        this.spotifyUrl = raw.spotifyUrl || '';
+        this.published = raw.published === true || raw.published === 'true';
         this.featured = raw.featured === true || raw.featured === 'true';
+        this.publishDate = raw.publishDate || '';
         this.order = parseInt(raw.order, 10) || 1;
         this.createdAt = raw.createdAt || Date.now();
         this.updatedAt = raw.updatedAt || Date.now();
     }
 
-    Soundscape.prototype.toJSON = function() {
+    Interview.prototype.toJSON = function() {
         return {
             id: this.id,
             title: this.title,
-            artist: this.artist,
-            cover: this.cover,
-            spotifyUrl: this.spotifyUrl,
-            youtubeUrl: this.youtubeUrl,
-            description: this.description,
+            slug: this.slug,
+            excerpt: this.excerpt,
+            content: this.content,
             category: this.category,
-            playlist: this.playlist,
-            duration: this.duration,
+            author: this.author,
+            cover: this.cover,
+            youtubeUrl: this.youtubeUrl,
+            spotifyUrl: this.spotifyUrl,
             published: this.published,
             featured: this.featured,
+            publishDate: this.publishDate,
             order: this.order,
             createdAt: this.createdAt,
             updatedAt: this.updatedAt
         };
     };
 
-    Soundscape.prototype.isPublished = function() {
+    Interview.prototype.isPublished = function() {
         return this.published === true;
     };
 
-    Soundscape.prototype.isFeatured = function() {
+    Interview.prototype.isFeatured = function() {
         return this.featured === true;
     };
 
-    Soundscape.prototype.formatUpdatedAt = function() {
+    Interview.prototype.formatUpdatedAt = function() {
         try {
             var d = new Date(this.updatedAt);
             var day = d.getDate();
@@ -64,15 +66,9 @@
         }
     };
 
-    Soundscape.prototype.formatDuration = function() {
-        var m = Math.floor(this.duration / 60);
-        var s = Math.floor(this.duration % 60);
-        return m + ':' + (s < 10 ? '0' : '') + s;
+    Interview.create = function(raw) {
+        return new Interview(raw);
     };
 
-    Soundscape.create = function(raw) {
-        return new Soundscape(raw);
-    };
-
-    window.Backstage.Soundscape = Soundscape;
+    window.Backstage.Interview = Interview;
 })();

@@ -49,13 +49,21 @@
                     <i class="fa-solid fa-gauge-high"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="#stories" class="admin-nav-item" data-section="stories">
-                    <i class="fa-solid fa-book-open"></i>
-                    <span>Historias</span>
+                <a href="#home" class="admin-nav-item" data-section="home">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Inicio</span>
                 </a>
                 <a href="#soundscapes" class="admin-nav-item" data-section="soundscapes">
                     <i class="fa-solid fa-headphones"></i>
                     <span>Latest Soundscapes</span>
+                </a>
+                <a href="#stories" class="admin-nav-item" data-section="stories">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>Historias</span>
+                </a>
+                <a href="#interviews" class="admin-nav-item" data-section="interviews">
+                    <i class="fa-solid fa-microphone"></i>
+                    <span>Entrevistas</span>
                 </a>
                 <a href="#gallery" class="admin-nav-item" data-section="gallery">
                     <i class="fa-solid fa-camera"></i>
@@ -63,7 +71,11 @@
                 </a>
                 <a href="#sections" class="admin-nav-item" data-section="sections">
                     <i class="fa-solid fa-pen-to-square"></i>
-                    <span>Contenido del sitio</span>
+                    <span>Páginas</span>
+                </a>
+                <a href="#settings" class="admin-nav-item" data-section="settings">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>Configuración</span>
                 </a>
                 <div class="admin-nav-divider"></div>
                 <a href="../index.html" class="admin-nav-item" target="_blank">
@@ -108,8 +120,10 @@
                 </div>
             </section>
             <section class="admin-section" id="section-soundscapes" style="display:none;"></section>
+            <section class="admin-section" id="section-interviews" style="display:none;"></section>
             <section class="admin-section" id="section-gallery" style="display:none;"></section>
             <section class="admin-section" id="section-sections" style="display:none;"></section>
+            <section class="admin-section" id="section-settings" style="display:none;"></section>
         </main>
     </div>
 
@@ -272,6 +286,18 @@
                         <input type="url" id="ssFormSpotifyUrl" placeholder="https://open.spotify.com/track/...">
                     </div>
                     <div class="form-group">
+                        <label for="ssFormYoutubeUrl">URL de YouTube</label>
+                        <input type="url" id="ssFormYoutubeUrl" placeholder="https://www.youtube.com/watch?v=...">
+                    </div>
+                    <div class="form-group">
+                        <label for="ssFormCategory">Categoria</label>
+                        <input type="text" id="ssFormCategory" placeholder="Ej: Indie, Rock, Synth">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="ssFormDescription">Descripcion</label>
+                        <textarea id="ssFormDescription" rows="2" placeholder="Nota corta sobre la cancion"></textarea>
+                    </div>
+                    <div class="form-group">
                         <label for="ssFormDuration">Duracion (segundos)</label>
                         <input type="number" id="ssFormDuration" min="1" value="180">
                     </div>
@@ -286,10 +312,114 @@
                             <option value="false">Borrador</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label for="ssFormFeatured">Destacada</label>
+                        <select id="ssFormFeatured">
+                            <option value="false">No</option>
+                            <option value="true">Si</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="form-actions">
                     <button type="button" class="btn-secondary" id="ssBtnCancel">Cancelar</button>
                     <button type="submit" class="btn-primary" id="ssBtnSave">
+                        <i class="fa-solid fa-check"></i> Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Interview Form Modal -->
+    <div class="modal-overlay" id="interviewModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="ivModalTitle">Nueva Entrevista</h2>
+                <button class="modal-close" id="ivModalClose" aria-label="Cerrar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="ivForm" novalidate>
+                <input type="hidden" id="ivFormId">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="ivFormTitle">Titulo <span class="required">*</span></label>
+                        <input type="text" id="ivFormTitle" required placeholder="Titulo de la entrevista">
+                        <span class="form-error" id="errorTitle"></span>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="ivFormSlug">Slug</label>
+                        <input type="text" id="ivFormSlug" placeholder="slug-automatico">
+                        <span class="form-hint">Se genera automaticamente desde el titulo</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="ivFormCategory">Categoria <span class="required">*</span></label>
+                        <input type="text" id="ivFormCategory" placeholder="Ej: Indie, Portada">
+                        <span class="form-error" id="errorCategory"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="ivFormAuthor">Autor</label>
+                        <input type="text" id="ivFormAuthor" placeholder="Nombre o alias">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="ivFormCover">URL de portada <span class="required">*</span></label>
+                        <input type="url" id="ivFormCover" placeholder="https://...">
+                        <span class="form-hint">Pega una URL o sube una imagen desde tu equipo.</span>
+                        <div class="form-image-upload">
+                            <input type="file" id="ivFormCoverFile" accept="image/*" class="form-file-input">
+                            <span class="form-file-label">Subir imagen</span>
+                        </div>
+                        <span class="form-error" id="errorCover"></span>
+                        <div class="form-image-preview" id="ivCoverPreview" style="display:none;">
+                            <img id="ivCoverPreviewImg" src="" alt="Vista previa de portada">
+                            <button type="button" class="ss-cover-remove" id="ivCoverRemove" title="Quitar imagen" aria-label="Quitar imagen">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="ivFormPublishDate">Fecha de publicacion</label>
+                        <input type="text" id="ivFormPublishDate" placeholder="Ej: Octubre 2023">
+                    </div>
+                    <div class="form-group">
+                        <label for="ivFormStatus">Estado</label>
+                        <select id="ivFormStatus">
+                            <option value="draft">Borrador</option>
+                            <option value="published">Publicada</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ivFormFeatured">Destacada</label>
+                        <select id="ivFormFeatured">
+                            <option value="false">No</option>
+                            <option value="true">Si</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ivFormOrder">Orden</label>
+                        <input type="number" id="ivFormOrder" min="1" value="1">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="ivFormExcerpt">Resumen <span class="required">*</span></label>
+                        <textarea id="ivFormExcerpt" rows="2" required placeholder="Resumen corto de la entrevista"></textarea>
+                        <span class="form-error" id="errorExcerpt"></span>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="ivFormYoutubeUrl">URL de YouTube</label>
+                        <input type="url" id="ivFormYoutubeUrl" placeholder="https://www.youtube.com/watch?v=...">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="ivFormSpotifyUrl">URL de Spotify</label>
+                        <input type="url" id="ivFormSpotifyUrl" placeholder="https://open.spotify.com/...">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="ivFormContent">Texto de la entrevista</label>
+                        <textarea id="ivFormContent" rows="8" placeholder="Contenido completo. Separa parrafos con doble salto de linea."></textarea>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="ivBtnCancel">Cancelar</button>
+                    <button type="submit" class="btn-primary" id="ivBtnSave">
                         <i class="fa-solid fa-check"></i> Guardar
                     </button>
                 </div>
@@ -427,6 +557,8 @@
     <!-- Models -->
     <script src="models/story.js"></script>
     <script src="models/soundscape.js"></script>
+    <script src="models/interview.js"></script>
+    <script src="models/site-config.js"></script>
     <script src="models/gallery.js"></script>
     <script src="models/section.js"></script>
 
@@ -440,6 +572,11 @@
     <script src="repositories/story-repository.js"></script>
     <script src="repositories/firestore-story-repository.js"></script>
     <script src="repositories/soundscape-repository.js"></script>
+    <script src="repositories/firestore-soundscape-repository.js"></script>
+    <script src="repositories/interview-repository.js"></script>
+    <script src="repositories/firestore-interview-repository.js"></script>
+    <script src="repositories/site-config-repository.js"></script>
+    <script src="repositories/firestore-site-config-repository.js"></script>
     <script src="repositories/gallery-repository.js"></script>
     <script src="repositories/firestore-gallery-repository.js"></script>
     <script src="repositories/section-repository.js"></script>
@@ -449,6 +586,8 @@
     <script src="services/storage-service.js"></script>
     <script src="services/story-service.js"></script>
     <script src="services/soundscape-service.js"></script>
+    <script src="services/interview-service.js"></script>
+    <script src="services/site-config-service.js"></script>
     <script src="services/gallery-service.js"></script>
     <script src="services/section-service.js"></script>
     <script src="services/dashboard-service.js"></script>
@@ -472,6 +611,8 @@
     <script src="views/dashboard-view.js"></script>
     <script src="views/story-view.js"></script>
     <script src="views/soundscape-view.js"></script>
+    <script src="views/interview-view.js"></script>
+    <script src="views/site-config-view.js"></script>
     <script src="views/gallery-view.js"></script>
     <script src="views/section-view.js"></script>
 
@@ -479,6 +620,8 @@
     <script src="controllers/dashboard-controller.js"></script>
     <script src="controllers/story-controller.js"></script>
     <script src="controllers/soundscape-controller.js"></script>
+    <script src="controllers/interview-controller.js"></script>
+    <script src="controllers/site-config-controller.js"></script>
     <script src="controllers/gallery-controller.js"></script>
     <script src="controllers/section-controller.js"></script>
 

@@ -15,6 +15,7 @@
         { key: 'cover', label: 'Portada' },
         { key: 'title', label: 'Titulo' },
         { key: 'artist', label: 'Artista' },
+        { key: 'category', label: 'Categoria' },
         { key: 'playlist', label: 'Playlist' },
         { key: 'duration', label: 'Duracion' },
         { key: 'status', label: 'Estado' },
@@ -68,6 +69,7 @@
                     { value: '', className: 'table-thumb-td' },
                     { value: item.title || '(sin titulo)', className: 'table-title' },
                     { value: item.artist || '-', className: 'table-author' },
+                    { value: item.category || '-', className: 'table-category' },
                     { value: item.playlist || '-', className: 'table-location' },
                     { value: item.duration ? formatDuration(item.duration) : '-', className: 'table-location' },
                     { value: '', className: 'table-status-td' }
@@ -88,7 +90,16 @@
                 };
                 thumbTd.appendChild(thumb);
 
-                var statusTd = tr.children[6];
+                var catTd = tr.children[4];
+                catTd.textContent = '';
+                if (item.category) {
+                    var catBadge = document.createElement('span');
+                    catBadge.className = 'badge badge-category';
+                    catBadge.textContent = item.category;
+                    catTd.appendChild(catBadge);
+                }
+
+                var statusTd = tr.children[7];
                 statusTd.textContent = '';
                 var statusBadge = document.createElement('span');
                 statusBadge.className = 'badge ' + (item.isPublished() ? 'badge-published' : 'badge-draft');

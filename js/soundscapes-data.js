@@ -74,3 +74,54 @@ var soundscapesDataDefault = [
     }
     soundscapesData = (data && data.length) ? data : soundscapesDataDefault;
 })();
+
+/* Async loader: tries Firestore first, falls back to localStorage/default */
+window.WhiteBoxSoundscapes = window.WhiteBoxSoundscapes || {};
+window.WhiteBoxSoundscapes.lastSource = null;
+window.WhiteBoxSoundscapes.lastError = null;
+
+window.WhiteBoxSoundscapes.loadPublished = function() {
+    var wbf = window.WhiteBoxFirebase;
+    if (wbf && wbf.db) {
+        return wbf.db.collection('soundscapes')
+            .where('published', '==', true)
+            .get()
+            .then(function(snapshot) {
+                var items = [];
+                snapshot.forEach(function(doc) {
+                    var d = doc.data();
+                    d.id = doc.id;
+                    items.push(d);
+                });
+
+                window.WhiteBoxSoundscapes.lastError = null;
+
+                if (items.length > 0) {
+                    window.WhiteBoxSoundscapes.lastSource = 'firestore';
+                    return items.sort(function(a, b) {
+                        return (a.order || 999) - (b.order || 999);
+                    });
+                }
+
+                window.WhiteBoxSoundscapes.lastSource = 'fallback';
+                window.WhiteBoxSoundscapes.lastError = null;
+                return soundscapesData
+                    .filter(function(s) { return s.published === true || s.published === 'true'; })
+                    .sort(function(a, b) { return (a.order || 999) - (b.order || 999); });
+            })
+            .catch(function(err) {
+                window.WhiteBoxSoundscapes.lastSource = 'fallback';
+                window.WhiteBoxSoundscapes.lastError = err && err.message ? err.message : 'Error de Firestore';
+                return soundscapesData
+                    .filter(function(s) { return s.published === true || s.published === 'true'; })
+                    .sort(function(a, b) { return (a.order || 999) - (b.order || 999); });
+            });
+    }
+    window.WhiteBoxSoundscapes.lastSource = 'local';
+    window.WhiteBoxSoundscapes.lastError = null;
+    return Promise.resolve(
+        soundscapesData
+            .filter(function(s) { return s.published === true || s.published === 'true'; })
+            .sort(function(a, b) { return (a.order || 999) - (b.order || 999); })
+    );
+};

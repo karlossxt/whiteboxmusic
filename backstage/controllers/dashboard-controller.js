@@ -31,6 +31,7 @@
         var cards = this.service.getStatCards();
         var recentStories = this.service.getRecentStories(5);
         var recentSoundscapes = this.service.getRecentSoundscapes(5);
+        var recentInterviews = this.service.getRecentInterviews(5);
         var previewStory = this.service.getPreviewStory();
         var self = this;
 
@@ -38,13 +39,15 @@
             cards,
             recentStories,
             recentSoundscapes,
+            recentInterviews,
             previewStory,
             {
                 onNewStory: function() { window.Backstage.router.navigate('stories'); },
                 onNewSong: function() { window.Backstage.router.navigate('soundscapes'); },
                 onViewSite: function() { window.open('../index.html', '_blank'); },
                 onViewStories: function() { window.Backstage.router.navigate('stories'); },
-                onViewSoundscapes: function() { window.Backstage.router.navigate('soundscapes'); }
+                onViewSoundscapes: function() { window.Backstage.router.navigate('soundscapes'); },
+                onViewInterviews: function() { window.Backstage.router.navigate('interviews'); }
             }
         );
     };

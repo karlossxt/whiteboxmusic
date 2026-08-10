@@ -53,10 +53,13 @@
         var self = this;
         var actions = {
             togglePublished: function(id) {
-                self.service.togglePublished(id);
-                self._renderAll();
-                window.Backstage.EventBus.emit('dashboard:refresh');
-                Toast.show('Estado actualizado', 'success');
+                self.service.togglePublished(id).then(function() {
+                    self._renderAll();
+                    window.Backstage.EventBus.emit('dashboard:refresh');
+                    Toast.show('Estado actualizado', 'success');
+                }).catch(function(err) {
+                    Toast.show('Error al actualizar estado: ' + (err.message || 'Error desconocido'), 'error');
+                });
             },
             edit: function(id) { self._openEditModal(id); },
             remove: function(id, title) { self._openConfirm(id, title); }
@@ -176,6 +179,7 @@
         document.getElementById('ssFormId').value = '';
         document.getElementById('ssFormDuration').value = '180';
         document.getElementById('ssFormPublished').value = 'true';
+        document.getElementById('ssFormFeatured').value = 'false';
         document.getElementById('ssFormOrder').value = String(this.service.getMaxOrder() + 1);
         this._coverFile = null;
         var preview = document.getElementById('ssCoverPreview');
@@ -196,9 +200,13 @@
         document.getElementById('ssFormPlaylist').value = item.playlist || '';
         document.getElementById('ssFormCover').value = item.cover || '';
         document.getElementById('ssFormSpotifyUrl').value = item.spotifyUrl || '';
+        document.getElementById('ssFormYoutubeUrl').value = item.youtubeUrl || '';
+        document.getElementById('ssFormDescription').value = item.description || '';
+        document.getElementById('ssFormCategory').value = item.category || '';
         document.getElementById('ssFormDuration').value = String(item.duration || 180);
         document.getElementById('ssFormOrder').value = String(item.order || 1);
         document.getElementById('ssFormPublished').value = item.published ? 'true' : 'false';
+        document.getElementById('ssFormFeatured').value = item.featured ? 'true' : 'false';
 
         var preview = document.getElementById('ssCoverPreview');
         var previewImg = document.getElementById('ssCoverPreviewImg');
@@ -222,10 +230,13 @@
             : 'Esta accion no se puede deshacer.';
 
         Confirm.show('Eliminar cancion', text, function() {
-            self.service.remove(id);
-            self._renderAll();
-            window.Backstage.EventBus.emit('dashboard:refresh');
-            Toast.show('Cancion eliminada', 'success');
+            self.service.remove(id).then(function() {
+                self._renderAll();
+                window.Backstage.EventBus.emit('dashboard:refresh');
+                Toast.show('Cancion eliminada', 'success');
+            }).catch(function(err) {
+                Toast.show('Error al eliminar: ' + (err.message || 'Error de Firestore'), 'error');
+            });
         });
     };
 
@@ -239,30 +250,34 @@
             playlist: document.getElementById('ssFormPlaylist').value,
             cover: document.getElementById('ssFormCover').value,
             spotifyUrl: document.getElementById('ssFormSpotifyUrl').value,
+            youtubeUrl: document.getElementById('ssFormYoutubeUrl').value,
+            description: document.getElementById('ssFormDescription').value,
+            category: document.getElementById('ssFormCategory').value,
             duration: document.getElementById('ssFormDuration').value,
             order: document.getElementById('ssFormOrder').value,
-            published: document.getElementById('ssFormPublished').value
+            published: document.getElementById('ssFormPublished').value,
+            featured: document.getElementById('ssFormFeatured').value
         };
 
         var existingId = document.getElementById('ssFormId').value;
         var self = this;
 
         this._prepareCover(data).then(function(finalData) {
-            var result;
+            var promise;
             if (existingId) {
-                result = self.service.update(existingId, finalData);
+                promise = self.service.update(existingId, finalData);
             } else {
-                result = self.service.create(finalData);
+                promise = self.service.create(finalData);
             }
-
+            return promise;
+        }).then(function(result) {
+            self._saving = false;
             if (result.success) {
-                self._saving = false;
                 Toast.show(existingId ? 'Cancion actualizada' : 'Cancion creada', 'success');
                 self._renderAll();
                 window.Backstage.EventBus.emit('dashboard:refresh');
                 Modal.closeAll();
             } else {
-                self._saving = false;
                 Toast.show(result.errors.join('. '), 'error');
             }
         }).catch(function(err) {

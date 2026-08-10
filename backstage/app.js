@@ -85,12 +85,20 @@
     function initDatasources() {
         var storyRegistry = new window.Backstage.DatasourceRegistry();
         var soundscapeRegistry = new window.Backstage.DatasourceRegistry();
+        var interviewRegistry = new window.Backstage.DatasourceRegistry();
+        var siteConfigRegistry = new window.Backstage.DatasourceRegistry();
         var galleryRegistry = new window.Backstage.DatasourceRegistry();
         var sectionRegistry = new window.Backstage.DatasourceRegistry();
         var local = new window.Backstage.LocalDatasource();
 
         soundscapeRegistry.register('local', local);
         soundscapeRegistry.setActive('local');
+
+        interviewRegistry.register('local', local);
+        interviewRegistry.setActive('local');
+
+        siteConfigRegistry.register('local', local);
+        siteConfigRegistry.setActive('local');
 
         galleryRegistry.register('local', local);
         galleryRegistry.setActive('local');
@@ -106,6 +114,12 @@
                 storyRegistry.register('firestore', firestore);
                 storyRegistry.register('local', local);
                 storyRegistry.setActive('firestore');
+                soundscapeRegistry.register('firestore', firestore);
+                soundscapeRegistry.setActive('firestore');
+                interviewRegistry.register('firestore', firestore);
+                interviewRegistry.setActive('firestore');
+                siteConfigRegistry.register('firestore', firestore);
+                siteConfigRegistry.setActive('firestore');
                 sectionRegistry.register('firestore', firestore);
                 sectionRegistry.setActive('firestore');
                 galleryRegistry.register('firestore', firestore);
@@ -124,6 +138,8 @@
 
         window.Backstage.storyDatasourceRegistry = storyRegistry;
         window.Backstage.soundscapeDatasourceRegistry = soundscapeRegistry;
+        window.Backstage.interviewDatasourceRegistry = interviewRegistry;
+        window.Backstage.siteConfigDatasourceRegistry = siteConfigRegistry;
         window.Backstage.galleryDatasourceRegistry = galleryRegistry;
         window.Backstage.sectionDatasourceRegistry = sectionRegistry;
         window.Backstage.datasource = storyRegistry;
@@ -131,6 +147,8 @@
         return {
             storyRegistry: storyRegistry,
             soundscapeRegistry: soundscapeRegistry,
+            interviewRegistry: interviewRegistry,
+            siteConfigRegistry: siteConfigRegistry,
             galleryRegistry: galleryRegistry,
             sectionRegistry: sectionRegistry,
             local: local,
@@ -144,7 +162,7 @@
        localStorage automaticamente.
        ------------------------------------------ */
     function preloadFirestoreData(firestoreDs) {
-        var COLLECTIONS = ['stories', 'site_content', 'gallery'];
+        var COLLECTIONS = ['stories', 'site_content', 'gallery', 'soundscapes', 'interviews', 'site_config'];
 
         firestoreDs._cache = firestoreDs._cache || {};
 
@@ -153,7 +171,10 @@
                 return Promise.resolve({
                     stories: firestoreDs._cache['stories'] ? firestoreDs._cache['stories'].length : 0,
                     sections: firestoreDs._cache['site_content'] ? firestoreDs._cache['site_content'].length : 0,
-                    gallery: firestoreDs._cache['gallery'] ? firestoreDs._cache['gallery'].length : 0
+                    gallery: firestoreDs._cache['gallery'] ? firestoreDs._cache['gallery'].length : 0,
+                    soundscapes: firestoreDs._cache['soundscapes'] ? firestoreDs._cache['soundscapes'].length : 0,
+                    interviews: firestoreDs._cache['interviews'] ? firestoreDs._cache['interviews'].length : 0,
+                    siteConfig: firestoreDs._cache['site_config'] ? firestoreDs._cache['site_config'].length : 0
                 });
             }
 
@@ -202,17 +223,21 @@
         });
     }
 
-    function bootWithLocalMode(storyReg, soundscapeReg, galleryReg, sectionReg, local) {
+    function bootWithLocalMode(storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, sectionReg, local) {
         window.Backstage._localMode = true;
 
         /* Asegurar que el datasource activo sea local */
         storyReg.setActive('local');
         soundscapeReg.setActive('local');
+        interviewReg.setActive('local');
+        siteConfigReg.setActive('local');
         galleryReg.setActive('local');
         sectionReg.setActive('local');
 
         var storyRepo = new window.Backstage.StoryRepository(storyReg);
         var soundscapeRepo = new window.Backstage.SoundscapeRepository(soundscapeReg);
+        var interviewRepo = new window.Backstage.InterviewRepository(interviewReg);
+        var siteConfigRepo = new window.Backstage.SiteConfigRepository(local);
         var galleryRepo = new window.Backstage.GalleryRepository(galleryReg);
         var sectionRepo = new window.Backstage.SectionRepository(local);
 
@@ -225,18 +250,21 @@
         if (window.WhiteBoxSiteSchema) {
             sectionRepo.migrateFromDefaults(window.WhiteBoxSiteSchema);
         }
+        siteConfigRepo.migrateFromDefaults();
 
-        bootApp(storyReg, soundscapeReg, galleryReg, storyRepo, soundscapeRepo, galleryRepo, sectionRepo, false);
+        bootApp(storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, storyRepo, soundscapeRepo, interviewRepo, siteConfigRepo, galleryRepo, sectionRepo, false);
     }
 
     /* ------------------------------------------
        4. BOOT APP
        ------------------------------------------ */
-    function bootApp(storyReg, soundscapeReg, galleryReg, storyRepo, soundscapeRepo, galleryRepo, sectionRepo, isFirestore) {
+    function bootApp(storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, storyRepo, soundscapeRepo, interviewRepo, siteConfigRepo, galleryRepo, sectionRepo, isFirestore) {
         var storyService = new window.Backstage.StoryService(storyRepo);
         var soundscapeService = new window.Backstage.SoundscapeService(soundscapeRepo);
+        var interviewService = new window.Backstage.InterviewService(interviewRepo);
+        var siteConfigService = new window.Backstage.SiteConfigService(siteConfigRepo);
         var galleryService = new window.Backstage.GalleryService(galleryRepo);
-        var dashboardService = new window.Backstage.DashboardService(storyService, soundscapeService);
+        var dashboardService = new window.Backstage.DashboardService(storyService, soundscapeService, interviewService, siteConfigService);
 
         var dashboardView = window.Backstage.Views.Dashboard;
         dashboardView.init('section-dashboard');
@@ -246,6 +274,12 @@
 
         var soundscapeView = window.Backstage.Views.Soundscape;
         soundscapeView.init('section-soundscapes');
+
+        var interviewView = window.Backstage.Views.Interview;
+        interviewView.init('section-interviews');
+
+        var siteConfigView = window.Backstage.Views.SiteConfig;
+        siteConfigView.init('section-settings');
 
         var galleryView = window.Backstage.Views.Gallery;
         galleryView.init('section-gallery');
@@ -263,6 +297,8 @@
         var dashboardCtrl = new window.Backstage.Controllers.Dashboard(dashboardService, dashboardView);
         var storyCtrl = new window.Backstage.Controllers.Story(storyService, storyView);
         var soundscapeCtrl = new window.Backstage.Controllers.Soundscape(soundscapeService, soundscapeView);
+        var interviewCtrl = new window.Backstage.Controllers.Interview(interviewService, interviewView);
+        var siteConfigCtrl = new window.Backstage.Controllers.SiteConfig(siteConfigService, siteConfigView);
         var galleryCtrl = new window.Backstage.Controllers.Gallery(galleryService, galleryView);
 
         if (window.Backstage._localMode) {
@@ -318,6 +354,19 @@
             unmount: function() { soundscapeCtrl.unmount(); }
         });
 
+        router.register('interviews', {
+            title: 'Gestionar Entrevistas',
+            subtitle: 'Administra las entrevistas de la seccion "Interviews"',
+            mount: function() {
+                showSection('interviews');
+                window.Backstage.Components.Sidebar.setActive('interviews');
+                window.Backstage.Components.Header.updateForRoute('interviews');
+                interviewCtrl.mount();
+                window.Backstage.Components.Header.showOnly('btnAddInterview');
+            },
+            unmount: function() { interviewCtrl.unmount(); }
+        });
+
         router.register('gallery', {
             title: 'Galería Fotográfica',
             subtitle: 'Administra los eventos y fotos del archivo visual',
@@ -333,7 +382,7 @@
 
         if (sectionCtrl) {
             router.register('sections', {
-                title: 'Contenido del Sitio',
+                title: 'Paginas del Sitio',
                 subtitle: 'Edita los textos y secciones de cada pagina',
                 mount: function() {
                     showSection('sections');
@@ -344,7 +393,34 @@
                 },
                 unmount: function() { sectionCtrl.unmount(); }
             });
+
+            router.register('home', {
+                title: 'Inicio',
+                subtitle: 'Edita el contenido de la portada',
+                mount: function() {
+                    showSection('sections');
+                    window.Backstage.Components.Sidebar.setActive('home');
+                    window.Backstage.Components.Header.updateForRoute('home');
+                    sectionCtrl.mount();
+                    sectionCtrl.openEditor('home');
+                    window.Backstage.Components.Header.hideAll();
+                },
+                unmount: function() { sectionCtrl.unmount(); }
+            });
         }
+
+        router.register('settings', {
+            title: 'Configuracion del Sitio',
+            subtitle: 'Datos globales: identidad, redes y contacto',
+            mount: function() {
+                showSection('settings');
+                window.Backstage.Components.Sidebar.setActive('settings');
+                window.Backstage.Components.Header.updateForRoute('settings');
+                siteConfigCtrl.mount();
+                window.Backstage.Components.Header.hideAll();
+            },
+            unmount: function() { siteConfigCtrl.unmount(); }
+        });
 
         window.Backstage.router = router;
 
@@ -369,6 +445,15 @@
                 if (current2 === 'soundscapes') soundscapeCtrl.refresh();
                 if (current2 === 'dashboard') dashboardCtrl.refresh();
             }
+            if (e.key === 'backstage_interviews_data' || e.key === 'backstage_interviews_data_backup') {
+                var current5 = router.getCurrent();
+                if (current5 === 'interviews') interviewCtrl.refresh();
+                if (current5 === 'dashboard') dashboardCtrl.refresh();
+            }
+            if (e.key === 'backstage_site_config' || e.key === 'backstage_site_config_backup') {
+                var current6 = router.getCurrent();
+                if (current6 === 'settings') siteConfigCtrl.refresh();
+            }
             if (e.key === 'gallery_events_data' || e.key === 'gallery_events_data_backup') {
                 var current3 = router.getCurrent();
                 if (current3 === 'gallery') galleryCtrl.refresh();
@@ -377,6 +462,7 @@
             if (e.key === 'backstage_site_content' || e.key === 'backstage_site_content_backup') {
                 var current4 = router.getCurrent();
                 if (current4 === 'sections' && sectionCtrl) sectionCtrl.refresh();
+                if (current4 === 'home' && sectionCtrl) sectionCtrl.refresh();
             }
         });
 
@@ -390,7 +476,7 @@
         if (banner) banner.style.display = '';
     }
 
-    function bindErrorScreenButtons(storyReg, soundscapeReg, galleryReg, sectionReg, local) {
+    function bindErrorScreenButtons(storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, sectionReg, local) {
         var retryBtn = document.getElementById('preloadRetryBtn');
         var localBtn = document.getElementById('preloadLocalBtn');
 
@@ -400,7 +486,7 @@
                 showPreloadError(true);
                 attemptPreload(storyReg).then(function(ok) {
                     if (ok) {
-                        bootWithFirestore(storyReg, soundscapeReg, galleryReg, sectionReg, local);
+                        bootWithFirestore(storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, sectionReg, local);
                     } else {
                         showPreloadError(false);
                     }
@@ -411,24 +497,22 @@
         if (localBtn) {
             localBtn.addEventListener('click', function() {
                 hidePreloadError();
-                bootWithLocalMode(storyReg, soundscapeReg, galleryReg, sectionReg, local);
+                bootWithLocalMode(storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, sectionReg, local);
             });
         }
     }
 
-    function bootWithFirestore(storyReg, soundscapeReg, galleryReg, sectionReg, local) {
+    function bootWithFirestore(storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, sectionReg, local) {
         var firestoreDs = storyReg.sources['firestore'];
         var storyRepo = new window.Backstage.FirestoreStoryRepository(storyReg);
-        var soundscapeRepo = new window.Backstage.SoundscapeRepository(soundscapeReg);
+        var soundscapeRepo = new window.Backstage.FirestoreSoundscapeRepository(soundscapeReg);
+        var interviewRepo = new window.Backstage.FirestoreInterviewRepository(interviewReg);
+        var siteConfigRepo = new window.Backstage.FirestoreSiteConfigRepository(siteConfigReg);
         var galleryRepo = new window.Backstage.FirestoreGalleryRepository(galleryReg);
         var sectionRepo = new window.Backstage.FirestoreSectionRepository(sectionReg);
 
-        if (typeof soundscapesDataDefault !== 'undefined') {
-            soundscapeRepo.migrateFromDefaults(soundscapesDataDefault);
-        }
-
         window.Backstage._localMode = false;
-        bootApp(storyReg, soundscapeReg, galleryReg, storyRepo, soundscapeRepo, galleryRepo, sectionRepo, true);
+        bootApp(storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, storyRepo, soundscapeRepo, interviewRepo, siteConfigRepo, galleryRepo, sectionRepo, true);
     }
 
     /* ------------------------------------------
@@ -438,20 +522,20 @@
         var ds = initDatasources();
 
         if (!ds.firestoreReady) {
-            bootWithLocalMode(ds.storyRegistry, ds.soundscapeRegistry, ds.galleryRegistry, ds.sectionRegistry, ds.local);
+            bootWithLocalMode(ds.storyRegistry, ds.soundscapeRegistry, ds.interviewRegistry, ds.siteConfigRegistry, ds.galleryRegistry, ds.sectionRegistry, ds.local);
             return;
         }
 
-        bindErrorScreenButtons(ds.storyRegistry, ds.soundscapeRegistry, ds.galleryRegistry, ds.sectionRegistry, ds.local);
+        bindErrorScreenButtons(ds.storyRegistry, ds.soundscapeRegistry, ds.interviewRegistry, ds.siteConfigRegistry, ds.galleryRegistry, ds.sectionRegistry, ds.local);
 
         var booted = false;
         function safeBoot(mode) {
             if (booted) return;
             booted = true;
             if (mode === 'firestore') {
-                bootWithFirestore(ds.storyRegistry, ds.soundscapeRegistry, ds.galleryRegistry, ds.sectionRegistry, ds.local);
+                bootWithFirestore(ds.storyRegistry, ds.soundscapeRegistry, ds.interviewRegistry, ds.siteConfigRegistry, ds.galleryRegistry, ds.sectionRegistry, ds.local);
             } else {
-                bootWithLocalMode(ds.storyRegistry, ds.soundscapeRegistry, ds.galleryRegistry, ds.sectionRegistry, ds.local);
+                bootWithLocalMode(ds.storyRegistry, ds.soundscapeRegistry, ds.interviewRegistry, ds.siteConfigRegistry, ds.galleryRegistry, ds.sectionRegistry, ds.local);
             }
         }
 

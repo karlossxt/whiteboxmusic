@@ -81,6 +81,12 @@
         });
     };
 
+    /* Atajo publico para abrir un editor directo (ej: ruta 'home') */
+    SectionController.prototype.openEditor = function(pageId) {
+        if (!this.schema.getById(pageId)) return;
+        this._openEditor(pageId);
+    };
+
     SectionController.prototype._uploadImage = function(file, pageId) {
         if (!this._storage) {
             return Promise.reject(new Error('La subida de imagenes no esta disponible'));
