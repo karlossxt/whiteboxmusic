@@ -15,7 +15,8 @@
        Agrega aquí los UUID de tus usuarios de Supabase
        (Authentication -> Users). */
     window.Backstage.ADMIN_UIDS = [
-        '9ff304f5-f666-4a29-ad38-3b99c68829d4'
+        '91f304f5-f666-4a29-ad38-3b99c68829d4',
+        'd2dde41e-f1b5-4d7a-80a9-578e04871521'
     ];
 
     /* Backwards compatibility: primer UID como principal */

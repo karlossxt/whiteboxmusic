@@ -10,7 +10,7 @@
     window.Backstage.Auth = window.Backstage.Auth || {};
 
     // ✅ UIDs autorizados de Supabase (definidos en admin-config.js)
-    var AUTHORIZED_UIDS = (window.Backstage && window.Backstage.ADMIN_UIDS) || ['9ff304f5-f666-4a29-ad38-3b99c68829d4'];
+    var AUTHORIZED_UIDS = (window.Backstage && window.Backstage.ADMIN_UIDS) || ['91f304f5-f666-4a29-ad38-3b99c68829d4', 'd2dde41e-f1b5-4d7a-80a9-578e04871521'];
 
     function isAuthorizedUser(user) {
         if (!user || !user.id) return false;
