@@ -681,10 +681,9 @@
 
     </main>
 
-    <!-- Firebase (fuente de verdad para la galeria) -->
-    <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
-    <script src="js/firebase-config.js"></script>
+    <!-- Supabase (fuente de verdad para la galeria) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
 
     <script>
         // ===================== HERO SLIDER (MAIN) =====================
@@ -895,7 +894,7 @@
 
         renderEventGrid();
 
-        // ===================== FIRESTORE SYNC =====================
+        // ===================== SUPABASE SYNC =====================
         function normalizeEvent(ev, id) {
             return {
                 id: id || ev.id || (ev.title || 'evento').toLowerCase().replace(/[^a-z0-9]+/g, '-'),
@@ -908,15 +907,15 @@
             };
         }
 
-        function loadFromFirestore() {
-            var wbf = window.WhiteBoxFirebase;
-            if (!wbf || !wbf.db) return;
-            wbf.db.collection('gallery').get().then(function(snapshot) {
+        function loadFromSupabase() {
+            var sb = window.getSupabaseClient();
+            if (!sb) return;
+            sb.from('gallery').select('*').then(function(response) {
                 var remote = [];
-                snapshot.forEach(function(doc) {
-                    var d = doc.data();
-                    if (d && d.galleryItems && d.galleryItems.length > 0) {
-                        remote.push(normalizeEvent(d, doc.id));
+                var data = response.data || [];
+                data.forEach(function(ev) {
+                    if (ev && ev.galleryItems && ev.galleryItems.length > 0) {
+                        remote.push(normalizeEvent(ev, ev.id));
                     }
                 });
                 if (!remote.length) return;
@@ -926,10 +925,10 @@
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(remote));
                 } catch (e) {}
             }).catch(function(err) {
-                console.warn('[Fotos] Firestore no disponible, usando datos locales', err);
+                console.warn('[Fotos] Supabase no disponible, usando datos locales', err);
             });
         }
-        loadFromFirestore();
+        loadFromSupabase();
 
         // ===================== VIEW STATE =====================
         var currentEvent = null;

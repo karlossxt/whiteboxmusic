@@ -7,7 +7,7 @@
    1. Detecta que pagina es (por nombre de archivo o [data-page])
    2. Aplica inmediatamente el contenido de localStorage
       'backstage_site_content' (pintado rapido + modo offline).
-   3. Intenta cargar 'site_content' desde Firestore (fuente
+   3. Intenta cargar 'site_content' desde Supabase (fuente
       de verdad). Si hay contenido remoto, lo aplica encima
       y refresca la cache local.
    4. Por cada campo del schema, si hay un valor guardado,
@@ -43,21 +43,21 @@
         }
     }
 
-    /* Fuente de verdad: Cloud Firestore. La coleccion 'site_content'
+    /* Fuente de verdad: Supabase. La tabla 'site_content'
        usa como id el pageId y como data { fields, updatedAt }.
        Devuelve un mapa { pageId: { key: value } } o null si falla. */
-    function getFirestoreContent() {
-        var wbf = window.WhiteBoxFirebase;
-        if (!wbf || !wbf.db) {
+    function getRemoteContent() {
+        var sb = window.getSupabaseClient();
+        if (!sb) {
             return Promise.resolve(null);
         }
 
-        return wbf.db.collection('site_content').get().then(function(snapshot) {
+        return sb.from('site_content').select('*').then(function(response) {
             var map = {};
-            snapshot.forEach(function(doc) {
-                var data = doc.data();
-                if (data && data.fields) {
-                    map[doc.id] = data.fields;
+            var data = response.data || [];
+            data.forEach(function(row) {
+                if (row && row.fields) {
+                    map[row.id] = row.fields;
                 }
             });
             if (Object.keys(map).length > 0) {
@@ -65,7 +65,7 @@
             }
             return map;
         }).catch(function(err) {
-            console.warn('[SiteContent] Firestore no disponible, se usa el contenido local', err);
+            console.warn('[SiteContent] Supabase no disponible, se usa el contenido local', err);
             return null;
         });
     }
@@ -98,7 +98,7 @@
         return page ? page.id : null;
     }
 
-    /* Sanitizacion por whitelist para contenido HTML editorial (CMS/Firestore).
+    /* Sanitizacion por whitelist para contenido HTML editorial (CMS/Supabase).
        Solo se permiten las etiquetas realmente necesarias:
        br, strong, em, span, p.
        Se bloquean script, iframe, object, embed, img, a, etc. y cualquier
@@ -279,8 +279,8 @@
         var stored = getStorage();
         var appliedLocal = stored ? applyPage(page, stored) : false;
 
-        /* Fuente de verdad: Firestore aplica encima si hay contenido */
-        getFirestoreContent().then(function(remoteMap) {
+        /* Fuente de verdad: Supabase aplica encima si hay contenido */
+        getRemoteContent().then(function(remoteMap) {
             finish(remoteMap, appliedLocal);
         });
     }

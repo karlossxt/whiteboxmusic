@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 setFallbackBanner(false);
             } else {
                 items.forEach(function(item) { grid.appendChild(buildCard(item)); });
-                setFallbackBanner(window.WhiteBoxSoundscapes.lastSource !== 'firestore');
+                setFallbackBanner(window.WhiteBoxSoundscapes.lastSource !== 'supabase');
             }
 
             if (!playerInitialized) {
