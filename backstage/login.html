@@ -109,6 +109,20 @@
 
             supa.auth.signInWithPassword({ email: email, password: password })
                 .then(function(resp) {
+                    if (resp.error) {
+                        setLoading(false);
+                        var msg = (resp.error && resp.error.message) || '';
+                        if (/invalid login credentials/i.test(msg)) {
+                            showError('Email o contraseña incorrectos.');
+                        } else if (/email not confirmed/i.test(msg)) {
+                            showError('Tu email aún no está confirmado. Revisa tu correo.');
+                        } else if (/rate|limit/i.test(msg)) {
+                            showError('Demasiados intentos. Espera un momento.');
+                        } else {
+                            showError('Error al iniciar sesión: ' + msg);
+                        }
+                        return;
+                    }
                     var user = resp.data && resp.data.user;
                     if (!user) {
                         setLoading(false);
