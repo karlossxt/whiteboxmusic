@@ -29,8 +29,8 @@
             <div class="preload-error-icon">
                 <i class="fa-solid fa-cloud-bolt"></i>
             </div>
-            <h2 class="preload-error-title">Sin conexion a Firestore</h2>
-            <p class="preload-error-msg">No se pudo conectar a Firestore. Verifica tu conexion e intenta de nuevo.</p>
+            <h2 class="preload-error-title">Sin conexion a Supabase</h2>
+            <p class="preload-error-msg">No se pudo conectar a Supabase. Verifica tu conexion e intenta de nuevo.</p>
             <div class="preload-error-actions">
                 <button class="btn-primary" id="preloadRetryBtn">Reintentar</button>
                 <button class="btn-secondary" id="preloadLocalBtn">Continuar en modo local</button>
@@ -108,13 +108,13 @@
 
             <div class="local-mode-banner" id="localModeBanner" style="display:none;">
                 <i class="fa-solid fa-triangle-exclamation"></i>
-                <span>Modo local activo — Los cambios no se sincronizan con Firestore.</span>
+                <span>Modo local activo — Los cambios no se sincronizan con Supabase.</span>
             </div>
             <section class="admin-section" id="section-dashboard"></section>
             <section class="admin-section" id="section-stories" style="display:none;">
                 <div class="migration-banner" id="migrationBanner" style="display:none;">
                     <div class="migration-banner-text">
-                        <strong>Hay historias en localStorage.</strong> Importalas a Firestore para sincronizar con el sitio publico.
+                        <strong>Hay historias en localStorage.</strong> Importalas a Supabase para sincronizar con el sitio publico.
                     </div>
                     <button class="btn-primary" id="migrationImportBtn">Importar historias locales</button>
                 </div>
