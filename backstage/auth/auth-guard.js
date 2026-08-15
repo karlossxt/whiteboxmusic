@@ -1,6 +1,6 @@
 /* ============================================
-   BACKSTAGE STUDIO — Auth Guard
-   Verifica sesión de Firebase. Si no hay
+   BACKSTAGE STUDIO — Auth Guard (Supabase)
+   Verifica sesión de Supabase Auth. Si no hay
    sesión válida, redirige a login.html.
    Solo el UID autorizado puede acceder.
    ============================================ */
@@ -9,43 +9,45 @@
     window.Backstage = window.Backstage || {};
     window.Backstage.Auth = window.Backstage.Auth || {};
 
+    // ✅ Cambia este UID al UID del admin en Supabase
     var AUTHORIZED_UID = (window.Backstage && window.Backstage.ADMIN_UID) || 'qtguil5JI0ejOeJ0fpiXrxTJvIq2';
 
     window.Backstage.Auth.guard = function() {
         return new Promise(function(resolve, reject) {
-            var auth = window.WhiteBoxFirebase ? window.WhiteBoxFirebase.auth : null;
+            var supa = window.getSupabaseClient();
 
-            if (!auth) {
-                reject(new Error('Firebase Auth no disponible'));
+            if (!supa) {
+                reject(new Error('Supabase client no disponible'));
                 return;
             }
 
             var resolved = false;
-            var unsubscribe = auth.onAuthStateChanged(function(user) {
+            var channel = supa.auth.onAuthStateChange(function(event, session) {
                 if (resolved) return;
                 resolved = true;
-                unsubscribe();
+                channel.subscribe();
 
-                if (!user) {
+                if (!session) {
                     window.location.href = 'login.html';
                     return;
                 }
 
-                if (user.uid !== AUTHORIZED_UID) {
-                    auth.signOut().then(function() {
+                if (session.user.id !== AUTHORIZED_UID) {
+                    supa.auth.signOut().then(function() {
                         alert('Acceso no autorizado.');
                         window.location.href = 'login.html';
                     });
                     return;
                 }
 
-                resolve(user);
+                resolve(session.user);
             });
 
+            // Timeout de 8 segundos
             setTimeout(function() {
                 if (!resolved) {
                     resolved = true;
-                    unsubscribe();
+                    channel.unsubscribe();
                     window.location.href = 'login.html';
                 }
             }, 8000);
@@ -53,8 +55,8 @@
     };
 
     window.Backstage.Auth.getUser = function() {
-        var auth = window.WhiteBoxFirebase ? window.WhiteBoxFirebase.auth : null;
-        return auth ? auth.currentUser : null;
+        var supa = window.getSupabaseClient();
+        return supa ? supa.auth.getUser() : null;
     };
 
     window.Backstage.Auth.getUserEmail = function() {
@@ -63,9 +65,9 @@
     };
 
     window.Backstage.Auth.logout = function() {
-        var auth = window.WhiteBoxFirebase ? window.WhiteBoxFirebase.auth : null;
-        if (auth) {
-            return auth.signOut().then(function() {
+        var supa = window.getSupabaseClient();
+        if (supa) {
+            return supa.auth.signOut().then(function() {
                 window.location.href = 'login.html';
             });
         }
