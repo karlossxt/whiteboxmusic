@@ -9,8 +9,8 @@
     window.Backstage = window.Backstage || {};
     window.Backstage.Auth = window.Backstage.Auth || {};
 
-    // ✅ Cambia este UID al UID del admin en Supabase
-    var AUTHORIZED_UID = (window.Backstage && window.Backstage.ADMIN_UID) || 'qtguil5JI0ejOeJ0fpiXrxTJvIq2';
+    // ✅ UID del admin de Supabase (cambiado en admin-config.js)
+    var AUTHORIZED_UID = (window.Backstage && window.Backstage.ADMIN_UID) || '9ff304f5-f666-4a29-ad38-3b99c68829d4';
 
     window.Backstage.Auth.guard = function() {
         return new Promise(function(resolve, reject) {
@@ -22,10 +22,11 @@
             }
 
             var resolved = false;
-            var channel = supa.auth.onAuthStateChange(function(event, session) {
+
+            // ✅ Supabase JS v2: onAuthStateChange recibe (event, session)
+            supa.auth.onAuthStateChange(function(event, session) {
                 if (resolved) return;
                 resolved = true;
-                channel.subscribe();
 
                 if (!session) {
                     window.location.href = 'login.html';
@@ -43,17 +44,18 @@
                 resolve(session.user);
             });
 
-            // Timeout de 8 segundos
+            // Timeout de 8 segundos si no hay cambio de estado
             setTimeout(function() {
                 if (!resolved) {
                     resolved = true;
-                    channel.unsubscribe();
                     window.location.href = 'login.html';
                 }
             }, 8000);
         });
     };
 
+    // ✅ getUser() en Supabase v2 retorna el usuario actual síncronamente
+    // o null si no hay sesión activa
     window.Backstage.Auth.getUser = function() {
         var supa = window.getSupabaseClient();
         return supa ? supa.auth.getUser() : null;

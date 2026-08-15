@@ -10,5 +10,5 @@
 
 (function() {
     window.Backstage = window.Backstage || {};
-    window.Backstage.ADMIN_UID = 'qtguil5JI0ejOeJ0fpiXrxTJvIq2';
+    window.Backstage.ADMIN_UID = '9ff304f5-f666-4a29-ad38-3b99c68829d4';
 })();

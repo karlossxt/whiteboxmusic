@@ -8,7 +8,7 @@
    4. legacyInterviews (datos historicos del sitio)
 
    LEGACY_INTERVIEWS: entrevistas individuales que antes se editaban como
-   campos iv1_*/iv2_*/iv3_* dentro de site_content / entreE.html. Se
+   campos iv1, iv2 e iv3 dentro de site_content / entreE.html. Se
    conservan como fallback para no romper el sitio si Supabase y
    localStorage estan vacios.
 */

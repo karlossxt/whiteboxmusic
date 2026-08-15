@@ -48,12 +48,12 @@
             id: 'entrevistas',
             label: 'Entrevistas',
             file: 'entreE.html',
-            /* Las entrevistas individuales ya NO viven en site_content:
-               se administran con el CRUD de Entrevistas del Backstage
-               (coleccion interviews) y se renderizan desde Firestore.
-               Los campos iv1_*/iv2_*/iv3_* quedaron como LEGACY_INTERVIEWS
-               en js/interviews-data.js. Aqui solo queda el contenido
-               estructural de la pagina. */
+/* Las entrevistas individuales ya NO viven en site_content:
+   se administran con el CRUD de Entrevistas del Backstage
+   (coleccion interviews) y se renderizan desde Supabase.
+   Los campos iv1, iv2 e iv3 quedaron como LEGACY_INTERVIEWS
+   en js/interviews-data.js. Aqui solo queda el contenido
+   estructural de la pagina. */
             fields: [
                 field('hero_title', 'Titulo hero ENTREVISTAS', 'textarea', 'html', '.main-title', 'ENTRE<br><span>VISTAS</span>'),
                 field('search_placeholder', 'Placeholder del buscador', 'text', 'placeholder', '.search-input', 'BUSCAR EN EL ARCHIVO...')

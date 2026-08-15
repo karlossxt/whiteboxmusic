@@ -533,16 +533,20 @@
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
 
-    <!-- Firebase SDK (compat) -->
-    <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-storage-compat.js"></script>
-    <script src="../js/firebase-config.js"></script>
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-config.js"></script>
 
-    <!-- Admin config + Auth Guard (checks session before loading) -->
-    <script src="auth/admin-config.js"></script>
-    <script src="auth/auth-guard.js"></script>
+<!-- Firebase SDK (compat) - mantenido por si se necesita retrocompatibilidad -->
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.16.0/firebase-storage-compat.js"></script>
+<script src="../js/firebase-config.js"></script>
+
+<!-- Admin config + Auth Guard (checks session before loading) -->
+<script src="auth/admin-config.js"></script>
+<script src="auth/auth-guard.js"></script>
 
     <!-- Legacy data (read-only, used for first-run migration) -->
     <script src="../js/stories-data.js"></script>
@@ -565,6 +569,7 @@
 
     <!-- Datasources -->
     <script src="datasources/local/local-datasource.js"></script>
+    <script src="datasources/supabase/supabase-datasource.js"></script>
     <script src="datasources/firestore/firestore-datasource.js"></script>
     <script src="datasources/datasource-registry.js"></script>
 

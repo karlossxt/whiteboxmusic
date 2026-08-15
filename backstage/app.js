@@ -1,12 +1,12 @@
 /* ============================================
    BACKSTAGE STUDIO — App Bootstrap
-   v0.3A — Firebase + Local fallback
-
+   Supabase + Local fallback
+   
    Flujo:
-   0. Auth guard (verifica sesion Firebase)
+   0. Auth guard (verifica sesion Supabase)
    1. Crea registros separados (stories / soundscapes)
-   2. preloadFirestoreData() solo descarga (NO importa de localStorage)
-   3. Si falla Firestore: pantalla error con Reintentar + Modo local
+   2. preloadSupabaseData() solo descarga (NO importa de localStorage)
+   3. Si falla Supabase: pantalla error con Reintentar + Modo local
    4. Crea repositories, services, views, controllers
    5. Router y start
    ============================================ */
@@ -14,9 +14,10 @@
 (function() {
     window.Backstage = window.Backstage || {};
 
-    var firestoreDsGlobal = null;
+    var supabaseDsGlobal = null;
     var storyRegGlobal = null;
     var soundscapeRegGlobal = null;
+    var interviewRegGlobal = null;
     var localGlobal = null;
     var retryCount = 0;
     var MAX_RETRIES = 3;
@@ -50,11 +51,11 @@
 
         if (retrying) {
             if (spinner) spinner.style.display = '';
-            if (msg) msg.textContent = 'Reconectando a Firestore...';
+            if (msg) msg.textContent = 'Reconectando a Supabase...';
             if (actions) actions.style.display = 'none';
         } else {
             if (spinner) spinner.style.display = 'none';
-            if (msg) msg.textContent = 'No se pudo conectar a Firestore. Verifica tu conexion e intenta de nuevo.';
+            if (msg) msg.textContent = 'No se pudo conectar a Supabase. Verifica tu conexion e intenta de nuevo.';
             if (actions) actions.style.display = '';
         }
     }
@@ -78,8 +79,8 @@
 
     /* ------------------------------------------
        1. DATASOURCE REGISTRIES (Blocker #3)
-       StoryDatasourceRegistry: Firestore when available, else local
-       SoundscapeDatasourceRegistry: always local
+       StoryDatasourceRegistry: Supabase when available, else local
+       SoundscapeDatasourceRegistry: always local (Supabase para writes es opcional)
        ------------------------------------------ */
     function initDatasources() {
         var storyRegistry = new window.Backstage.DatasourceRegistry();
@@ -90,6 +91,7 @@
         var sectionRegistry = new window.Backstage.DatasourceRegistry();
         var local = new window.Backstage.LocalDatasource();
 
+        // Soundscapes, interviews, siteConfig, gallery, section siempre inician en local
         soundscapeRegistry.register('local', local);
         soundscapeRegistry.setActive('local');
 
@@ -105,32 +107,22 @@
         sectionRegistry.register('local', local);
         sectionRegistry.setActive('local');
 
-        var firestoreReady = false;
+        // Story puede usar Supabase si está disponible
+        var supa = window.WhiteBoxSupabase ? window.WhiteBoxSupabase.client : null;
+        var storySupabaseReady = false;
         try {
-            var wbf = window.WhiteBoxFirebase;
-            if (wbf && wbf.db && wbf.auth && wbf.auth.currentUser) {
-                var firestore = new window.Backstage.FirestoreDatasource();
-                storyRegistry.register('firestore', firestore);
+            if (supa) {
+                var storySupa = new window.Backstage.SupabaseDatasource(supa.from('stories'));
+                storyRegistry.register('supabase', storySupa);
                 storyRegistry.register('local', local);
-                storyRegistry.setActive('firestore');
-                soundscapeRegistry.register('firestore', firestore);
-                soundscapeRegistry.setActive('firestore');
-                interviewRegistry.register('firestore', firestore);
-                interviewRegistry.setActive('firestore');
-                siteConfigRegistry.register('firestore', firestore);
-                siteConfigRegistry.setActive('firestore');
-                sectionRegistry.register('firestore', firestore);
-                sectionRegistry.setActive('firestore');
-                galleryRegistry.register('firestore', firestore);
-                galleryRegistry.setActive('firestore');
-                firestoreReady = true;
-                firestoreDsGlobal = firestore;
+                storyRegistry.setActive('supabase');
+                storySupabaseReady = true;
             }
         } catch (e) {
-            console.warn('[Backstage] Firestore no disponible:', e.message);
+            console.warn('[Backstage] Supabase no disponible para stories:', e.message);
         }
 
-        if (!firestoreReady) {
+        if (!storySupabaseReady) {
             storyRegistry.register('local', local);
             storyRegistry.setActive('local');
         }
@@ -150,8 +142,7 @@
             siteConfigRegistry: siteConfigRegistry,
             galleryRegistry: galleryRegistry,
             sectionRegistry: sectionRegistry,
-            local: local,
-            firestoreReady: firestoreReady
+            local: local
         };
     }
 
@@ -160,32 +151,32 @@
        Solo descarga datos remotos. NO importa de
        localStorage automaticamente.
        ------------------------------------------ */
-    function preloadFirestoreData(firestoreDs) {
+    function preloadSupabaseData(storyDs) {
         var COLLECTIONS = ['stories', 'site_content', 'gallery', 'soundscapes', 'interviews', 'site_config'];
 
-        firestoreDs._cache = firestoreDs._cache || {};
+        storyDs._cache = storyDs._cache || {};
 
         function loadCollection(index) {
             if (index >= COLLECTIONS.length) {
                 return Promise.resolve({
-                    stories: firestoreDs._cache['stories'] ? firestoreDs._cache['stories'].length : 0,
-                    sections: firestoreDs._cache['site_content'] ? firestoreDs._cache['site_content'].length : 0,
-                    gallery: firestoreDs._cache['gallery'] ? firestoreDs._cache['gallery'].length : 0,
-                    soundscapes: firestoreDs._cache['soundscapes'] ? firestoreDs._cache['soundscapes'].length : 0,
-                    interviews: firestoreDs._cache['interviews'] ? firestoreDs._cache['interviews'].length : 0,
-                    siteConfig: firestoreDs._cache['site_config'] ? firestoreDs._cache['site_config'].length : 0
+                    stories: storyDs._cache['stories'] ? storyDs._cache['stories'].length : 0,
+                    sections: storyDs._cache['site_content'] ? storyDs._cache['site_content'].length : 0,
+                    gallery: storyDs._cache['gallery'] ? storyDs._cache['gallery'].length : 0,
+                    soundscapes: storyDs._cache['soundscapes'] ? storyDs._cache['soundscapes'].length : 0,
+                    interviews: storyDs._cache['interviews'] ? storyDs._cache['interviews'].length : 0,
+                    siteConfig: storyDs._cache['site_config'] ? storyDs._cache['site_config'].length : 0
                 });
             }
 
             var name = COLLECTIONS[index];
-            return firestoreDs._collectionRef(name).get().then(function(snapshot) {
+            return storyDs._collectionRef(name).get().then(function(snapshot) {
                 var items = [];
                 snapshot.forEach(function(doc) {
-                    var data = doc.data();
-                    data.id = doc.id;
+                    var data = doc;
+                    data.id = doc.id || doc._id;
                     items.push(data);
                 });
-                firestoreDs._cache[name] = items;
+                storyDs._cache[name] = items;
                 return loadCollection(index + 1);
             });
         }
@@ -197,15 +188,15 @@
        3. RETRY + LOCAL MODE (Blocker #8)
        ------------------------------------------ */
     function attemptPreload(storyRegistry) {
-        var firestoreDs = storyRegistry.sources['firestore'];
-        if (!firestoreDs) {
+        var storyDs = storyRegistry.sources['supabase'];
+        if (!storyDs) {
             return Promise.resolve(false);
         }
 
-        return preloadFirestoreData(firestoreDs).then(function() {
+        return preloadSupabaseData(storyDs).then(function() {
             return true;
         }).catch(function(err) {
-            console.error('[Backstage] Preload Firestore falló:', err);
+            console.error('[Backstage] Preload Supabase falló:', err);
             retryCount++;
 
             if (retryCount < MAX_RETRIES) {
@@ -257,7 +248,7 @@
     /* ------------------------------------------
        4. BOOT APP
        ------------------------------------------ */
-    function bootApp(storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, storyRepo, soundscapeRepo, interviewRepo, siteConfigRepo, galleryRepo, sectionRepo, isFirestore) {
+    function bootApp(storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, storyRepo, soundscapeRepo, interviewRepo, siteConfigRepo, galleryRepo, sectionRepo, isSupabase) {
         var storyService = new window.Backstage.StoryService(storyRepo);
         var soundscapeService = new window.Backstage.SoundscapeService(soundscapeRepo);
         var interviewService = new window.Backstage.InterviewService(interviewRepo);
@@ -381,8 +372,8 @@
 
         if (sectionCtrl) {
             router.register('sections', {
-                title: 'Paginas del Sitio',
-                subtitle: 'Edita los textos y secciones de cada pagina',
+                title: 'Páginas del Sitio',
+                subtitle: 'Edita los textos y secciones de cada página',
                 mount: function() {
                     showSection('sections');
                     window.Backstage.Components.Sidebar.setActive('sections');
@@ -409,7 +400,7 @@
         }
 
         router.register('settings', {
-            title: 'Configuracion del Sitio',
+            title: 'Configuración del Sitio',
             subtitle: 'Datos globales: identidad, redes y contacto',
             mount: function() {
                 showSection('settings');
@@ -485,7 +476,7 @@
                 showPreloadError(true);
                 attemptPreload(storyReg).then(function(ok) {
                     if (ok) {
-                        bootWithFirestore(storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, sectionReg, local);
+                        bootWithSupabase(storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, sectionReg, local);
                     } else {
                         showPreloadError(false);
                     }
@@ -501,17 +492,16 @@
         }
     }
 
-    function bootWithFirestore(storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, sectionReg, local) {
-        var firestoreDs = storyReg.sources['firestore'];
-        var storyRepo = new window.Backstage.FirestoreStoryRepository(storyReg);
-        var soundscapeRepo = new window.Backstage.FirestoreSoundscapeRepository(soundscapeReg);
-        var interviewRepo = new window.Backstage.FirestoreInterviewRepository(interviewReg);
-        var siteConfigRepo = new window.Backstage.FirestoreSiteConfigRepository(siteConfigReg);
-        var galleryRepo = new window.Backstage.FirestoreGalleryRepository(galleryReg);
-        var sectionRepo = new window.Backstage.FirestoreSectionRepository(sectionReg);
+    function bootWithSupabase(storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, sectionReg, local) {
+        var storyDs = storyReg.sources['supabase'];
+        if (!storyDs) {
+            // Fallback a local si Supabase no está disponible
+            bootWithLocalMode(storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, sectionReg, local);
+            return;
+        }
 
         window.Backstage._localMode = false;
-        bootApp(storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, storyRepo, soundscapeRepo, interviewRepo, siteConfigRepo, galleryRepo, sectionRepo, true);
+        bootApp(storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, sectionReg, true);
     }
 
     /* ------------------------------------------
@@ -520,24 +510,19 @@
     function init() {
         var ds = initDatasources();
 
-        if (!ds.firestoreReady) {
-            bootWithLocalMode(ds.storyRegistry, ds.soundscapeRegistry, ds.interviewRegistry, ds.siteConfigRegistry, ds.galleryRegistry, ds.sectionRegistry, ds.local);
-            return;
-        }
-
-        bindErrorScreenButtons(ds.storyRegistry, ds.soundscapeRegistry, ds.interviewRegistry, ds.siteConfigRegistry, ds.galleryRegistry, ds.sectionRegistry, ds.local);
-
+        // Intentar preload con Supabase
         var booted = false;
         function safeBoot(mode) {
             if (booted) return;
             booted = true;
-            if (mode === 'firestore') {
-                bootWithFirestore(ds.storyRegistry, ds.soundscapeRegistry, ds.interviewRegistry, ds.siteConfigRegistry, ds.galleryRegistry, ds.sectionRegistry, ds.local);
+            if (mode === 'supabase') {
+                bootWithSupabase(ds.storyRegistry, ds.soundscapeRegistry, ds.interviewRegistry, ds.siteConfigRegistry, ds.galleryRegistry, ds.sectionRegistry, ds.local);
             } else {
                 bootWithLocalMode(ds.storyRegistry, ds.soundscapeRegistry, ds.interviewRegistry, ds.siteConfigRegistry, ds.galleryRegistry, ds.sectionRegistry, ds.local);
             }
         }
 
+        // Timeout de 10 segundos
         setTimeout(function() {
             if (!booted) {
                 console.warn('[Backstage] Preload timeout, falling back to local mode');
@@ -546,8 +531,12 @@
         }, 10000);
 
         attemptPreload(ds.storyRegistry).then(function(ok) {
-            safeBoot(ok ? 'firestore' : 'local');
+            safeBoot(ok ? 'supabase' : 'local');
         });
+    }
+
+    function showAppSplash() {
+        // Puede usarse para mostrar splash inicial
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -555,6 +544,8 @@
             init();
         }).catch(function(err) {
             console.error('[Backstage] Auth guard failed', err);
+            // Si auth falla, intentar cargar en modo local
+            init();
         });
     });
 })();
