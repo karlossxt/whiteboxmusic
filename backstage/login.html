@@ -52,6 +52,13 @@
 
         var supa = window.getSupabaseClient();
 
+        var AUTHORIZED_UIDS = (window.Backstage && window.Backstage.ADMIN_UIDS) || ['9ff304f5-f666-4a29-ad38-3b99c68829d4'];
+
+        function isAuthorizedUser(user) {
+            if (!user || !user.id) return false;
+            return AUTHORIZED_UIDS.indexOf(user.id) !== -1;
+        }
+
         function setLoading(loading) {
             if (loading) {
                 loginBtn.disabled = true;
@@ -77,7 +84,7 @@
         supa.auth.getSession().then(function(resp) {
             var user = resp && resp.data && resp.data.session ? resp.data.session.user : null;
             if (user) {
-                if (user.id === window.Backstage.ADMIN_UID) {
+                if (isAuthorizedUser(user)) {
                     window.location.href = 'index.html';
                 } else {
                     supa.auth.signOut();
@@ -108,7 +115,7 @@
                         showError('No se pudo iniciar sesión.');
                         return;
                     }
-                    if (user.id !== window.Backstage.ADMIN_UID) {
+                    if (!isAuthorizedUser(user)) {
                         supa.auth.signOut();
                         showError('Acceso no autorizado.');
                         setLoading(false);

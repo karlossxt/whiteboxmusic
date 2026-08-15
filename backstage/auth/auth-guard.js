@@ -9,8 +9,13 @@
     window.Backstage = window.Backstage || {};
     window.Backstage.Auth = window.Backstage.Auth || {};
 
-    // ✅ UID del admin de Supabase (cambiado en admin-config.js)
-    var AUTHORIZED_UID = (window.Backstage && window.Backstage.ADMIN_UID) || '9ff304f5-f666-4a29-ad38-3b99c68829d4';
+    // ✅ UIDs autorizados de Supabase (definidos en admin-config.js)
+    var AUTHORIZED_UIDS = (window.Backstage && window.Backstage.ADMIN_UIDS) || ['9ff304f5-f666-4a29-ad38-3b99c68829d4'];
+
+    function isAuthorizedUser(user) {
+        if (!user || !user.id) return false;
+        return AUTHORIZED_UIDS.indexOf(user.id) !== -1;
+    }
 
     window.Backstage.Auth.guard = function() {
         return new Promise(function(resolve, reject) {
@@ -33,7 +38,7 @@
                     return;
                 }
 
-                if (session.user.id !== AUTHORIZED_UID) {
+                if (!isAuthorizedUser(session.user)) {
                     supa.auth.signOut().then(function() {
                         alert('Acceso no autorizado.');
                         window.location.href = 'login.html';

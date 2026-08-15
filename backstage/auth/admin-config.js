@@ -10,5 +10,14 @@
 
 (function() {
     window.Backstage = window.Backstage || {};
-    window.Backstage.ADMIN_UID = '9ff304f5-f666-4a29-ad38-3b99c68829d4';
+
+    /* UIDs autorizados para acceder al panel.
+       Agrega aquí los UUID de tus usuarios de Supabase
+       (Authentication -> Users). */
+    window.Backstage.ADMIN_UIDS = [
+        '9ff304f5-f666-4a29-ad38-3b99c68829d4'
+    ];
+
+    /* Backwards compatibility: primer UID como principal */
+    window.Backstage.ADMIN_UID = window.Backstage.ADMIN_UIDS[0];
 })();
