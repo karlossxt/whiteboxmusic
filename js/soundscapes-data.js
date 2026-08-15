@@ -1,4 +1,12 @@
-/* SOUNDSCAPES DATA - Latest Soundscapes - WhiteBox Music */
+/* SOUNDSCAPES DATA - Latest Soundscapes - WhiteBox Music
+   Versión Supabase: usa Supabase Postgres en lugar de Firestore.
+
+   Orden de datos:
+   1. Supabase: supabase.from('soundscapes').select('*').eq('published', true)
+   2. localStorage 'backstage_soundscapes_data' (panel oficial Backstage, modo local)
+   3. localStorage 'wbox_soundscapes_data' (panel legado)
+   4. soundscapesDataDefault (datos por defecto)
+*/
 
 var soundscapesDataDefault = [
     {
@@ -58,6 +66,7 @@ var soundscapesDataDefault = [
     }
 ];
 
+/* Datos locales y legacy */
 (function() {
     var BACKSTAGE_KEY = 'backstage_soundscapes_data';
     var LEGACY_KEY = 'wbox_soundscapes_data';
@@ -75,8 +84,7 @@ var soundscapesDataDefault = [
     soundscapesData = (data && data.length) ? data : soundscapesDataDefault;
 })();
 
-/* Async loader: Firestore primero. Si Firestore falla, usa
-   localStorage / datos por defecto como contenido temporal. */
+/* Cargador async: intenta Supabase primero, luego localStorage/defaults */
 window.WhiteBoxSoundscapes = window.WhiteBoxSoundscapes || {};
 window.WhiteBoxSoundscapes.lastSource = null;
 window.WhiteBoxSoundscapes.lastError = null;
@@ -88,32 +96,32 @@ function whiteBoxSoundscapesGetLocal() {
 }
 
 window.WhiteBoxSoundscapes.loadPublished = function() {
-    var wbf = window.WhiteBoxFirebase;
-    if (wbf && wbf.db) {
-        return wbf.db.collection('soundscapes')
-            .where('published', '==', true)
-            .get()
-            .then(function(snapshot) {
-                var items = [];
-                snapshot.forEach(function(doc) {
-                    var d = doc.data();
-                    d.id = doc.id;
-                    items.push(d);
-                });
-
-                window.WhiteBoxSoundscapes.lastSource = 'firestore';
-                window.WhiteBoxSoundscapes.lastError = null;
-                return items.sort(function(a, b) {
-                    return (a.order || 999) - (b.order || 999);
-                });
-            })
-            .catch(function(err) {
-                console.error('[WhiteBoxSoundscapes] Error consultando Firestore:', err);
-                window.WhiteBoxSoundscapes.lastSource = 'fallback';
-                window.WhiteBoxSoundscapes.lastError = err && err.message ? err.message : 'Error de Firestore';
-                return whiteBoxSoundscapesGetLocal();
-            });
+    var sb = window.getSupabaseClient();
+    if (!sb) {
+        window.WhiteBoxSoundscapes.lastSource = 'local';
+        window.WhiteBoxSoundscapes.lastError = 'Supabase client no disponible';
+        return Promise.resolve(whiteBoxSoundscapesGetLocal());
     }
+
+    return sb.from('soundscapes').select('*').eq('published', true).order('order', { ascending: true }).then(function(response) {
+        var items = response.data || [];
+        window.WhiteBoxSoundscapes.lastSource = 'supabase';
+        window.WhiteBoxSoundscapes.lastError = null;
+
+        if (items.length > 0) {
+            items = items.map(function(item) { return { id: item.id || item._id, ...item }; });
+            return items.sort(function(a, b) { return (a.order || 999) - (b.order || 999); });
+        }
+
+        window.WhiteBoxSoundscapes.lastSource = 'fallback';
+        window.WhiteBoxSoundscapes.lastError = null;
+        return whiteBoxSoundscapesGetLocal();
+    }).catch(function(err) {
+        console.error('[WhiteBoxSoundscapes] Error consultando Supabase:', err);
+        window.WhiteBoxSoundscapes.lastSource = 'fallback';
+        window.WhiteBoxSoundscapes.lastError = err && err.message ? err.message : 'Error de Supabase';
+        return whiteBoxSoundscapesGetLocal();
+    });
     window.WhiteBoxSoundscapes.lastSource = 'local';
     window.WhiteBoxSoundscapes.lastError = null;
     return Promise.resolve(whiteBoxSoundscapesGetLocal());

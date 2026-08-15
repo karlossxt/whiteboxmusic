@@ -1,13 +1,13 @@
 /* ============================================
-   WHITEBOX SITE — Site Config Applier
+   WHITEBOX SITE — Site Config Applier (Supabase)
    Aplica la configuracion global del sitio guardada
-   en Backstage (coleccion site_config / localStorage
-   'backstage_site_config').
+   en Supabase (coleccion site_config) y localStorage
+   'backstage_site_config'.
 
    Flujo:
    1. Aplica inmediatamente la config de localStorage
       (pintado rapido + modo offline).
-   2. Si Firebase esta disponible, lee 'site_config/site'
+   2. Si Supabase esta disponible, lee 'public.site_config'
       y aplica encima (fuente de verdad), refrescando
       la cache local.
 
@@ -98,15 +98,15 @@
     }
 
     function fetchRemote() {
-        var wbf = window.WhiteBoxFirebase;
-        if (!wbf || !wbf.db) return Promise.resolve(null);
-        return wbf.db.collection('site_config').doc('site').get().then(function(doc) {
-            if (!doc.exists) return null;
-            var data = doc.data();
+        var sb = window.getSupabaseClient();
+        if (!sb) return Promise.resolve(null);
+        return sb.from('site_config').select('*').maybeSingle().then(function(response) {
+            var data = response.data;
+            if (!data) return null;
             cacheConfig(data);
             return data;
         }).catch(function(err) {
-            console.warn('[SiteConfig] Firestore no disponible, se usa la config local', err);
+            console.warn('[SiteConfig] Supabase no disponible, se usa la config local', err);
             return null;
         });
     }

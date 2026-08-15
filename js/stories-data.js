@@ -1,9 +1,11 @@
-/* STORIES DATA - Datos de las historias de la comunidad */
+/* STORIES DATA - Datos de las historias de la comunidad
+   Versión Supabase: usa Supabase Postgres en lugar de Firestore.
 
-/*
-    Fuente de datos unificada: backstage_stories_data (panel oficial Backstage).
-    Fallback: wbox_stories_data (panel legado), luego datos predeterminados.
-    Los likes se almacenan en wbox_story_likes y son independientes del contenido.
+   Orden de datos:
+   1. Supabase: supabase.from('stories').select('*').eq('status', 'published')
+   2. localStorage 'backstage_stories_data' (panel oficial Backstage, modo local)
+   3. localStorage 'wbox_stories_data' (panel legado)
+   4. storiesDataDefault (datos por defecto)
 */
 
 var storiesDataDefault = [
@@ -44,7 +46,7 @@ var storiesDataDefault = [
         location: "Tokyo, JP",
         image: "tienda.jpg",
         excerpt: "Entré a Disk Union en Shimokitazawa buscando un regalo. Tres horas después salí con una nueva comprensión de lo que el sonido realmente significa.",
-        content: "La tienda de vinilos que cambió la forma en que escucho música: Entré a Disk Union en Shimokitazawa buscando un regalo. Tres horas después salí con una nueva comprensión de lo que el sonido realmente significa. El dueño, un hombre mayor llamado Tanaka-san, me notó hojeando discos sin dirección.\n\nSe acercó y sin decir una palabra sacó una edición de un disco de jazz japonés de 1978 que nunca había escuchado. Lo puso en la tornamesa de la tienda y subió el volumen. Toda la tienda en silencio. Era crudo, imperfecto y hermoso.\n\nEse momento me enseñó que la música independiente no es solo un género. Es una filosofía. Se trata de encontrar belleza en las cosas que no están pulidas para el consumo masivo. Desde entonces colecciono vinilos y ahora dirijo un fanzine digital dedicado a la música underground japonesa. Todo porque un desconocido decidió compartir un disco conmigo.",
+        content: "La tienda de vinilos que cambió la forma en que escucho música: Entré a Disk Union en Shimokitazawa buscando un regalo. Tres horas después salí con una nueva comprensión de lo que el sonido realmente significa. El dueño, un hombre mayor llamado Tanaka-san, me notó Henceforth dealing with discs without direction.\n\nSe acercó y sin decir una palabra sacó una edición de un disco de jazz japonés de 1978 que nunca había escuchado. Lo puso en la tornamesa de la tienda y subió el volumen. Toda la tienda en silencio. Era crudo, imperfecto y hermoso.\n\nEse momento me enseñó que la música independiente no es solo un género. Es una filosofía. Se trata de encontrar belleza en las cosas que no están pulidas para el consumo masivo. Desde entonces colecciono vinilos y ahora dirijo un fanzine digital dedicado a la música underground japonesa. Todo porque un desconocido decidió compartir un disco conmigo.",
         relatedSong: "Naniwa Jazz Collective - Twilight in Osaka",
         status: "published",
         featured: false,
@@ -69,74 +71,66 @@ var storiesDataDefault = [
     }
 ];
 
+/* Suponemos que el panel escribe en una tabla 'stories' de Supabase.
+   Si no hay conexión a Supabase, cae a localStorage / defaults. */
+
 (function() {
     var BACKSTAGE_KEY = 'backstage_stories_data';
     var LEGACY_KEY = 'wbox_stories_data';
     var data = null;
     try {
         var saved = localStorage.getItem(BACKSTAGE_KEY);
-        if (saved) {
-            data = JSON.parse(saved);
-        }
+        if (saved) { data = JSON.parse(saved); }
     } catch (e) { data = null; }
     if (!data || !data.length) {
         try {
             var legacy = localStorage.getItem(LEGACY_KEY);
-            if (legacy) {
-                data = JSON.parse(legacy);
-            }
+            if (legacy) { data = JSON.parse(legacy); }
         } catch (e) { data = null; }
     }
     storiesData = (data && data.length) ? data : storiesDataDefault;
 })();
 
-/* Async loader: tries Firestore first, falls back to localStorage/default */
+/* Async loader: tries Supabase first, falls back to localStorage/default */
 window.WhiteBoxStories = window.WhiteBoxStories || {};
 window.WhiteBoxStories.lastSource = null;
 window.WhiteBoxStories.lastError = null;
 
+function whiteBoxStoriesGetLocal() {
+    return (window.storiesData || storiesDataDefault || [])
+        .filter(function(s) { return s.status === 'published'; })
+        .sort(function(a, b) { return (a.order || 999) - (b.order || 999); });
+}
+
 window.WhiteBoxStories.loadPublished = function() {
-    var wbf = window.WhiteBoxFirebase;
-    if (wbf && wbf.db) {
-        return wbf.db.collection('stories')
-            .where('status', '==', 'published')
-            .get()
-            .then(function(snapshot) {
-                var items = [];
-                snapshot.forEach(function(doc) {
-                    var d = doc.data();
-                    d.id = doc.id;
-                    items.push(d);
-                });
-
-                window.WhiteBoxStories.lastError = null;
-
-                if (items.length > 0) {
-                    window.WhiteBoxStories.lastSource = 'firestore';
-                    return items.sort(function(a, b) {
-                        return (a.order || 999) - (b.order || 999);
-                    });
-                }
-
-                window.WhiteBoxStories.lastSource = 'fallback';
-                window.WhiteBoxStories.lastError = null;
-                return storiesData
-                    .filter(function(s) { return s.status === 'published'; })
-                    .sort(function(a, b) { return (a.order || 999) - (b.order || 999); });
-            })
-            .catch(function(err) {
-                window.WhiteBoxStories.lastSource = 'fallback';
-                window.WhiteBoxStories.lastError = err && err.message ? err.message : 'Error de Firestore';
-                return storiesData
-                    .filter(function(s) { return s.status === 'published'; })
-                    .sort(function(a, b) { return (a.order || 999) - (b.order || 999); });
-            });
+    var sb = window.getSupabaseClient();
+    if (!sb) {
+        window.WhiteBoxStories.lastSource = 'local';
+        window.WhiteBoxStories.lastError = 'Supabase client no disponible';
+        return Promise.resolve(whiteBoxStoriesGetLocal());
     }
+
+    return sb.from('stories').select('*').eq('status', 'published').order('order', { ascending: true }).then(function(response) {
+        var items = response.data || [];
+        window.WhiteBoxStories.lastSource = 'supabase';
+        window.WhiteBoxStories.lastError = null;
+
+        if (items.length > 0) {
+            // Asegurar que todos tengan id
+            items = items.map(function(item) { return { id: item.id || item.slug || item._id, ...item }; });
+            return items.sort(function(a, b) { return (a.order || 999) - (b.order || 999); });
+        }
+
+        window.WhiteBoxStories.lastSource = 'fallback';
+        window.WhiteBoxStories.lastError = null;
+        return whiteBoxStoriesGetLocal();
+    }).catch(function(err) {
+        console.error('[WhiteBoxStories] Error consultando Supabase:', err);
+        window.WhiteBoxStories.lastSource = 'fallback';
+        window.WhiteBoxStories.lastError = err && err.message ? err.message : 'Error de Supabase';
+        return whiteBoxStoriesGetLocal();
+    });
     window.WhiteBoxStories.lastSource = 'local';
     window.WhiteBoxStories.lastError = null;
-    return Promise.resolve(
-        storiesData
-            .filter(function(s) { return s.status === 'published'; })
-            .sort(function(a, b) { return (a.order || 999) - (b.order || 999); })
-    );
+    return Promise.resolve(whiteBoxStoriesGetLocal());
 };

@@ -1,20 +1,16 @@
-/* INTERVIEWS DATA - Datos del archivo de entrevistas WhiteBox */
+/* INTERVIEWS DATA - Datos del archivo de entrevistas WhiteBox
+   Versión Supabase: usa Supabase Postgres en lugar de Firestore.
 
-/*
-    Fuente editorial principal: coleccion Firestore 'interviews'
-    (CRUD de Entrevistas del Backstage).
+   Orden de datos:
+   1. Supabase: supabase.from('interviews').select('*').eq('published', true)
+   2. localStorage 'backstage_interviews_data' (panel oficial Backstage, modo local)
+   3. localStorage 'wbox_interviews_data' (panel legado)
+   4. legacyInterviews (datos historicos del sitio)
 
-    Orden de datos:
-    1. Firestore: db.collection('interviews').where('published','==',true)
-    2. localStorage 'backstage_interviews_data' (panel oficial Backstage, modo local)
-    3. localStorage 'wbox_interviews_data' (panel legado)
-    4. LEGACY_INTERVIEWS (datos historicos del sitio)
-
-    LEGACY_INTERVIEWS: entrevistas individuales que antes se editaban como
-    campos iv1_*/iv2_*/iv3_* dentro de site_content / entreE.html. Se
-    conservan como fallback para no romper el sitio si Firestore y
-    localStorage estan vacios. La fuente editorial principal es el CRUD.
-    Etiquetados como legacy para su posible eliminacion en v0.5.
+   LEGACY_INTERVIEWS: entrevistas individuales que antes se editaban como
+   campos iv1_*/iv2_*/iv3_* dentro de site_content / entreE.html. Se
+   conservan como fallback para no romper el sitio si Supabase y
+   localStorage estan vacios.
 */
 
 var legacyInterviewsDefault = [
@@ -43,13 +39,14 @@ var legacyInterviewsDefault = [
         num: 'VOL. 03',
         category: 'CULTURA URBANA',
         title: 'Ritmo, rima y realidad',
-        excerpt: 'Dani Hache nos abre las puertas de su estudio para explicarnos cómo se cocina el trap más crudo del momento...',
+        excerpt: 'Dani Hache nos abre las puertas de su studio para explicarnos cómo se cocina el trap más crudo del momento...',
         cta: 'LEER ENTREVISTA',
         ctaUrl: '#',
         image: 'https://images.pexels.com/photos/257904/pexels-photo-257904.jpeg'
     }
 ];
 
+/* Datos locales y legacy */
 (function() {
     var BACKSTAGE_KEY = 'backstage_interviews_data';
     var LEGACY_KEY = 'wbox_interviews_data';
@@ -86,41 +83,34 @@ window.WhiteBoxInterviews.lastSource = null;
 window.WhiteBoxInterviews.lastError = null;
 window.WhiteBoxInterviews.LEGACY_INTERVIEWS = legacyInterviewsDefault;
 
-/* Async loader: Firestore primero, luego localStorage/default. */
+/* Async loader: Supabase primero, luego localStorage/default */
 window.WhiteBoxInterviews.loadPublished = function() {
-    var wbf = window.WhiteBoxFirebase;
-
-    if (wbf && wbf.db) {
-        return wbf.db.collection('interviews')
-            .where('published', '==', true)
-            .get()
-            .then(function(snapshot) {
-                var items = [];
-                snapshot.forEach(function(doc) {
-                    var d = doc.data();
-                    d.id = doc.id;
-                    items.push(d);
-                });
-
-                window.WhiteBoxInterviews.lastError = null;
-
-                if (items.length > 0) {
-                    window.WhiteBoxInterviews.lastSource = 'firestore';
-                    return items.sort(function(a, b) {
-                        return (a.order || 999) - (b.order || 999);
-                    });
-                }
-
-                window.WhiteBoxInterviews.lastSource = 'fallback';
-                window.WhiteBoxInterviews.lastError = null;
-                return sortPublishedInterviews(interviewsData);
-            })
-            .catch(function(err) {
-                window.WhiteBoxInterviews.lastSource = 'fallback';
-                window.WhiteBoxInterviews.lastError = err && err.message ? err.message : 'Error de Firestore';
-                return sortPublishedInterviews(interviewsData);
-            });
+    var sb = window.getSupabaseClient();
+    if (!sb) {
+        window.WhiteBoxInterviews.lastSource = 'local';
+        window.WhiteBoxInterviews.lastError = 'Supabase client no disponible';
+        return Promise.resolve(sortPublishedInterviews(interviewsData));
     }
+
+    return sb.from('interviews').select('*').eq('published', true).order('order', { ascending: true }).then(function(response) {
+        var items = response.data || [];
+        window.WhiteBoxInterviews.lastError = null;
+
+        if (items.length > 0) {
+            items = items.map(function(item) { return { id: item.id || item._id, ...item }; });
+            window.WhiteBoxInterviews.lastSource = 'supabase';
+            return items.sort(function(a, b) { return (a.order || 999) - (b.order || 999); });
+        }
+
+        window.WhiteBoxInterviews.lastSource = 'fallback';
+        window.WhiteBoxInterviews.lastError = null;
+        return sortPublishedInterviews(interviewsData);
+    }).catch(function(err) {
+        console.error('[WhiteBoxInterviews] Error consultando Supabase:', err);
+        window.WhiteBoxInterviews.lastSource = 'fallback';
+        window.WhiteBoxInterviews.lastError = err && err.message ? err.message : 'Error de Supabase';
+        return sortPublishedInterviews(interviewsData);
+    });
 
     window.WhiteBoxInterviews.lastSource = 'local';
     window.WhiteBoxInterviews.lastError = null;
