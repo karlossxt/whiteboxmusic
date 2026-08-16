@@ -13,11 +13,17 @@
         this._cache = {};
     }
 
+    var ORDERED_TABLES = { stories: 1, soundscapes: 1, interviews: 1, gallery: 1 };
+
     SupabaseDatasource.prototype._collectionRef = function(collectionName) {
         var ds = this;
         return {
             get: function() {
-                return ds.client.from(collectionName).select('*').order('order', { ascending: true }).then(function(response) {
+                var query = ds.client.from(collectionName).select('*');
+                if (ORDERED_TABLES[collectionName]) {
+                    query = query.order('order', { ascending: true });
+                }
+                return query.then(function(response) {
                     var items = response.data || [];
                     var standardized = items.map(function(item) {
                         return { id: item.id || item._id || item.slug, ...item };
