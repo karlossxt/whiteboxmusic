@@ -123,6 +123,53 @@ body {
     cursor: not-allowed;
 }
 
+.login-forgot {
+    margin-top: 16px;
+}
+
+.login-forgot-btn {
+    background: none;
+    border: none;
+    color: #0070f3;
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+}
+
+.login-forgot-btn:hover {
+    color: #3291ff;
+}
+
+.login-recover-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+}
+
+.login-recover-text {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 24px;
+}
+
+.login-success {
+    background: #13281a;
+    border: 1px solid #1f4d2f;
+    color: #4ade80;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.login-back {
+    margin-top: 16px;
+}
+
 .login-spinner-ring {
     display: inline-block;
     width: 16px;

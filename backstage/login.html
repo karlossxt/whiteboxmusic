@@ -33,7 +33,25 @@
                         <span class="login-spinner-ring"></span>
                     </span>
                 </button>
+                <p class="login-forgot">
+                    <button type="button" class="login-forgot-btn" id="forgotBtn">¿Olvidaste tu contraseña?</button>
+                </p>
             </form>
+
+            <div class="login-recover" id="recoverPanel" style="display:none;">
+                <h2 class="login-recover-title">Recuperar contraseña</h2>
+                <p class="login-recover-text">Te enviaremos un enlace para restablecer tu contraseña.</p>
+                <div class="login-field">
+                    <label for="recoverEmail">Email</label>
+                    <input type="email" id="recoverEmail" placeholder="admin@whitebox.music" autocomplete="email">
+                </div>
+                <div class="login-error" id="recoverError" style="display:none;"></div>
+                <div class="login-success" id="recoverSuccess" style="display:none;"></div>
+                <button type="button" class="login-btn" id="recoverBtn">Enviar enlace</button>
+                <p class="login-back">
+                    <button type="button" class="login-forgot-btn" id="backBtn">← Volver al inicio de sesión</button>
+                </p>
+            </div>
         </div>
     </div>
 
@@ -79,6 +97,58 @@
         function hideError() {
             errorEl.style.display = 'none';
         }
+
+        var forgotBtn = document.getElementById('forgotBtn');
+        var backBtn = document.getElementById('backBtn');
+        var recoverPanel = document.getElementById('recoverPanel');
+        var recoverEmail = document.getElementById('recoverEmail');
+        var recoverError = document.getElementById('recoverError');
+        var recoverSuccess = document.getElementById('recoverSuccess');
+        var recoverBtn = document.getElementById('recoverBtn');
+
+        function showRecoverError(msg) {
+            recoverError.textContent = msg;
+            recoverError.style.display = 'block';
+        }
+
+        forgotBtn.addEventListener('click', function() {
+            form.style.display = 'none';
+            recoverError.style.display = 'none';
+            recoverSuccess.style.display = 'none';
+            recoverPanel.style.display = 'block';
+        });
+
+        backBtn.addEventListener('click', function() {
+            recoverPanel.style.display = 'none';
+            form.style.display = '';
+        });
+
+        recoverBtn.addEventListener('click', function() {
+            var email = (recoverEmail.value || '').trim();
+            recoverError.style.display = 'none';
+            recoverSuccess.style.display = 'none';
+
+            if (!email) {
+                showRecoverError('Ingresa tu email.');
+                return;
+            }
+
+            recoverBtn.disabled = true;
+
+            supa.auth.resetPasswordForEmail(email, {
+                redirectTo: 'https://whiteboxmusic.com.mx/backstage/reset-password.html'
+            }).then(function(resp) {
+                if (resp.error) {
+                    showRecoverError('No fue posible enviar el enlace: ' + resp.error.message);
+                    recoverBtn.disabled = false;
+                    return;
+                }
+                recoverSuccess.textContent = 'Si el email existe, recibirás un enlace para restablecer tu contraseña.';
+                recoverSuccess.style.display = 'block';
+                recoverBtn.disabled = false;
+                recoverEmail.value = '';
+            });
+        });
 
         // Si ya hay sesión activa, ir directo
         supa.auth.getSession().then(function(resp) {
