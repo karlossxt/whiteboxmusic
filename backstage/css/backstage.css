@@ -1486,6 +1486,32 @@ a { color: inherit; text-decoration: none; }
     padding-top: 20px;
 }
 
+.import-results {
+    margin-top: 16px;
+    padding: 14px 16px;
+    background-color: #14161d;
+    border: 1px solid var(--border, #1f232c);
+    border-radius: 10px;
+    font-size: 0.875rem;
+}
+
+.import-result-row {
+    padding: 5px 0;
+    color: var(--text, #e8eaed);
+}
+
+.import-result-row.error {
+    color: #ff6b6b;
+    font-weight: 600;
+}
+
+.import-result-note {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border, #1f232c);
+    color: #ffb86b;
+}
+
 .table-badge-ok {
     color: var(--green);
     font-weight: 600;

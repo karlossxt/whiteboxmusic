@@ -120,7 +120,70 @@
 
             this._container.appendChild(form);
 
+            this._renderImportPanel(actions);
+
             this._bindForm(actions);
+        },
+
+        _renderImportPanel: function(actions) {
+            var panel = document.createElement('div');
+            panel.className = 'sections-editor-import';
+            panel.innerHTML =
+                '<div class="sections-editor-top" style="margin-top:24px;">' +
+                '<div class="sections-editor-heading">' +
+                '<h3>Herramientas</h3>' +
+                '<span class="form-hint">Importa el contenido guardado en este navegador (localStorage) hacia Supabase, la fuente de verdad del sitio publico.</span>' +
+                '</div></div>' +
+                '<div class="form-actions sections-editor-actions">' +
+                '<button type="button" class="btn-primary" id="importLocalBtn">' +
+                '<i class="fa-solid fa-cloud-arrow-up"></i> Importar contenido local a Supabase</button>' +
+                '</div>' +
+                '<div id="importLocalResults" class="import-results" style="display:none;"></div>';
+            this._container.appendChild(panel);
+        },
+
+        showImportResult: function(report) {
+            var box = document.getElementById('importLocalResults');
+            if (!box) return;
+            box.style.display = 'block';
+            box.textContent = '';
+
+            var keys = Object.keys(report);
+            var anyError = false;
+            for (var i = 0; i < keys.length; i++) {
+                var key = keys[i];
+                var r = report[key];
+                if (!r || typeof r !== 'object') continue;
+
+                var row = document.createElement('div');
+                var label = key;
+                for (var c = 0; c < window.Backstage.Services.Import._labels.length; c++) {
+                    if (window.Backstage.Services.Import._labels[c].key === key) {
+                        label = window.Backstage.Services.Import._labels[c].label;
+                        break;
+                    }
+                }
+
+                if (r.error) {
+                    row.className = 'import-result-row error';
+                    row.textContent = label + ': ERROR — ' + r.error;
+                    anyError = true;
+                } else if (r.skipped) {
+                    row.className = 'import-result-row';
+                    row.textContent = label + ': sin datos locales (omitido)';
+                } else {
+                    row.className = 'import-result-row';
+                    row.textContent = label + ': ' + r.count + ' importado(s)';
+                }
+                box.appendChild(row);
+            }
+
+            if (anyError) {
+                var note = document.createElement('div');
+                note.className = 'import-result-note';
+                note.textContent = 'Revisa que estes con sesion iniciada en Supabase y que las policies RLS de la tabla permitan escritura (autenticado).';
+                box.appendChild(note);
+            }
         },
 
         getFormValues: function() {
@@ -156,6 +219,12 @@
                 form.onsubmit = function(e) {
                     e.preventDefault();
                     actions.save();
+                };
+            }
+            var importBtn = document.getElementById('importLocalBtn');
+            if (importBtn) {
+                importBtn.onclick = function() {
+                    if (actions.importLocal) actions.importLocal();
                 };
             }
         },

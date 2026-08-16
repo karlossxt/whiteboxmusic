@@ -12,10 +12,12 @@
     var Confirm = window.Backstage.Components.Confirm;
     var Header = window.Backstage.Components.Header;
 
-    function SiteConfigController(siteConfigService, siteConfigView) {
+    function SiteConfigController(siteConfigService, siteConfigView, importService) {
         this.service = siteConfigService;
         this.view = siteConfigView;
+        this.importService = importService || window.Backstage.Services.Import;
         this._saving = false;
+        this._importing = false;
         this._eventsBound = false;
     }
 
@@ -38,7 +40,49 @@
 
         this.view.renderForm(config, {
             save: function() { self._save(); },
-            reset: function() { self._reset(); }
+            reset: function() { self._reset(); },
+            importLocal: function() { self._importLocal(); }
+        });
+    };
+
+    SiteConfigController.prototype._importLocal = function() {
+        if (this._importing) return;
+        this._importing = true;
+
+        var self = this;
+        var btn = document.getElementById('importLocalBtn');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Importando...';
+        }
+
+        this.importService.run().then(function(report) {
+            var total = 0;
+            var hasErr = false;
+            Object.keys(report).forEach(function(k) {
+                var r = report[k];
+                if (r && r.count) total += r.count;
+                if (r && r.error) hasErr = true;
+            });
+            self.view.showImportResult(report);
+            if (hasErr) {
+                Toast.show('Importacion con errores. Revisa el detalle.', 'error');
+            } else if (total > 0) {
+                Toast.show('Importacion completada: ' + total + ' registros', 'success');
+                Toast.show('Recarga el panel para ver los datos importados', 'info');
+            } else {
+                Toast.show('No hay datos locales para importar', 'info');
+            }
+        }).catch(function(err) {
+            Toast.show(err.message || 'Error al importar', 'error');
+            self.view.showImportResult({ general: { error: err.message || String(err) } });
+        }).then(function() {
+            self._importing = false;
+            var btn2 = document.getElementById('importLocalBtn');
+            if (btn2) {
+                btn2.disabled = false;
+                btn2.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Importar contenido local a Supabase';
+            }
         });
     };
 
