@@ -7,58 +7,87 @@
 (function() {
     window.Backstage = window.Backstage || {};
 
-    function SupabaseDatasource(supabaseTable) {
+    function SupabaseDatasource(supabaseClient) {
         this.type = 'supabase';
-        this.table = supabaseTable; // Ej: supabase.from('stories')
+        this.client = supabaseClient;
         this._cache = {};
     }
 
     SupabaseDatasource.prototype._collectionRef = function(collectionName) {
-        // Retorna un objeto con método .get() que retorna Promise<snapshot>
         var ds = this;
         return {
             get: function() {
-                return ds.table.select('*').order('order', { ascending: true }).then(function(response) {
+                return ds.client.from(collectionName).select('*').order('order', { ascending: true }).then(function(response) {
                     var items = response.data || [];
-                    // Estandarizar formato: asegurar que cada item tenga 'id'
                     var standardized = items.map(function(item) {
                         return { id: item.id || item._id || item.slug, ...item };
                     });
-                    // Retornar como "snapshot" con .forEach
+
+                    ds._cache[collectionName] = standardized.slice();
+
                     return {
                         data: standardized,
-                        forEach: function(cb) {
-                            standardized.forEach(cb);
+                        forEach: function(callback) {
+                            standardized.forEach(callback);
                         }
                     };
                 }).catch(function(err) {
                     console.error('[Backstage] Error Supabase query:', err);
-                    return { data: [], error: err };
+                    return {
+                        data: [],
+                        forEach: function() {},
+                        error: err
+                    };
                 });
             }
         };
     };
 
-    SupabaseDatasource.prototype.get = function(key) {
-        // Para compatibilidad con el registry que usa this._cache y this._collectionRef
-        return this._collectionRef(key);
-    };
+    /* ----------------------------------------
+       Lecturas síncronas desde cache
+       usadas por los repositories
+       ---------------------------------------- */
 
-    SupabaseDatasource.prototype.set = function(key, value) {
-        // Supabase write - opcional, usar con cuidado
-        // Este método es básico; las escrituras complejas usan repositorios
-        console.warn('[Backstage] Supabase write no implementado en datasource directo');
-        return false;
+    SupabaseDatasource.prototype.get = function(key) {
+        if (!this._cache[key]) {
+            return null;
+        }
+        return this._cache[key].slice();
     };
 
     SupabaseDatasource.prototype.getWithDefault = function(key, defaultData) {
-        var ref = this.get(key);
-        return ref.then(function(data) {
-            if (data && data.length) return data;
-            if (defaultData) return defaultData.slice();
-            return [];
-        });
+        var data = this.get(key);
+        if (Array.isArray(data)) {
+            return data;
+        }
+        return Array.isArray(defaultData)
+            ? defaultData.slice()
+            : defaultData;
     };
 
-    window.Backstage.SupabaseDatasource = SupabaseDatasource;
+    /*
+     * Escrituras se implementarán posteriormente
+     * con INSERT / UPDATE / DELETE reales.
+     */
+
+    SupabaseDatasource.prototype.set = function(key, value) {
+        console.warn(
+            '[Backstage] set() Supabase pendiente:',
+            key
+        );
+        this._cache[key] =
+            Array.isArray(value)
+                ? value.slice()
+                : value;
+        return true;
+    };
+
+    SupabaseDatasource.prototype.remove = function(key) {
+        delete this._cache[key];
+        return true;
+    };
+
+    window.Backstage.SupabaseDatasource =
+        SupabaseDatasource;
+
 })();

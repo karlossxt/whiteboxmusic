@@ -112,7 +112,7 @@
         var storySupabaseReady = false;
         try {
             if (supa) {
-                var storySupa = new window.Backstage.SupabaseDatasource(supa.from('stories'));
+                var storySupa = new window.Backstage.SupabaseDatasource(supa);
                 storyRegistry.register('supabase', storySupa);
                 storyRegistry.register('local', local);
                 storyRegistry.setActive('supabase');
@@ -152,31 +152,38 @@
        localStorage automaticamente.
        ------------------------------------------ */
     function preloadSupabaseData(storyDs) {
-        var COLLECTIONS = ['stories', 'site_content', 'gallery', 'soundscapes', 'interviews', 'site_config'];
+        var COLLECTIONS = [
+            { table: 'stories', key: 'stories_data' },
+            { table: 'soundscapes', key: 'soundscapes_data' },
+            { table: 'interviews', key: 'interviews_data' },
+            { table: 'gallery', key: 'gallery_events_data' },
+            { table: 'site_content', key: 'site_content' },
+            { table: 'site_config', key: 'site_config' }
+        ];
 
         storyDs._cache = storyDs._cache || {};
 
         function loadCollection(index) {
             if (index >= COLLECTIONS.length) {
                 return Promise.resolve({
-                    stories: storyDs._cache['stories'] ? storyDs._cache['stories'].length : 0,
+                    stories: storyDs._cache['stories_data'] ? storyDs._cache['stories_data'].length : 0,
                     sections: storyDs._cache['site_content'] ? storyDs._cache['site_content'].length : 0,
-                    gallery: storyDs._cache['gallery'] ? storyDs._cache['gallery'].length : 0,
-                    soundscapes: storyDs._cache['soundscapes'] ? storyDs._cache['soundscapes'].length : 0,
-                    interviews: storyDs._cache['interviews'] ? storyDs._cache['interviews'].length : 0,
+                    gallery: storyDs._cache['gallery_events_data'] ? storyDs._cache['gallery_events_data'].length : 0,
+                    soundscapes: storyDs._cache['soundscapes_data'] ? storyDs._cache['soundscapes_data'].length : 0,
+                    interviews: storyDs._cache['interviews_data'] ? storyDs._cache['interviews_data'].length : 0,
                     siteConfig: storyDs._cache['site_config'] ? storyDs._cache['site_config'].length : 0
                 });
             }
 
-            var name = COLLECTIONS[index];
-            return storyDs._collectionRef(name).get().then(function(snapshot) {
+            var entry = COLLECTIONS[index];
+            return storyDs._collectionRef(entry.table).get().then(function(snapshot) {
                 var items = [];
                 snapshot.forEach(function(doc) {
                     var data = doc;
                     data.id = doc.id || doc._id;
                     items.push(data);
                 });
-                storyDs._cache[name] = items;
+                storyDs._cache[entry.key] = items;
                 return loadCollection(index + 1);
             });
         }
@@ -501,7 +508,81 @@
         }
 
         window.Backstage._localMode = false;
-        bootApp(storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, sectionReg, true);
+
+        /*
+         * Registros que apuntan a Supabase.
+         * Todos usan el mismo datasource pre-cargado, que ya
+         * contiene stories, soundscapes, interviews y site_config.
+         */
+        var supabaseStoryRegistry = new window.Backstage.DatasourceRegistry();
+        var supabaseSoundscapeRegistry = new window.Backstage.DatasourceRegistry();
+        var supabaseInterviewRegistry = new window.Backstage.DatasourceRegistry();
+
+        supabaseStoryRegistry.register('supabase', storyDs);
+        supabaseStoryRegistry.register('local', local);
+        supabaseStoryRegistry.setActive('supabase');
+
+        supabaseSoundscapeRegistry.register('supabase', storyDs);
+        supabaseSoundscapeRegistry.register('local', local);
+        supabaseSoundscapeRegistry.setActive('supabase');
+
+        supabaseInterviewRegistry.register('supabase', storyDs);
+        supabaseInterviewRegistry.register('local', local);
+        supabaseInterviewRegistry.setActive('supabase');
+
+        /*
+         * Ahora sí creamos REPOSITORIES.
+         */
+        var storyRepo =
+            new window.Backstage.StoryRepository(
+                supabaseStoryRegistry
+            );
+
+        var soundscapeRepo =
+            new window.Backstage.SoundscapeRepository(
+                supabaseSoundscapeRegistry
+            );
+
+        var interviewRepo =
+            new window.Backstage.InterviewRepository(
+                supabaseInterviewRegistry
+            );
+
+        /*
+         * Configuración, galería y secciones
+         * permanecen como están por ahora.
+         */
+        var siteConfigRepo =
+            new window.Backstage.SiteConfigRepository(
+                local
+            );
+
+        var galleryRepo =
+            new window.Backstage.GalleryRepository(
+                local
+            );
+
+        var sectionRepo =
+            new window.Backstage.SectionRepository(
+                local
+            );
+
+        bootApp(
+            supabaseStoryRegistry,
+            supabaseSoundscapeRegistry,
+            supabaseInterviewRegistry,
+            siteConfigReg,
+            galleryReg,
+
+            storyRepo,
+            soundscapeRepo,
+            interviewRepo,
+            siteConfigRepo,
+            galleryRepo,
+            sectionRepo,
+
+            true
+        );
     }
 
     /* ------------------------------------------
