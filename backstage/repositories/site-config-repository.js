@@ -18,6 +18,9 @@
 
     SiteConfigRepository.prototype.getConfig = function() {
         var raw = this.datasource.get(this.storageKey);
+        if (Array.isArray(raw)) {
+            raw = raw[0] || null;
+        }
         if (!raw) return window.Backstage.SiteConfig.defaults();
         return new this.ModelClass(raw);
     };

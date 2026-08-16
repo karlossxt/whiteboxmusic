@@ -550,21 +550,22 @@
 
         /*
          * Configuración, galería y secciones
-         * permanecen como están por ahora.
+         * también se leen de Supabase para que el panel
+         * muestre el mismo contenido que el sitio público.
          */
         var siteConfigRepo =
             new window.Backstage.SiteConfigRepository(
-                local
+                supabaseStoryRegistry
             );
 
         var galleryRepo =
             new window.Backstage.GalleryRepository(
-                local
+                supabaseStoryRegistry
             );
 
         var sectionRepo =
             new window.Backstage.SectionRepository(
-                local
+                supabaseStoryRegistry
             );
 
         bootApp(

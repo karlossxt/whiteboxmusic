@@ -52,7 +52,9 @@
         if (!this._cache[key]) {
             return null;
         }
-        return this._cache[key].slice();
+        return Array.isArray(this._cache[key])
+            ? this._cache[key].slice()
+            : this._cache[key];
     };
 
     SupabaseDatasource.prototype.getWithDefault = function(key, defaultData) {
