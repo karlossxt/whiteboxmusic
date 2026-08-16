@@ -67,21 +67,66 @@
             : defaultData;
     };
 
-    /*
-     * Escrituras se implementarán posteriormente
-     * con INSERT / UPDATE / DELETE reales.
-     */
+    SupabaseDatasource.prototype._tableFor = function(key) {
+        var TABLE_MAP = {
+            'stories_data': 'stories',
+            'soundscapes_data': 'soundscapes',
+            'interviews_data': 'interviews',
+            'gallery_events_data': 'gallery',
+            'site_content': 'site_content',
+            'site_config': 'site_config'
+        };
+        return TABLE_MAP[key] || key;
+    };
 
+    /*
+     * Escrituras reales en Supabase.
+     * - Array: hace upsert de cada item (por id) y borra
+     *   los que ya no existen respecto al cache anterior.
+     * - Objeto único (site_config): hace upsert de la fila.
+     * El cache se actualiza optimistamente; ante un error la
+     * Promise se rechaza para que el panel muestre el fallo.
+     */
     SupabaseDatasource.prototype.set = function(key, value) {
-        console.warn(
-            '[Backstage] set() Supabase pendiente:',
-            key
-        );
+        var ds = this;
+        var table = this._tableFor(key);
+        var previous = Array.isArray(this._cache[key]) ? this._cache[key].slice() : [];
+
         this._cache[key] =
             Array.isArray(value)
                 ? value.slice()
                 : value;
-        return true;
+
+        if (Array.isArray(value)) {
+            var oldIds = previous.map(function(item) { return item.id; });
+            var newIds = value.map(function(item) { return item.id; });
+            var removed = oldIds.filter(function(id) { return newIds.indexOf(id) === -1; });
+
+            var ops = [];
+            removed.forEach(function(id) {
+                ops.push(ds.client.from(table).delete().eq('id', id));
+            });
+            value.forEach(function(item) {
+                ops.push(ds.client.from(table).upsert(item, { onConflict: 'id' }));
+            });
+
+            return Promise.all(ops).then(function(results) {
+                var failed = results.filter(function(resp) { return resp && resp.error; });
+                if (failed.length) {
+                    console.error('[Backstage] Error escribiendo en Supabase (' + table + ')', failed);
+                    throw new Error('No se pudo guardar en Supabase');
+                }
+                return true;
+            });
+        }
+
+        return ds.client.from(table).upsert(value, { onConflict: 'id' }).then(function(resp) {
+            if (resp && resp.error) {
+                console.error('[Backstage] Error escribiendo en Supabase (' + table + ')', resp.error);
+                throw new Error('No se pudo guardar en Supabase');
+            }
+            return true;
+        });
     };
 
     SupabaseDatasource.prototype.remove = function(key) {

@@ -60,7 +60,10 @@
         }
         var model = new this.ModelClass(item);
         items.push(model);
-        this.save(items);
+        var saveResult = this.save(items);
+        if (saveResult && typeof saveResult.then === 'function') {
+            return saveResult.then(function() { return model; });
+        }
         return model;
     };
 
@@ -70,7 +73,10 @@
             if (items[i].id === id) {
                 data.id = id;
                 items[i] = new this.ModelClass(data);
-                this.save(items);
+                var saveResult = this.save(items);
+                if (saveResult && typeof saveResult.then === 'function') {
+                    return saveResult.then(function() { return items[i]; });
+                }
                 return items[i];
             }
         }
@@ -80,7 +86,10 @@
     BaseRepository.prototype.remove = function(id) {
         var items = this.getAll();
         var filtered = items.filter(function(item) { return item.id !== id; });
-        this.save(filtered);
+        var saveResult = this.save(filtered);
+        if (saveResult && typeof saveResult.then === 'function') {
+            return saveResult.then(function() { return filtered; });
+        }
         return filtered;
     };
 

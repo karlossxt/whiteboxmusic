@@ -53,7 +53,10 @@
         var item = this.getById(id);
         if (!item) return null;
         item.published = !item.isPublished();
-        this.update(id, item.toJSON());
+        var result = this.update(id, item.toJSON());
+        if (result && typeof result.then === 'function') {
+            return result;
+        }
         return item;
     };
 
@@ -61,7 +64,10 @@
         var item = this.getById(id);
         if (!item) return null;
         item.featured = !item.isFeatured();
-        this.update(id, item.toJSON());
+        var result = this.update(id, item.toJSON());
+        if (result && typeof result.then === 'function') {
+            return result;
+        }
         return item;
     };
 

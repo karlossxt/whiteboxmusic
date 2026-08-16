@@ -28,7 +28,10 @@
     SiteConfigRepository.prototype.saveConfig = function(data) {
         var model = new this.ModelClass(data);
         model.updatedAt = Date.now();
-        this.datasource.set(this.storageKey, model.toJSON());
+        var result = this.datasource.set(this.storageKey, model.toJSON());
+        if (result && typeof result.then === 'function') {
+            return result.then(function() { return model; });
+        }
         return model;
     };
 
