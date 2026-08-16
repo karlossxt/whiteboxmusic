@@ -1,27 +1,37 @@
+/* ============================================
+   BACKSTAGE STUDIO — Storage Service (Supabase)
+   Sube imágenes al bucket público 'images' de
+   Supabase Storage y devuelve la URL pública.
+
+   Reemplaza Firebase Storage tras la migración.
+   ============================================ */
+
 (function() {
     window.Backstage = window.Backstage || {};
     window.Backstage.Services = window.Backstage.Services || {};
 
+    var BUCKET = 'images';
+
     function StorageService() {
-        this._storage = null;
+        this._supabase = null;
         try {
-            var wbf = window.WhiteBoxFirebase;
-            if (wbf && wbf.app && typeof firebase !== 'undefined' && firebase.storage) {
-                this._storage = firebase.storage();
+            if (typeof window.getSupabaseClient === 'function') {
+                this._supabase = window.getSupabaseClient();
             }
         } catch (e) {
-            console.warn('[StorageService] Firebase Storage no disponible:', e.message);
+            console.warn('[StorageService] Supabase Storage no disponible:', e.message);
         }
     }
 
     StorageService.prototype.isAvailable = function() {
-        return !!this._storage;
+        return !!(this._supabase && this._supabase.storage);
     };
 
     StorageService.prototype.uploadImage = function(file, folder) {
+        var self = this;
         return new Promise(function(resolve, reject) {
-            if (!this._storage) {
-                reject(new Error('Firebase Storage no disponible'));
+            if (!self.isAvailable()) {
+                reject(new Error('Supabase Storage no disponible'));
                 return;
             }
             if (!file || !file.type || !file.type.startsWith('image/')) {
@@ -31,37 +41,29 @@
 
             var ext = file.name.split('.').pop() || 'jpg';
             var filename = Date.now() + '_' + Math.random().toString(36).substring(2, 8) + '.' + ext;
-            var fullPath = (folder || 'gallery') + '/' + filename;
-            var storageRef = this._storage.ref(fullPath);
+            var fullPath = ((folder || 'gallery') + '/' + filename).replace(/^\/+/, '');
 
-            var self = this;
             var reader = new FileReader();
             reader.onload = function(e) {
                 self._compressImage(e.target.result, 1600, 0.8, function(compressed) {
                     var blob = self._dataURLtoBlob(compressed);
-                    var uploadTask = storageRef.put(blob, {
-                        contentType: 'image/jpeg',
-                        customMetadata: { uploadTimestamp: String(Date.now()) }
-                    });
 
-                    uploadTask.on('state_changed',
-                        function(snapshot) {
-                            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        },
-                        function(error) {
-                            reject(error);
-                        },
-                        function() {
-                            uploadTask.snapshot.ref.getDownloadURL().then(function(url) {
-                                resolve(url);
-                            }).catch(reject);
+                    self._supabase.storage.from(BUCKET).upload(fullPath, blob, {
+                        contentType: 'image/jpeg',
+                        upsert: false
+                    }).then(function(resp) {
+                        if (resp.error) {
+                            reject(resp.error);
+                            return;
                         }
-                    );
+                        var url = self._supabase.storage.from(BUCKET).getPublicUrl(fullPath).data.publicUrl;
+                        resolve(url);
+                    }).catch(reject);
                 });
             };
             reader.onerror = function() { reject(new Error('Error al leer el archivo')); };
             reader.readAsDataURL(file);
-        }.bind(this));
+        });
     };
 
     StorageService.prototype.uploadMultiple = function(files, folder) {
