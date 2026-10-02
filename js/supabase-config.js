@@ -15,8 +15,15 @@
         if (window.WhiteBoxSupabase.initialized) return;
         
         // ✅ Cambia estos valores por tu proyecto Supabase
+        //
+        // La key es la "publishable key" (prefijo sb_publishable_), que
+        // es el formato nuevo de Supabase y reemplaza al viejo JWT
+        // de anon. Mismo rol y mismos permisos: sirve para leer y para
+        // escribir solo lo que las policies de RLS permitan.
+        // NO es una service_role key: esa si se salta RLS y jamas
+        // debe ir en el cliente.
         const SUPABASE_URL = 'https://vtodlxjfbzzexgpcjajj.supabase.co';
-        const SUPABASE_ANON_KEY ='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0b2RseGpmYnp6ZXhncGNqYWpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3NTE1NzYsImV4cCI6MjEwMjMyNzU3Nn0.yxgsIbtmppXLkkynfAR0ZN6-HD00-ZVgRN8dOA8Vi-o';
+        const SUPABASE_ANON_KEY = 'sb_publishable_FIcB3IgkXxM1mKh1a2OzsQ_caM7UEO9';
 
         if (!window.supabase) {
             // Cargar SDK dinámicamente si no está disponible
