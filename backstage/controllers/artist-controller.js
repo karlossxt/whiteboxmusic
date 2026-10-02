@@ -53,6 +53,8 @@
         var items = this.service.getAll();
         items.sort(function(a, b) { return (a.order || 999) - (b.order || 999); });
 
+        this.view.setTableMissing(!!window.Backstage.artistTableMissing);
+
         var self = this;
         var actions = {
             edit: function(id) { self._openEditModal(id); },

@@ -31,11 +31,21 @@
 
                     ds._cache[collectionName] = standardized.slice();
 
+                    /* supabase-js RESUELVE (no rechaza) cuando la
+                       consulta falla: el error llega en response.error.
+                       Por eso el .catch de abajo casi nunca se ejecuta
+                       y una tabla inexistente se confundia con una
+                       tabla vacia. PGRST205 = la tabla no existe. */
+                    if (response.error) {
+                        console.error('[Backstage] Error Supabase en ' + collectionName + ':', response.error.message);
+                    }
+
                     return {
                         data: standardized,
                         forEach: function(callback) {
                             standardized.forEach(callback);
-                        }
+                        },
+                        error: response.error || null
                     };
                 }).catch(function(err) {
                     console.error('[Backstage] Error Supabase query:', err);

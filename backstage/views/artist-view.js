@@ -36,9 +36,17 @@
         _statsContainer: null,
         _tableBody: null,
         _emptyEl: null,
+        _tableMissing: false,
 
         init: function(sectionId) {
             this._section = document.getElementById(sectionId);
+        },
+
+        /* La tabla "artists" todavia no existe en Supabase. Cambia
+           el estado vacio: no es que falten artistas, es que no hay
+           donde guardarlos. */
+        setTableMissing: function(value) {
+            this._tableMissing = !!value;
         },
 
         renderStats: function(stats) {
@@ -58,7 +66,7 @@
             this._tableBody.textContent = '';
 
             if (!items || items.length === 0) {
-                this._emptyEl.style.display = 'block';
+                this._renderEmptyState();
                 return;
             }
             this._emptyEl.style.display = 'none';
@@ -164,6 +172,34 @@
 
                 this._tableBody.appendChild(tr);
             }, this);
+        },
+
+        /* Sin la tabla, el sitio publico sigue mostrando los 4
+           artistas del fallback en artists-data.js, asi que un
+           "aun no hay artistas" es doblemente engañoso: no aparecen
+           en el panel, pero en el sitio si. */
+        _renderEmptyState: function() {
+            var el = this._emptyEl;
+            el.textContent = '';
+            el.style.display = 'block';
+
+            var icon = document.createElement('i');
+            var title = document.createElement('h3');
+            var text = document.createElement('p');
+
+            if (this._tableMissing) {
+                icon.className = 'fa-solid fa-database';
+                title.textContent = 'Falta la tabla "artists" en Supabase';
+                text.textContent = 'Por eso la seccion sale vacia. El sitio publico sigue mostrando los 4 artistas de ejemplo, pero para editarlos o quitarlos desde aqui hay que crear la tabla: corre el archivo supabase-artists.sql en el SQL Editor de Supabase. Es incremental y no borra las demas tablas.';
+            } else {
+                icon.className = 'fa-solid fa-headphones';
+                title.textContent = 'Aun no hay artistas';
+                text.textContent = 'Agrega tu primer artista para que aparezca en la seccion Descubre.';
+            }
+
+            el.appendChild(icon);
+            el.appendChild(title);
+            el.appendChild(text);
         },
 
         _ensureStructure: function() {

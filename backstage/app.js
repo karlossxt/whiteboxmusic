@@ -206,6 +206,7 @@
         ];
 
         storyDs._cache = storyDs._cache || {};
+        storyDs._loadErrors = storyDs._loadErrors || [];
 
         function loadCollection(index) {
             if (index >= COLLECTIONS.length) {
@@ -229,6 +230,22 @@
                     items.push(data);
                 });
                 storyDs._cache[entry.key] = items;
+
+                /* El datasource se traga el error de la query y
+                   devuelve una coleccion vacia, asi que la cache
+                   queda indistinguible de "la tabla existe pero no
+                   tiene filas". Guardamos cuales fallaron para poder
+                   distinguir los dos casos y no mostrar un estado
+                   vacio que mienta (ej: "aun no hay artistas" cuando
+                   en realidad la tabla no existe). */
+                if (snapshot.error) {
+                    storyDs._loadErrors.push({
+                        table: entry.table,
+                        key: entry.key,
+                        error: snapshot.error
+                    });
+                }
+
                 return loadCollection(index + 1);
             });
         }
@@ -267,6 +284,11 @@
 
     function bootWithLocalMode(storyReg, soundscapeReg, interviewReg, artistReg, siteConfigReg, galleryReg, sectionReg, local) {
         window.Backstage._localMode = true;
+
+        /* En local la tabla no aplica: los datos viven en
+           localStorage y la semilla legacy se aplica abajo. */
+        window.Backstage.missingTables = [];
+        window.Backstage.artistTableMissing = false;
 
         /* Asegurar que el datasource activo sea local */
         storyReg.setActive('local');
@@ -575,6 +597,16 @@
         }
 
         window.Backstage._localMode = false;
+
+        /* Tablas que no se pudieron leer, normalmente porque aun no
+           existen. Sin esto la vista no puede distinguir "no has
+           agregado nada" de "no puedo leer nada", y el estado vacio
+           termina mintiendo. */
+        var failedTables = (storyDs._loadErrors || []).map(function(entry) {
+            return entry.table;
+        });
+        window.Backstage.missingTables = failedTables;
+        window.Backstage.artistTableMissing = failedTables.indexOf('artists') !== -1;
 
         /*
          * Registros que apuntan a Supabase.
