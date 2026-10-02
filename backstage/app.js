@@ -21,6 +21,21 @@
     var localGlobal = null;
     var retryCount = 0;
     var MAX_RETRIES = 3;
+    /* Espera entre reintentos, en segundos. El primer reintento
+       espera BACKOFF*1, el segundo BACKOFF*2, etc. */
+    var RETRY_BACKOFF_SEC = 2;
+    /* Presupuesto total de reintentos. El intento 1 falla de
+       inmediato; entre intento N y N+1 se espera BACKOFF*N. Con
+       MAX_RETRIES=3 son dos esperas: 2s + 4s = 6s.
+       El timeout de seguridad tiene que ser MAYOR que esto, o el
+       fallback automatico le ganaba la carrera a la pantalla de error
+       y sus botones nunca eran usables. */
+    var RETRY_BUDGET_MS = (function() {
+        var sum = 0;
+        for (var i = 1; i < MAX_RETRIES; i++) sum += RETRY_BACKOFF_SEC * i;
+        return sum * 1000;
+    })();
+    var PRELOAD_TIMEOUT_MS = RETRY_BUDGET_MS + 8000;
 
     /* ------------------------------------------
        UI: Loading screen
@@ -30,6 +45,15 @@
         var layout = document.getElementById('adminLayout');
         if (loading) loading.style.display = 'none';
         if (layout) layout.style.display = '';
+    }
+
+    /* Refleja si la pantalla de error esta visible. La usa el arranque
+       para no taparle la decision al usuario: si los reintentos ya se
+       agotaron, los botones ("Reintentar" / "Continuar en modo local")
+       son los que deciden, no un fallback automatico. */
+    function isPreloadErrorVisible() {
+        var el = document.getElementById('adminPreloadError');
+        return !!(el && el.style.display && el.style.display !== 'none');
     }
 
     function hidePreloadError() {
@@ -111,8 +135,21 @@
         sectionRegistry.register('local', local);
         sectionRegistry.setActive('local');
 
-        // Story puede usar Supabase si está disponible
-        var supa = window.WhiteBoxSupabase ? window.WhiteBoxSupabase.client : null;
+        // Story puede usar Supabase si está disponible.
+        // Hay que pedir el cliente con getSupabaseClient() en vez de leer
+        // WhiteBoxSupabase.client a secas: ese campo solo se llena cuando
+        // alguien llama a getSupabaseClient() (lo hacia auth-guard.js), y
+        // leerlo directo nos dejaba en local sin avisar.
+        var supa = null;
+        try {
+            if (typeof window.getSupabaseClient === 'function') {
+                supa = window.getSupabaseClient();
+            } else if (window.WhiteBoxSupabase) {
+                supa = window.WhiteBoxSupabase.client;
+            }
+        } catch (e) {
+            console.warn('[Backstage] No se pudo obtener el cliente de Supabase:', e.message);
+        }
         var storySupabaseReady = false;
         try {
             if (supa) {
@@ -219,7 +256,7 @@
                 return new Promise(function(resolve) {
                     setTimeout(function() {
                         attemptPreload(storyRegistry).then(resolve);
-                    }, 2000 * retryCount);
+                    }, RETRY_BACKOFF_SEC * 1000 * retryCount);
                 });
             }
 
@@ -508,28 +545,23 @@
         if (banner) banner.style.display = '';
     }
 
-    function bindErrorScreenButtons(storyReg, soundscapeReg, interviewReg, artistReg, siteConfigReg, galleryReg, sectionReg, local) {
+    /* Botones de la pantalla de error de Supabase.
+       Recibe callbacks en vez de los registries porque el arranque
+       tiene que pasar por safeBoot(), que es lo unico que evita un
+       doble boot si el usuario insiste en el boton. */
+    function bindErrorScreenButtons(onRetry, onLocal) {
         var retryBtn = document.getElementById('preloadRetryBtn');
         var localBtn = document.getElementById('preloadLocalBtn');
 
         if (retryBtn) {
             retryBtn.addEventListener('click', function() {
-                retryCount = 0;
-                showPreloadError(true);
-                attemptPreload(storyReg).then(function(ok) {
-                    if (ok) {
-                        bootWithSupabase(storyReg, soundscapeReg, interviewReg, artistReg, siteConfigReg, galleryReg, sectionReg, local);
-                    } else {
-                        showPreloadError(false);
-                    }
-                });
+                if (typeof onRetry === 'function') onRetry();
             });
         }
 
         if (localBtn) {
             localBtn.addEventListener('click', function() {
-                hidePreloadError();
-                bootWithLocalMode(storyReg, soundscapeReg, interviewReg, artistReg, siteConfigReg, galleryReg, sectionReg, local);
+                if (typeof onLocal === 'function') onLocal();
             });
         }
     }
@@ -651,16 +683,48 @@
             }
         }
 
-        // Timeout de 10 segundos
+        // Botones de la pantalla de error: reconectar, o seguir en local.
+        // Ambos pasan por safeBoot para no arrancar la app dos veces.
+        bindErrorScreenButtons(
+            function retryPreload() {
+                retryCount = 0;
+                showPreloadError(true);
+                attemptPreload(ds.storyRegistry).then(function(ok) {
+                    if (ok) {
+                        safeBoot('supabase');
+                    } else {
+                        showPreloadError(false);
+                    }
+                });
+            },
+            function goLocal() {
+                hidePreloadError();
+                safeBoot('local');
+            }
+        );
+
+        // Red de seguridad por si el preload se queda colgado sin
+        // resolver. Va MAS ALLÁ del presupuesto de reintentos a
+        // propósito: si no, este timeout le ganaba la carrera a la
+        // pantalla de error y sus botones nunca se podían usar.
         setTimeout(function() {
             if (!booted) {
                 console.warn('[Backstage] Preload timeout, falling back to local mode');
                 safeBoot('local');
             }
-        }, 10000);
+        }, PRELOAD_TIMEOUT_MS);
 
         attemptPreload(ds.storyRegistry).then(function(ok) {
-            safeBoot(ok ? 'supabase' : 'local');
+            if (ok) {
+                safeBoot('supabase');
+                return;
+            }
+            // Si se agotaron los reintentos, la pantalla de error ya
+            // esta visible con sus botones: esperamos a que el usuario
+            // elija. Si no hay nada visible (p.ej. no habia datasource
+            // de Supabase), arrancamos en local sin interrumpir.
+            if (isPreloadErrorVisible()) return;
+            safeBoot('local');
         });
     }
 
