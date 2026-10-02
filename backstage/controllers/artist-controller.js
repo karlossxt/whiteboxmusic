@@ -248,6 +248,7 @@
         document.getElementById('arFormImage').value = artist.image || '';
         document.getElementById('arFormTags').value = artist.getTagsText();
         document.getElementById('arFormLink').value = artist.link || '';
+        document.getElementById('arFormInterview').value = artist.interview || '';
         document.getElementById('arFormStatus').value = artist.published ? 'published' : 'draft';
         document.getElementById('arFormFeatured').value = artist.featured ? 'true' : 'false';
         document.getElementById('arFormOrder').value = String(artist.order || 1);
@@ -285,6 +286,7 @@
             image: document.getElementById('arFormImage').value,
             tags: document.getElementById('arFormTags').value,
             link: document.getElementById('arFormLink').value,
+            interview: document.getElementById('arFormInterview').value,
             published: document.getElementById('arFormStatus').value === 'published',
             featured: document.getElementById('arFormFeatured').value,
             order: document.getElementById('arFormOrder').value

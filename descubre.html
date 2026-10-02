@@ -112,6 +112,97 @@
             filter: grayscale(0%) contrast(1);
         }
 
+        /* Artistas que tienen entrevista: la imagen acts as boton */
+        .card-img.is-clickable {
+            cursor: pointer;
+        }
+
+        .card-img.is-clickable:focus-visible {
+            outline: 3px solid var(--pink);
+            outline-offset: -3px;
+        }
+
+        /* ===================== MODAL ENTREVISTA ===================== */
+        .artist-modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: rgba(0, 0, 0, 0.88);
+        }
+
+        .artist-modal-overlay[hidden] {
+            display: none;
+        }
+
+        .artist-modal {
+            position: relative;
+            width: 100%;
+            max-width: 720px;
+            max-height: 85vh;
+            overflow-y: auto;
+            background: #0d0d0d;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-left: 4px solid var(--pink);
+            padding: 40px 36px 36px;
+        }
+
+        .artist-modal-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: border-color 0.3s ease, color 0.3s ease;
+        }
+
+        .artist-modal-close:hover {
+            border-color: var(--pink);
+            color: var(--pink);
+        }
+
+        .artist-modal-name {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #fff;
+            margin-bottom: 24px;
+            padding-right: 40px;
+        }
+
+        .artist-modal-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .artist-modal-text {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: #e8e8e8;
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+        }
+
+        @media (max-width: 768px) {
+            .artist-modal { padding: 32px 22px 26px; }
+            .artist-modal-name { font-size: 1.5rem; }
+        }
+
         .card-info {
             position: absolute;
             bottom: 0; left: 0;
@@ -270,6 +361,19 @@
             No hay artistas que coincidan con tu busqueda.
         </p>
 
+        <!-- Modal de entrevista: se abre al hacer click en la imagen
+             de un artista que tenga texto de entrevista. -->
+        <div class="artist-modal-overlay" id="artistModal" hidden>
+            <div class="artist-modal" role="dialog" aria-modal="true" aria-labelledby="artistModalName">
+                <button class="artist-modal-close" id="artistModalClose" type="button" aria-label="Cerrar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <h2 class="artist-modal-name" id="artistModalName"></h2>
+                <div class="artist-modal-tags" id="artistModalTags"></div>
+                <div class="artist-modal-text" id="artistModalText"></div>
+            </div>
+        </div>
+
     </main>
 
     <footer class="site-footer">
@@ -299,6 +403,59 @@
         var searchInput = document.querySelector('.hero-section .search-input');
         var allArtists = [];
 
+        var modal = document.getElementById('artistModal');
+        var modalName = document.getElementById('artistModalName');
+        var modalTags = document.getElementById('artistModalTags');
+        var modalText = document.getElementById('artistModalText');
+        var modalClose = document.getElementById('artistModalClose');
+        var lastFocused = null;
+
+        function openInterview(artist) {
+            if (!modal) return;
+            lastFocused = document.activeElement;
+
+            modalName.textContent = artist.name || '';
+
+            modalTags.textContent = '';
+            var tags = artist.tags || [];
+            tags.forEach(function(tag) {
+                var span = document.createElement('span');
+                span.className = 'tag';
+                span.textContent = tag;
+                modalTags.appendChild(span);
+            });
+            modalTags.style.display = tags.length ? '' : 'none';
+
+            /* white-space: pre-wrap respeta los saltos de linea que
+               el panel guardo, asi los parrafos se ven como se
+               escribieron. */
+            modalText.textContent = artist.interview || '';
+
+            modal.hidden = false;
+            document.body.style.overflow = 'hidden';
+            if (modalClose) modalClose.focus();
+        }
+
+        function closeInterview() {
+            if (!modal || modal.hidden) return;
+            modal.hidden = true;
+            document.body.style.overflow = '';
+            if (lastFocused && typeof lastFocused.focus === 'function') {
+                lastFocused.focus();
+            }
+            lastFocused = null;
+        }
+
+        if (modalClose) modalClose.addEventListener('click', closeInterview);
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) closeInterview();
+            });
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeInterview();
+        });
+
         function safeImageUrl(url) {
             if (!url || typeof url !== 'string') return '';
             var trimmed = url.trim();
@@ -320,6 +477,22 @@
             img.className = 'card-img';
             img.alt = artist.name || '';
             img.loading = 'lazy';
+
+            /* Solo es boton si hay entrevista que mostrar. */
+            var interview = String(artist.interview || '').trim();
+            if (interview) {
+                img.classList.add('is-clickable');
+                img.setAttribute('role', 'button');
+                img.setAttribute('tabindex', '0');
+                img.setAttribute('aria-label', 'Leer la entrevista de ' + (artist.name || 'este artista'));
+                img.addEventListener('click', function() { openInterview(artist); });
+                img.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+                        e.preventDefault();
+                        openInterview(artist);
+                    }
+                });
+            }
             card.appendChild(img);
 
             if (link) {

@@ -47,6 +47,7 @@
             image: String(data.image || '').trim(),
             tags: window.Backstage.Artist.normalizeTags(data.tags),
             link: String(data.link || '').trim(),
+            interview: String(data.interview || '').trim(),
             published: data.published === true || data.published === 'true',
             featured: data.featured === true || data.featured === 'true',
             createdAt: data.createdAt || now,

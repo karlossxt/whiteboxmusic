@@ -14,6 +14,7 @@
         this.image = raw.image || '';
         this.tags = Artist.normalizeTags(raw.tags);
         this.link = raw.link || '';
+        this.interview = raw.interview || '';
         this.published = raw.published === true || raw.published === 'true';
         this.featured = raw.featured === true || raw.featured === 'true';
         this.order = parseInt(raw.order, 10) || 1;
@@ -44,6 +45,7 @@
             image: this.image,
             tags: this.tags.slice(),
             link: this.link,
+            interview: this.interview,
             published: this.published,
             featured: this.featured,
             order: this.order,
