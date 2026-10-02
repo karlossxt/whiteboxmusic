@@ -44,6 +44,16 @@
             ]
         },
 
+        descubre: {
+            id: 'descubre',
+            label: 'Descubre',
+            file: 'descubre.html',
+            fields: [
+                field('hero_title', 'Titulo principal', 'text', 'text', '.hero-section .main-title > span', 'DESCUBRE'),
+                field('search_placeholder', 'Placeholder del buscador', 'text', 'placeholder', '.hero-section .search-input', 'BUSCAR ARTISTA, GÉNERO O CIUDAD...')
+            ]
+        },
+
         entrevistas: {
             id: 'entrevistas',
             label: 'Entrevistas',
