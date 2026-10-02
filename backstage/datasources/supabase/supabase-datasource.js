@@ -13,7 +13,7 @@
         this._cache = {};
     }
 
-    var ORDERED_TABLES = { stories: 1, soundscapes: 1, interviews: 1, gallery: 1 };
+    var ORDERED_TABLES = { stories: 1, soundscapes: 1, interviews: 1, gallery: 1, artists: 1 };
 
     SupabaseDatasource.prototype._collectionRef = function(collectionName) {
         var ds = this;
@@ -78,6 +78,7 @@
             'stories_data': 'stories',
             'soundscapes_data': 'soundscapes',
             'interviews_data': 'interviews',
+            'artists_data': 'artists',
             'gallery_events_data': 'gallery',
             'site_content': 'site_content',
             'site_config': 'site_config'

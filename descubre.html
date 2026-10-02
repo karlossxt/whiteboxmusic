@@ -133,6 +133,10 @@
             text-transform: uppercase;
             line-height: 0.9;
             margin-bottom: 10px;
+            /* Los nombres ahora vienen del panel como texto libre,
+               sin <br> fijos. Evita que una palabra larga desborde
+               la tarjeta. */
+            overflow-wrap: break-word;
         }
 
         .tags-row {
@@ -171,6 +175,16 @@
             background: var(--pink);
             border-color: var(--pink);
             transform: rotate(90deg);
+        }
+
+        .artists-empty {
+            text-align: center;
+            color: #fff;
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 60px 20px 100px;
+            opacity: 0.6;
         }
 
         @media (max-width: 768px) {
@@ -247,60 +261,14 @@
             </div>
         </section>
 
-        <section class="descubre-grid">
-            
-            <div class="artist-card">
-                <img src="https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg" class="card-img" alt="Zoe" loading="lazy">
-                <div class="float-btn">+</div>
-                <div class="card-info">
-                    <h2 class="artist-name">ZOE<br></h2>
-                    <div class="tags-row">
-                        <span class="tag">SYNTH POP</span>
-                        <span class="tag">DARKWAVE</span>
-                        <span class="tag">GRAN CANARIA</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="artist-card">
-                <img src="https://images.pexels.com/photos/1644613/pexels-photo-1644613.jpeg" class="card-img" alt="The Last Internationale" loading="lazy">
-                <div class="float-btn">+</div>
-                <div class="card-info">
-                    <h2 class="artist-name">THE LAST<br>INTERNATIONALE</h2>
-                    <div class="tags-row">
-                        <span class="tag">INDIE ROCK</span>
-                        <span class="tag">ALTERNATIVE</span>
-                        <span class="tag">BARCELONA</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="artist-card">
-                <img src="https://images.pexels.com/photos/257904/pexels-photo-257904.jpeg" class="card-img" alt="SIA" loading="lazy">
-                <div class="float-btn">+</div>
-                <div class="card-info">
-                    <h2 class="artist-name">SIA<br></h2>
-                    <div class="tags-row">
-                        <span class="tag">URBAN</span>
-                        <span class="tag">TRAP</span>
-                        <span class="tag">MADRID</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="artist-card">
-                <img src="https://images.pexels.com/photos/210922/pexels-photo-210922.jpeg" class="card-img" alt="WhiteBox Live" loading="lazy">
-                <div class="float-btn">+</div>
-                <div class="card-info">
-                    <h2 class="artist-name">WHITEBOX<br>LIVE</h2>
-                    <div class="tags-row">
-                        <span class="tag">SESSIONS</span>
-                        <span class="tag">LONDON</span>
-                    </div>
-                </div>
-            </div>
-
+        <section class="descubre-grid" id="artistsGrid">
+            <!-- Las tarjetas se renderizan desde js/artists-data.js
+                 (Supabase -> localStorage -> datos legacy). -->
         </section>
+
+        <p class="artists-empty" id="artistsEmpty" style="display:none;">
+            No hay artistas que coincidan con tu busqueda.
+        </p>
 
     </main>
 
@@ -319,6 +287,118 @@
     <script src="js/supabase-config.js"></script>
     <script src="js/site-schema.js"></script>
     <script src="js/site-content.js"></script>
+    <script src="js/artists-data.js"></script>
+
+<script>
+    /* ============================================
+       DESCUBRE — render de artistas + buscador
+       ============================================ */
+    (function() {
+        var grid = document.getElementById('artistsGrid');
+        var emptyMsg = document.getElementById('artistsEmpty');
+        var searchInput = document.querySelector('.hero-section .search-input');
+        var allArtists = [];
+
+        function safeImageUrl(url) {
+            if (!url || typeof url !== 'string') return '';
+            var trimmed = url.trim();
+            if (!trimmed) return '';
+            var lower = trimmed.toLowerCase();
+            if (lower.indexOf('javascript:') === 0) return '';
+            if (lower.indexOf('data:text/html') === 0) return '';
+            return trimmed;
+        }
+
+        function buildCard(artist) {
+            var card = document.createElement('div');
+            card.className = 'artist-card';
+
+            var link = String(artist.link || '').trim();
+
+            var img = document.createElement('img');
+            img.src = safeImageUrl(artist.image);
+            img.className = 'card-img';
+            img.alt = artist.name || '';
+            img.loading = 'lazy';
+            card.appendChild(img);
+
+            if (link) {
+                var floatBtn = document.createElement('a');
+                floatBtn.className = 'float-btn';
+                floatBtn.href = link;
+                floatBtn.title = artist.name || '';
+                floatBtn.setAttribute('aria-label', 'Ver ' + (artist.name || 'artista'));
+                floatBtn.textContent = '+';
+                if (/^https?:\/\//i.test(link)) {
+                    floatBtn.target = '_blank';
+                    floatBtn.rel = 'noopener noreferrer';
+                }
+                card.appendChild(floatBtn);
+            } else {
+                var floatSpan = document.createElement('div');
+                floatSpan.className = 'float-btn';
+                floatSpan.textContent = '+';
+                card.appendChild(floatSpan);
+            }
+
+            var info = document.createElement('div');
+            info.className = 'card-info';
+
+            var name = document.createElement('h2');
+            name.className = 'artist-name';
+            name.textContent = artist.name || '';
+            info.appendChild(name);
+
+            var tags = artist.tags || [];
+            if (tags.length) {
+                var tagsRow = document.createElement('div');
+                tagsRow.className = 'tags-row';
+                tags.forEach(function(tag) {
+                    var span = document.createElement('span');
+                    span.className = 'tag';
+                    span.textContent = tag;
+                    tagsRow.appendChild(span);
+                });
+                info.appendChild(tagsRow);
+            }
+
+            card.appendChild(info);
+            return card;
+        }
+
+        function render(list) {
+            grid.textContent = '';
+
+            if (!list.length) {
+                if (emptyMsg) emptyMsg.style.display = 'block';
+                return;
+            }
+            if (emptyMsg) emptyMsg.style.display = 'none';
+
+            list.forEach(function(artist) {
+                grid.appendChild(buildCard(artist));
+            });
+        }
+
+        function applyFilter() {
+            var query = searchInput ? searchInput.value : '';
+            render(window.WhiteBoxArtists.filter(allArtists, query));
+        }
+
+        function init() {
+            window.WhiteBoxArtists.loadPublished().then(function(artists) {
+                allArtists = artists || [];
+                applyFilter();
+            });
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', applyFilter);
+        }
+
+        init();
+    })();
+</script>
 
 <script src="js/site-config.js"></script>
 </body>

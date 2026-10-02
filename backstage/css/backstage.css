@@ -1004,6 +1004,20 @@ a { color: inherit; text-decoration: none; }
     border: 1px solid var(--border-light);
 }
 
+/* Tags de un artista en la tabla de Descubre */
+.table-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    max-width: 260px;
+}
+
+.table-tags .badge {
+    font-size: 0.6rem;
+    padding: 2px 7px;
+    white-space: nowrap;
+}
+
 /* ===================== BUTTON STATES ===================== */
 .btn-icon.featured-active {
     color: var(--pink);

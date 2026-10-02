@@ -86,6 +86,7 @@
         var storyRegistry = new window.Backstage.DatasourceRegistry();
         var soundscapeRegistry = new window.Backstage.DatasourceRegistry();
         var interviewRegistry = new window.Backstage.DatasourceRegistry();
+        var artistRegistry = new window.Backstage.DatasourceRegistry();
         var siteConfigRegistry = new window.Backstage.DatasourceRegistry();
         var galleryRegistry = new window.Backstage.DatasourceRegistry();
         var sectionRegistry = new window.Backstage.DatasourceRegistry();
@@ -97,6 +98,9 @@
 
         interviewRegistry.register('local', local);
         interviewRegistry.setActive('local');
+
+        artistRegistry.register('local', local);
+        artistRegistry.setActive('local');
 
         siteConfigRegistry.register('local', local);
         siteConfigRegistry.setActive('local');
@@ -130,6 +134,7 @@
         window.Backstage.storyDatasourceRegistry = storyRegistry;
         window.Backstage.soundscapeDatasourceRegistry = soundscapeRegistry;
         window.Backstage.interviewDatasourceRegistry = interviewRegistry;
+        window.Backstage.artistDatasourceRegistry = artistRegistry;
         window.Backstage.siteConfigDatasourceRegistry = siteConfigRegistry;
         window.Backstage.galleryDatasourceRegistry = galleryRegistry;
         window.Backstage.sectionDatasourceRegistry = sectionRegistry;
@@ -139,6 +144,7 @@
             storyRegistry: storyRegistry,
             soundscapeRegistry: soundscapeRegistry,
             interviewRegistry: interviewRegistry,
+            artistRegistry: artistRegistry,
             siteConfigRegistry: siteConfigRegistry,
             galleryRegistry: galleryRegistry,
             sectionRegistry: sectionRegistry,
@@ -156,6 +162,7 @@
             { table: 'stories', key: 'stories_data' },
             { table: 'soundscapes', key: 'soundscapes_data' },
             { table: 'interviews', key: 'interviews_data' },
+            { table: 'artists', key: 'artists_data' },
             { table: 'gallery', key: 'gallery_events_data' },
             { table: 'site_content', key: 'site_content' },
             { table: 'site_config', key: 'site_config' }
@@ -171,6 +178,7 @@
                     gallery: storyDs._cache['gallery_events_data'] ? storyDs._cache['gallery_events_data'].length : 0,
                     soundscapes: storyDs._cache['soundscapes_data'] ? storyDs._cache['soundscapes_data'].length : 0,
                     interviews: storyDs._cache['interviews_data'] ? storyDs._cache['interviews_data'].length : 0,
+                    artists: storyDs._cache['artists_data'] ? storyDs._cache['artists_data'].length : 0,
                     siteConfig: storyDs._cache['site_config'] ? storyDs._cache['site_config'].length : 0
                 });
             }
@@ -220,13 +228,14 @@
         });
     }
 
-    function bootWithLocalMode(storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, sectionReg, local) {
+    function bootWithLocalMode(storyReg, soundscapeReg, interviewReg, artistReg, siteConfigReg, galleryReg, sectionReg, local) {
         window.Backstage._localMode = true;
 
         /* Asegurar que el datasource activo sea local */
         storyReg.setActive('local');
         soundscapeReg.setActive('local');
         interviewReg.setActive('local');
+        artistReg.setActive('local');
         siteConfigReg.setActive('local');
         galleryReg.setActive('local');
         sectionReg.setActive('local');
@@ -234,6 +243,7 @@
         var storyRepo = new window.Backstage.StoryRepository(storyReg);
         var soundscapeRepo = new window.Backstage.SoundscapeRepository(soundscapeReg);
         var interviewRepo = new window.Backstage.InterviewRepository(interviewReg);
+        var artistRepo = new window.Backstage.ArtistRepository(artistReg);
         var siteConfigRepo = new window.Backstage.SiteConfigRepository(local);
         var galleryRepo = new window.Backstage.GalleryRepository(galleryReg);
         var sectionRepo = new window.Backstage.SectionRepository(local);
@@ -244,21 +254,25 @@
         if (typeof soundscapesDataDefault !== 'undefined') {
             soundscapeRepo.migrateFromDefaults(soundscapesDataDefault);
         }
+        if (window.WhiteBoxArtists && window.WhiteBoxArtists.LEGACY_ARTISTS) {
+            artistRepo.migrateFromDefaults(window.WhiteBoxArtists.LEGACY_ARTISTS);
+        }
         if (window.WhiteBoxSiteSchema) {
             sectionRepo.migrateFromDefaults(window.WhiteBoxSiteSchema);
         }
         siteConfigRepo.migrateFromDefaults();
 
-        bootApp(storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, storyRepo, soundscapeRepo, interviewRepo, siteConfigRepo, galleryRepo, sectionRepo, false);
+        bootApp(storyReg, soundscapeReg, interviewReg, artistReg, siteConfigReg, galleryReg, storyRepo, soundscapeRepo, interviewRepo, artistRepo, siteConfigRepo, galleryRepo, sectionRepo, false);
     }
 
     /* ------------------------------------------
        4. BOOT APP
        ------------------------------------------ */
-    function bootApp(storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, storyRepo, soundscapeRepo, interviewRepo, siteConfigRepo, galleryRepo, sectionRepo, isSupabase) {
+    function bootApp(storyReg, soundscapeReg, interviewReg, artistReg, siteConfigReg, galleryReg, storyRepo, soundscapeRepo, interviewRepo, artistRepo, siteConfigRepo, galleryRepo, sectionRepo, isSupabase) {
         var storyService = new window.Backstage.StoryService(storyRepo);
         var soundscapeService = new window.Backstage.SoundscapeService(soundscapeRepo);
         var interviewService = new window.Backstage.InterviewService(interviewRepo);
+        var artistService = new window.Backstage.ArtistService(artistRepo);
         var siteConfigService = new window.Backstage.SiteConfigService(siteConfigRepo);
         var galleryService = new window.Backstage.GalleryService(galleryRepo);
         var dashboardService = new window.Backstage.DashboardService(storyService, soundscapeService, interviewService, siteConfigService);
@@ -274,6 +288,9 @@
 
         var interviewView = window.Backstage.Views.Interview;
         interviewView.init('section-interviews');
+
+        var artistView = window.Backstage.Views.Artist;
+        artistView.init('section-artists');
 
         var siteConfigView = window.Backstage.Views.SiteConfig;
         siteConfigView.init('section-settings');
@@ -295,6 +312,7 @@
         var storyCtrl = new window.Backstage.Controllers.Story(storyService, storyView);
         var soundscapeCtrl = new window.Backstage.Controllers.Soundscape(soundscapeService, soundscapeView);
         var interviewCtrl = new window.Backstage.Controllers.Interview(interviewService, interviewView);
+        var artistCtrl = new window.Backstage.Controllers.Artist(artistService, artistView);
         var siteConfigCtrl = new window.Backstage.Controllers.SiteConfig(siteConfigService, siteConfigView);
         var galleryCtrl = new window.Backstage.Controllers.Gallery(galleryService, galleryView);
 
@@ -362,6 +380,19 @@
                 window.Backstage.Components.Header.showOnly('btnAddInterview');
             },
             unmount: function() { interviewCtrl.unmount(); }
+        });
+
+        router.register('artists', {
+            title: 'Artistas de Descubre',
+            subtitle: 'Administra las tarjetas de la seccion "Descubre"',
+            mount: function() {
+                showSection('artists');
+                window.Backstage.Components.Sidebar.setActive('artists');
+                window.Backstage.Components.Header.updateForRoute('artists');
+                artistCtrl.mount();
+                window.Backstage.Components.Header.showOnly('btnAddArtist');
+            },
+            unmount: function() { artistCtrl.unmount(); }
         });
 
         router.register('gallery', {
@@ -447,6 +478,10 @@
                 if (current5 === 'interviews') interviewCtrl.refresh();
                 if (current5 === 'dashboard') dashboardCtrl.refresh();
             }
+            if (e.key === 'backstage_artists_data' || e.key === 'backstage_artists_data_backup') {
+                var current7 = router.getCurrent();
+                if (current7 === 'artists') artistCtrl.refresh();
+            }
             if (e.key === 'backstage_site_config' || e.key === 'backstage_site_config_backup') {
                 var current6 = router.getCurrent();
                 if (current6 === 'settings') siteConfigCtrl.refresh();
@@ -473,7 +508,7 @@
         if (banner) banner.style.display = '';
     }
 
-    function bindErrorScreenButtons(storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, sectionReg, local) {
+    function bindErrorScreenButtons(storyReg, soundscapeReg, interviewReg, artistReg, siteConfigReg, galleryReg, sectionReg, local) {
         var retryBtn = document.getElementById('preloadRetryBtn');
         var localBtn = document.getElementById('preloadLocalBtn');
 
@@ -483,7 +518,7 @@
                 showPreloadError(true);
                 attemptPreload(storyReg).then(function(ok) {
                     if (ok) {
-                        bootWithSupabase(storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, sectionReg, local);
+                        bootWithSupabase(storyReg, soundscapeReg, interviewReg, artistReg, siteConfigReg, galleryReg, sectionReg, local);
                     } else {
                         showPreloadError(false);
                     }
@@ -494,16 +529,16 @@
         if (localBtn) {
             localBtn.addEventListener('click', function() {
                 hidePreloadError();
-                bootWithLocalMode(storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, sectionReg, local);
+                bootWithLocalMode(storyReg, soundscapeReg, interviewReg, artistReg, siteConfigReg, galleryReg, sectionReg, local);
             });
         }
     }
 
-    function bootWithSupabase(storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, sectionReg, local) {
+    function bootWithSupabase(storyReg, soundscapeReg, interviewReg, artistReg, siteConfigReg, galleryReg, sectionReg, local) {
         var storyDs = storyReg.sources['supabase'];
         if (!storyDs) {
             // Fallback a local si Supabase no está disponible
-            bootWithLocalMode(storyReg, soundscapeReg, interviewReg, siteConfigReg, galleryReg, sectionReg, local);
+            bootWithLocalMode(storyReg, soundscapeReg, interviewReg, artistReg, siteConfigReg, galleryReg, sectionReg, local);
             return;
         }
 
@@ -530,6 +565,11 @@
         supabaseInterviewRegistry.register('local', local);
         supabaseInterviewRegistry.setActive('supabase');
 
+        var supabaseArtistRegistry = new window.Backstage.DatasourceRegistry();
+        supabaseArtistRegistry.register('supabase', storyDs);
+        supabaseArtistRegistry.register('local', local);
+        supabaseArtistRegistry.setActive('supabase');
+
         /*
          * Ahora sí creamos REPOSITORIES.
          */
@@ -546,6 +586,11 @@
         var interviewRepo =
             new window.Backstage.InterviewRepository(
                 supabaseInterviewRegistry
+            );
+
+        var artistRepo =
+            new window.Backstage.ArtistRepository(
+                supabaseArtistRegistry
             );
 
         /*
@@ -572,12 +617,14 @@
             supabaseStoryRegistry,
             supabaseSoundscapeRegistry,
             supabaseInterviewRegistry,
+            supabaseArtistRegistry,
             siteConfigReg,
             galleryReg,
 
             storyRepo,
             soundscapeRepo,
             interviewRepo,
+            artistRepo,
             siteConfigRepo,
             galleryRepo,
             sectionRepo,
@@ -598,9 +645,9 @@
             if (booted) return;
             booted = true;
             if (mode === 'supabase') {
-                bootWithSupabase(ds.storyRegistry, ds.soundscapeRegistry, ds.interviewRegistry, ds.siteConfigRegistry, ds.galleryRegistry, ds.sectionRegistry, ds.local);
+                bootWithSupabase(ds.storyRegistry, ds.soundscapeRegistry, ds.interviewRegistry, ds.artistRegistry, ds.siteConfigRegistry, ds.galleryRegistry, ds.sectionRegistry, ds.local);
             } else {
-                bootWithLocalMode(ds.storyRegistry, ds.soundscapeRegistry, ds.interviewRegistry, ds.siteConfigRegistry, ds.galleryRegistry, ds.sectionRegistry, ds.local);
+                bootWithLocalMode(ds.storyRegistry, ds.soundscapeRegistry, ds.interviewRegistry, ds.artistRegistry, ds.siteConfigRegistry, ds.galleryRegistry, ds.sectionRegistry, ds.local);
             }
         }
 

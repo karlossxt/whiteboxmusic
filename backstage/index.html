@@ -65,6 +65,10 @@
                     <i class="fa-solid fa-microphone"></i>
                     <span>Entrevistas</span>
                 </a>
+                <a href="#artists" class="admin-nav-item" data-section="artists">
+                    <i class="fa-solid fa-headphones"></i>
+                    <span>Descubre</span>
+                </a>
                 <a href="#gallery" class="admin-nav-item" data-section="gallery">
                     <i class="fa-solid fa-camera"></i>
                     <span>Galería</span>
@@ -121,6 +125,7 @@
             </section>
             <section class="admin-section" id="section-soundscapes" style="display:none;"></section>
             <section class="admin-section" id="section-interviews" style="display:none;"></section>
+            <section class="admin-section" id="section-artists" style="display:none;"></section>
             <section class="admin-section" id="section-gallery" style="display:none;"></section>
             <section class="admin-section" id="section-sections" style="display:none;"></section>
             <section class="admin-section" id="section-settings" style="display:none;"></section>
@@ -427,6 +432,79 @@
         </div>
     </div>
 
+    <!-- Artist Form Modal -->
+    <div class="modal-overlay" id="artistModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="arModalTitle">Nuevo Artista</h2>
+                <button class="modal-close" id="arModalClose" aria-label="Cerrar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="arForm" novalidate>
+                <input type="hidden" id="arFormId">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="arFormName">Nombre del artista <span class="required">*</span></label>
+                        <input type="text" id="arFormName" required placeholder="Ej: The Last Internationale">
+                        <span class="form-error" id="errorarFormName"></span>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="arFormImage">URL de imagen <span class="required">*</span></label>
+                        <input type="url" id="arFormImage" placeholder="https://...">
+                        <span class="form-hint">Pega una URL o sube una imagen desde tu equipo.</span>
+                        <div class="form-image-upload">
+                            <input type="file" id="arFormImageFile" accept="image/*" class="form-file-input">
+                            <span class="form-file-label">Subir imagen</span>
+                        </div>
+                        <span class="form-error" id="errorarFormImage"></span>
+                        <div class="form-image-preview" id="arImagePreview" style="display:none;">
+                            <img id="arImagePreviewImg" src="" alt="Vista previa de imagen">
+                            <button type="button" class="ss-cover-remove" id="arImageRemove" title="Quitar imagen" aria-label="Quitar imagen">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="arFormTags">Tags <span class="required">*</span></label>
+                        <input type="text" id="arFormTags" placeholder="Ej: Synth Pop, Darkwave, Gran Canaria">
+                        <span class="form-hint">Separados por coma. Se usan como etiquetas de la tarjeta y para el buscador.</span>
+                        <span class="form-error" id="errorarFormTags"></span>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="arFormLink">Link del artista</label>
+                        <input type="url" id="arFormLink" placeholder="https://... (opcional)">
+                        <span class="form-hint">Si lo llenas, el boton "+" de la tarjeta lleva a este sitio.</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="arFormStatus">Estado</label>
+                        <select id="arFormStatus">
+                            <option value="draft">Borrador</option>
+                            <option value="published">Publicado</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="arFormFeatured">Destacado</label>
+                        <select id="arFormFeatured">
+                            <option value="false">No</option>
+                            <option value="true">Si</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="arFormOrder">Orden</label>
+                        <input type="number" id="arFormOrder" min="1" value="1">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="arBtnCancel">Cancelar</button>
+                    <button type="submit" class="btn-primary" id="arBtnSave">
+                        <i class="fa-solid fa-check"></i> Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Gallery Form Modal -->
     <div class="modal-overlay" id="galleryModal">
         <div class="modal-content">
@@ -551,6 +629,7 @@
     <!-- Legacy data (read-only, used for first-run migration) -->
     <script src="../js/stories-data.js"></script>
     <script src="../js/soundscapes-data.js"></script>
+    <script src="../js/artists-data.js"></script>
 
     <!-- Site content schema (shared with the public site) -->
     <script src="../js/site-schema.js"></script>
@@ -563,6 +642,7 @@
     <script src="models/story.js"></script>
     <script src="models/soundscape.js"></script>
     <script src="models/interview.js"></script>
+    <script src="models/artist.js"></script>
     <script src="models/site-config.js"></script>
     <script src="models/gallery.js"></script>
     <script src="models/section.js"></script>
@@ -580,6 +660,7 @@
     <script src="repositories/soundscape-repository.js"></script>
     <script src="repositories/firestore-soundscape-repository.js"></script>
     <script src="repositories/interview-repository.js"></script>
+    <script src="repositories/artist-repository.js"></script>
     <script src="repositories/firestore-interview-repository.js"></script>
     <script src="repositories/site-config-repository.js"></script>
     <script src="repositories/firestore-site-config-repository.js"></script>
@@ -594,6 +675,7 @@
     <script src="services/story-service.js"></script>
     <script src="services/soundscape-service.js"></script>
     <script src="services/interview-service.js"></script>
+    <script src="services/artist-service.js"></script>
     <script src="services/site-config-service.js"></script>
     <script src="services/gallery-service.js"></script>
     <script src="services/section-service.js"></script>
@@ -619,6 +701,7 @@
     <script src="views/story-view.js"></script>
     <script src="views/soundscape-view.js"></script>
     <script src="views/interview-view.js"></script>
+    <script src="views/artist-view.js"></script>
     <script src="views/site-config-view.js"></script>
     <script src="views/gallery-view.js"></script>
     <script src="views/section-view.js"></script>
@@ -628,6 +711,7 @@
     <script src="controllers/story-controller.js"></script>
     <script src="controllers/soundscape-controller.js"></script>
     <script src="controllers/interview-controller.js"></script>
+    <script src="controllers/artist-controller.js"></script>
     <script src="controllers/site-config-controller.js"></script>
     <script src="controllers/gallery-controller.js"></script>
     <script src="controllers/section-controller.js"></script>
