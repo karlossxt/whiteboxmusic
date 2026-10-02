@@ -498,6 +498,9 @@
             }
             card.appendChild(img);
 
+            /* El "+" solo se dibuja si el artista tiene link. Como
+               boton, si no tiene destino no es nada, y se veía igual
+               que los de verdad. */
             if (link) {
                 var floatBtn = document.createElement('a');
                 floatBtn.className = 'float-btn';
@@ -510,11 +513,6 @@
                     floatBtn.rel = 'noopener noreferrer';
                 }
                 card.appendChild(floatBtn);
-            } else {
-                var floatSpan = document.createElement('div');
-                floatSpan.className = 'float-btn';
-                floatSpan.textContent = '+';
-                card.appendChild(floatSpan);
             }
 
             var info = document.createElement('div');
