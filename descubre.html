@@ -96,7 +96,6 @@
             position: relative;
             overflow: hidden;
             border: 1px solid #222;
-            cursor: pointer;
             background-color: var(--gray);
         }
 
@@ -112,7 +111,11 @@
             filter: grayscale(0%) contrast(1);
         }
 
-        /* Artistas que tienen entrevista: la imagen acts as boton */
+        /* Solo la imagen es clicable, y solo si el artista tiene
+           entrevista. El cursor va aqui (y no en .artist-card) para
+           que la manita aparezca exactamente en la zona que
+           responde al click. .card-info queda encima de la imagen
+           en la parte de abajo y no abre el modal. */
         .card-img.is-clickable {
             cursor: pointer;
         }
